@@ -1,80 +1,184 @@
-import { useEffect, useRef } from 'react';
-import Typed from 'typed.js';
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { TextPlugin } from "gsap/TextPlugin";
+
+gsap.registerPlugin(TextPlugin);
 
 export default function Hero() {
   const heroRef = useRef(null);
-  const typedRef = useRef(null);
+  const typingRef = useRef(null);
+  const scoreRef = useRef(null);
+
+  // Typing suggestions (Typing: A)
+  const suggestions = [
+    '“Mera rent, SIP aur UPI spends ek saath kaise plan karun?”',
+    '“If I save ₹30k/month, 18 lakh ka goal kab tak achieve hoga?”',
+    '“Parents ke medical fund ke saath Goa trip bhi fit ho sakta hai?”',
+  ];
 
   useEffect(() => {
-    // Typed.js animated text
-    if (typedRef.current) {
-      new Typed(typedRef.current, {
-        strings: ['{"salary":100000,"rent":20000,"savings":15000}'],
-        typeSpeed: 40,
-        backSpeed: 30,
-        showCursor: false,
-        loop: true
-      });
-    }
+    // =========================
+    // GSAP FADE + SLIDE REVEAL
+    // =========================
+    const revealEls = heroRef.current.querySelectorAll(".nf-hero-animate");
+    gsap.set(revealEls, { opacity: 0, y: 22 });
 
-    // Intersection animations for hero elements
-    if (heroRef.current) {
-      const elems = heroRef.current.querySelectorAll('.nf-hero-animate');
-      elems.forEach(el => {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(18px)';
-      });
+    gsap.to(revealEls, {
+      opacity: 1,
+      y: 0,
+      duration: 0.8,
+      stagger: 0.12,
+      ease: "power3.out",
+    });
 
-      const io = new IntersectionObserver((entries, obs) => {
-        entries.forEach(entry => {
-          if (!entry.isIntersecting) return;
-          elems.forEach((el, idx) => {
-            setTimeout(() => {
-              el.style.transition = 'opacity 0.45s ease-out, transform 0.45s ease-out';
-              el.style.opacity = '1';
-              el.style.transform = 'translateY(0)';
-            }, idx * 100);
-          });
-          obs.unobserve(entry.target);
+    // =========================
+    // GSAP TYPING ANIMATION
+    // =========================
+    const tl = gsap.timeline({ repeat: -1, repeatDelay: 0.4 });
+
+    suggestions.forEach((text) => {
+      tl.to(typingRef.current, {
+        duration: text.length * 0.04,
+        text,
+        ease: "none",
+      })
+        .to({}, { duration: 0.9 })
+        .to(typingRef.current, {
+          duration: text.length * 0.03,
+          text: "",
+          ease: "none",
         });
-      }, { threshold: 0.3 });
-      io.observe(heroRef.current);
-    }
+    });
+
+    // =========================
+    // SCORE COUNTER ANIMATION
+    // =========================
+    const scoreObj = { val: 0 };
+    gsap.to(scoreObj, {
+      val: 9.2,
+      duration: 1.7,
+      delay: 0.8,
+      ease: "power2.out",
+      onUpdate: () => {
+        if (scoreRef.current) {
+          scoreRef.current.textContent = scoreObj.val.toFixed(1);
+        }
+      },
+    });
+
+    return () => {
+      tl.kill();
+      gsap.killTweensOf(revealEls);
+    };
   }, []);
 
   return (
-    <section id="nf-hero" className="relative overflow-hidden" ref={heroRef}>
-      <div className="relative mx-auto max-w-6xl px-4 sm:px-6 lg:px-8 py-16 sm:py-20 lg:py-24 grid items-center gap-10 lg:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)]">
-        {/* Left side */}
-        <div className="space-y-6">
-          <div className="inline-flex items-center gap-2 rounded-full border border-emerald-200/15 bg-emerald-400/5 px-3 py-1.5 text-xs font-medium tracking-wide text-emerald-100/90 shadow-[0_0_30px_rgba(16,185,129,0.25)] nf-hero-animate">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" className="iconify text-emerald-300"><path fill="currentColor" d="M3.845 3.845a2.883 2.883 0 0 0 0 4.077L5.432 9.51c.012-.014.555.503.568.49l4-4c.013-.013-.504-.556-.49-.568L7.922 3.845a2.883 2.883 0 0 0-4.077 0m1.288 11.462a.483.483 0 0 1 .9 0l.157.4a.48.48 0 0 0 .272.273l.398.157a.486.486 0 0 1 0 .903l-.398.158a.48.48 0 0 0-.272.273l-.157.4a.483.483 0 0 1-.9 0l-.157-.4a.48.48 0 0 0-.272-.273l-.398-.158a.486.486 0 0 1 0-.903l.398-.157a.48.48 0 0 0 .272-.274z" opacity=".5"></path><path fill="currentColor" d="M19.967 9.13a.483.483 0 0 1 .9 0l.156.399c.05.125.148.224.273.273l.398.158a.486.486 0 0 1 0 .902l-.398.158a.5.5 0 0 0-.273.273l-.156.4a.483.483 0 0 1-.9 0l-.157-.4a.5.5 0 0 0-.272-.273l-.398-.158a.486.486 0 0 1 0-.902l.398-.158a.5.5 0 0 0 .272-.273z" opacity=".2"></path><path fill="currentColor" d="M16.1 2.307a.483.483 0 0 1 .9 0l.43 1.095a.48.48 0 0 0 .272.274l1.091.432a.486.486 0 0 1 0 .903l-1.09.432a.5.5 0 0 0-.273.273L17 6.81a.483.483 0 0 1-.9 0l-.43-1.095a.5.5 0 0 0-.273-.273l-1.09-.432a.486.486 0 0 1 0-.903l1.09-.432a.5.5 0 0 0 .273-.274z" opacity=".7"></path><path fill="currentColor" d="M10.568 6.49c-.012.014-.555-.503-.568-.49l-4 4c-.013.013.504.556.49.568l9.588 9.587a2.883 2.883 0 1 0 4.078-4.077z"></path></svg>
-            <span>Founding India cohort – first year at ₹899</span>
-          </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-light tracking-tight text-white leading-tight nf-hero-animate">
-            <span className="text-white/90"><em className="not-italic">Compose</em> your Indian money story.</span>
-          </h1>
-          <p className="text-lg lg:text-xl text-neutral-300 max-w-xl nf-hero-animate">
-            Take control of salary, cards, investments and UPI — all in one place. Simple &amp; powerful, built for India.
-          </p>
-          <div className="flex flex-wrap items-center gap-3 nf-hero-animate">
-            <a href="#signup" className="inline-flex items-center gap-2 rounded-full bg-white text-sm font-medium text-black px-5 py-3 shadow-[0_0_40px_rgba(250,250,250,0.35)] hover:bg-neutral-100 transition">
-              <span>Join waitlist</span>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" className="iconify iconify--solar"><path fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="m9 5l6 7l-6 7"></path></svg>
-            </a>
-            <a href="#download" className="inline-flex items-center gap-2 rounded-full border border-indigo-400/30 bg-indigo-400/10 text-sm font-medium text-indigo-100/90 px-5 py-3 hover:bg-indigo-400/15 transition">
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" className="iconify iconify--solar"><path fill="currentColor" d="M3.845 3.845a2.883 2.883 0 0 0 0 4.077L5.432 9.51c.012-.014.555.503.568.49l4-4c.013-.013-.504-.556-.49-.568L7.922 3.845a2.883 2.883 0 0 0-4.077 0m1.288 11.462a.483.483 0 0 1 .9 0l.157.4a.48.48 0 0 0 .272.273l.398.157a.486.486 0 0 1 0 .903l-.398.158a.48.48 0 0 0-.272.273l-.157.4a.483.483 0 0 1-.9 0l-.157-.4a.48.48 0 0 0-.272-.273l-.398-.158a.486.486 0 0 1 0-.903l.398-.157a.48.48 0 0 0 .272-.274z" opacity=".5"></path><path fill="currentColor" d="M19.967 9.13a.483.483 0 0 1 .9 0l.156.399c.05.125.148.224.273.273l.398.158a.486.486 0 0 1 0 .902l-.398.158a.5.5 0 0 0-.273.273l-.156.4a.483.483 0 0 1-.9 0l-.157-.4a.5.5 0 0 0-.272-.273l-.398-.158a.486.486 0 0 1 0-.902l.398-.158a.5.5 0 0 0 .272-.273z" opacity=".2"></path><path fill="currentColor" d="M16.1 2.307a.483.483 0 0 1 .9 0l.43 1.095a.48.48 0 0 0 .272.274l1.091.432a.486.486 0 0 1 0 .903l-1.09.432a.5.5 0 0 0-.273.273L17 6.81a.483.483 0 0 1-.9 0l-.43-1.095a.5.5 0 0 0-.273-.273l-1.09-.432a.486.486 0 0 1 0-.903l1.09-.432a.5.5 0 0 0 .273-.274z" opacity=".7"></path><path fill="currentColor" d="M10.568 6.49c-.012.014-.555-.503-.568-.49l-4 4c-.013.013.504.556.49.568l9.588 9.587a2.883 2.883 0 1 0 4.078-4.077z"></path></svg>
-              <span>₨899 only (Founding)</span>
-            </a>
-          </div>
-        </div>
+    <section
+      id="nf-hero"
+      ref={heroRef}
+      className="relative overflow-hidden bg-[#05050A] text-white"
+    >
+      {/* Background glows */}
+      <div className="pointer-events-none absolute inset-0 -z-10">
+        <div className="absolute -left-40 top-0 w-[720px] h-[720px] rounded-full bg-[radial-gradient(circle_at_center,rgba(79,70,229,0.16),transparent_60%)] blur-[180px]" />
+        <div className="absolute right-0 bottom-0 w-[640px] h-[640px] rounded-full bg-[radial-gradient(circle_at_center,rgba(15,23,42,0.9),transparent_60%)] blur-[140px]" />
+      </div>
 
-        {/* Right side mockup */}
-        <div className="relative">
-          <div className="relative rounded-3xl overflow-hidden">
-            <img src="https://images.pexels.com/photos/6927447/pexels-photo-6927447.jpeg?auto=compress&cs=tinysrgb&w=1200" alt="NueroFin dashboard" className="h-full w-full object-cover" loading="lazy" />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+      <div className="relative mx-auto max-w-7xl px-6 lg:px-12 py-20 lg:py-28">
+        <div className="grid items-start gap-12 lg:grid-cols-[1.05fr_0.95fr]">
+
+          {/* LEFT SIDE */}
+          <div className="space-y-6">
+
+            {/* Badge */}
+            <div className="nf-hero-animate inline-flex items-center gap-3 rounded-full border border-emerald-300/18 bg-emerald-400/6 px-4 py-2 text-xs font-medium tracking-wide text-emerald-100 shadow-[0_0_60px_rgba(16,185,129,0.14)]">
+              <span>Founding India cohort – first year at ₹899</span>
+            </div>
+
+            {/* Heading */}
+            <h1 className="nf-hero-animate text-[3.6rem] leading-[1.0] font-light tracking-tight max-w-2xl">
+              Compose your Indian money <span className="block">OS.</span>
+            </h1>
+
+            {/* Subtext */}
+            <p className="nf-hero-animate text-lg text-neutral-300 max-w-xl">
+              NueroFin is your personal AI Money Copilot for India.  
+              Connect UPI handles, cards, bank accounts and goals into one live workspace —  
+              then ask NueroFin what to do next.
+            </p>
+
+            {/* CTA Buttons */}
+            <div className="nf-hero-animate flex items-center gap-4 mt-2">
+              <a className="inline-flex items-center gap-3 rounded-full bg-white px-5 py-3 text-sm font-medium text-black shadow-[0_30px_120px_rgba(255,255,255,0.08)] hover:bg-neutral-100 transition">
+                START WITH ₹0 joining fee
+              </a>
+              <a className="inline-flex items-center gap-2 rounded-full border border-indigo-400/20 bg-indigo-500/6 px-4 py-2 text-sm font-medium text-indigo-100 hover:bg-indigo-500/8 transition">
+                ₹899 only (Founding)
+              </a>
+            </div>
+
+            {/* Typing pill with GSAP typing */}
+            <div className="nf-hero-animate mt-8 max-w-2xl">
+              <div className="flex items-center gap-4">
+                <div className="flex-1 rounded-full bg-white/5 border border-white/6 px-4 py-3 text-sm text-neutral-100 shadow-[inset_0_1px_0_rgba(255,255,255,0.02)]">
+                  <span ref={typingRef} className="select-none"></span>
+                  <span aria-hidden className="inline-block ml-1 text-neutral-400">|</span>
+                </div>
+                <div className="flex items-center justify-center h-10 w-10 rounded-full bg-white/6 border border-white/6">
+                  <div className="h-6 w-6 rounded-full bg-white/10" />
+                </div>
+              </div>
+            </div>
+
+            {/* Lower Subtext */}
+            <div className="nf-hero-animate mt-6 text-base text-neutral-300/80 max-w-xl">
+              Track everything. Ask in Hinglish. Automate the next move.
+            </div>
           </div>
+
+          {/* RIGHT SIDE — Image + Score + Insight */}
+          <div className="relative nf-hero-animate">
+            <div className="rounded-3xl overflow-hidden bg-neutral-900/20 border border-white/6 shadow-[0_40px_140px_rgba(2,6,23,0.9)]">
+
+              {/* ORIGINAL PHOTO — unchanged */}
+              <img
+                src="https://images.pexels.com/photos/6927447/pexels-photo-6927447.jpeg?auto=compress&cs=tinysrgb&w=1200"
+                alt="NueroFin dashboard"
+                className="w-full h-[520px] object-cover rounded-3xl"
+                loading="lazy"
+              />
+
+              {/* Score + insight overlay */}
+              <div className="absolute left-6 bottom-6 max-w-[68%]">
+
+                <div className="text-xs text-neutral-300">Nuero Score</div>
+
+                <div className="flex items-end gap-3">
+                  <div ref={scoreRef} className="text-4xl font-semibold text-white">0.0</div>
+                  <div className="text-sm text-emerald-300/90 mt-1">/ 10</div>
+                </div>
+
+                <div className="mt-2 text-xs text-emerald-300/80">
+                  ↑ Ahead of 84% of similar Indian households
+                </div>
+
+                {/* Insight box */}
+                <div className="mt-4 rounded-xl bg-black/70 border border-white/6 px-4 py-3 text-sm text-neutral-200 backdrop-blur-md shadow-[0_20px_60px_rgba(0,0,0,0.6)]">
+                  <div className="flex items-start gap-3">
+                    <div className="flex-none h-8 w-8 rounded-full bg-emerald-700/80 flex items-center justify-center text-white text-sm">i</div>
+                    <div>
+                      <div className="font-medium">Today's insight</div>
+                      <div className="text-sm text-neutral-300 mt-1">
+                        You can redirect ₹4,200/month from low-value spends to SIPs and still keep your lifestyle unchanged.
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>
