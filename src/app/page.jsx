@@ -2,7 +2,6 @@
 
 import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
-import SpendingSection from "../components/SpendingSection";
 import TrackSection from "../components/TrackSection";
 import AutomationSection from "../components/AutomationSection";
 import AISearchSection from "../components/AISearchSection";
@@ -24,7 +23,6 @@ export default function Home() {
       {/* MAIN CONTENT */}
       <Navbar />
       <Hero />
-      <SpendingSection />
       <TrackSection />
       <AutomationSection />
       <AISearchSection />
