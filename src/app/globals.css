@@ -111,3 +111,74 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #6b7280;
 }
+
+/* Premium Login Button Wrapper */
+#login-premium {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+  color: white !important; /* ← Prevent GSAP conflict */
+}
+
+/* Shine bar */
+#login-premium .shine {
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 70%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(255,255,255,0.40) 50%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  pointer-events: none;
+}
+
+/* Trigger Shine Sweep */
+#login-premium:hover .shine {
+  animation: shineSweep 0.85s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes shineSweep {
+  0% { left: -120%; }
+  100% { left: 120%; }
+}
+
+/* Soft hover background using Tailwind layers */
+#login-premium .hover-bg {
+  opacity: 0;
+  transition: opacity 0.35s ease;
+}
+
+#login-premium:hover .hover-bg {
+  opacity: 1;
+}
+
+.shine {
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 80%;
+  height: 100%;
+  background: linear-gradient(
+    120deg,
+    transparent 0%,
+    rgba(255,255,255,0.5) 50%,
+    transparent 100%
+  );
+  transform: skewX(-20deg);
+  pointer-events: none;
+}
+
+#login-premium:hover .shine,
+#signup-ultra:hover .shine {
+  animation: shineSweep 1s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+@keyframes shineSweep {
+  0% { left: -150%; }
+  100% { left: 150%; }
+}
