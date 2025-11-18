@@ -14,13 +14,7 @@ import Footer from "../components/Footer";
 export default function Home() {
   return (
     <main className="relative w-full overflow-hidden bg-black text-white">
-      {/* Background Gradient Layers if your HTML had them */}
-      <div className="absolute inset-0 pointer-events-none z-0">
-        <div className="absolute top-0 left-0 w-[800px] h-[800px] bg-purple-500/20 rounded-full blur-[200px]" />
-        <div className="absolute bottom-0 right-0 w-[700px] h-[700px] bg-indigo-500/20 rounded-full blur-[200px]" />
-      </div>
 
-      {/* MAIN CONTENT */}
       <Navbar />
       <Hero />
       <TrackSection />
@@ -28,8 +22,9 @@ export default function Home() {
       <AISearchSection />
       <ForecastSection />
       <FamiliesSection />
-      <DownloadSection />
       <Testimonials />
+      <DownloadSection />
+
       <Footer />
     </main>
   );
