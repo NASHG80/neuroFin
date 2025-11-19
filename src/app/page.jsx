@@ -1,6 +1,5 @@
 "use client";
 
-import Navbar from "../components/Navbar";
 import Hero from "../components/Hero";
 import TrackSection from "../components/TrackSection";
 import AutomationSection from "../components/AutomationSection";
@@ -15,7 +14,6 @@ export default function Home() {
   return (
     <main className="relative w-full overflow-hidden bg-black text-white">
 
-      <Navbar />
       <Hero />
       <TrackSection />
       <AutomationSection />

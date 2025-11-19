@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 export default function Navbar() {
   const navRef = useRef(null);
@@ -13,6 +13,8 @@ export default function Navbar() {
   const [lastScroll, setLastScroll] = useState(0);
   const [hidden, setHidden] = useState(false);
   const [hoveringService, setHoveringService] = useState(false);
+
+  const navigate = useNavigate();
 
   /* ────────────────────────────────────────────────
       Hide / Reveal Navbar on scroll
@@ -205,6 +207,7 @@ export default function Navbar() {
           <button
             ref={(el) => (linksRef.current[3] = el)}
             id="login-premium"
+            onClick={() => navigate("/login")}
             className="relative group px-5 py-2 font-medium text-white tracking-wide
                        rounded-lg transition-all duration-300
                        border border-white/10 bg-white/5 backdrop-blur-md
@@ -226,6 +229,7 @@ export default function Navbar() {
           <button
             id="signup-ultra"
             ref={(el) => (linksRef.current[4] = el)}
+            onClick={() => navigate("/signup")}
             className="relative group px-6 py-2 font-semibold rounded-full
                        bg-white text-black
                        shadow-[0_0_35px_rgba(255,255,255,0.45)]
