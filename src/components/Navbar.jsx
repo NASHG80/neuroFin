@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
+import { Link } from "react-router-dom";
 
 export default function Navbar() {
   const navRef = useRef(null);
@@ -199,7 +200,7 @@ export default function Navbar() {
 
         {/* RIGHT — PREMIUM LOGIN + ULTRA SIGN UP */}
         <div className="flex items-center gap-6 flex-none">
-
+                
           {/* PREMIUM LOGIN */}
           <button
             ref={(el) => (linksRef.current[3] = el)}
@@ -219,7 +220,8 @@ export default function Navbar() {
               <span className="shine"></span>
             </span>
           </button>
-
+                
+                
           {/* ULTRA SIGN UP */}
           <button
             id="signup-ultra"
@@ -252,6 +254,7 @@ export default function Navbar() {
               <span className="shine"></span>
             </span>
           </button>
+          
         </div>
       </div>
 
