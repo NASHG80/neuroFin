@@ -1,25 +1,83 @@
-import React, { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useEffect, useRef, useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import gsap from "gsap";
 
-function SignupPage() {
+export default function SignupPage() {
   const navigate = useNavigate();
-  const [form, setForm] = useState({ name: "", email: "", password: "" });
+  const containerRef = useRef(null);
+  const cardRef = useRef(null);
+  const formRefs = useRef([]);
+  
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
-  async function handleSubmit(e) {
+  // --- ANIMATIONS ---
+  useEffect(() => {
+    const ctx = gsap.context(() => {
+      // 1. Background Float
+      gsap.to(".glow-orb-signup", {
+        scale: 1.2,
+        duration: 8,
+        repeat: -1,
+        yoyo: true,
+        ease: "sine.inOut",
+      });
+
+      // 2. Card Reveal
+      gsap.fromTo(
+        cardRef.current,
+        { opacity: 0, y: 40, rotateX: 10 },
+        { opacity: 1, y: 0, rotateX: 0, duration: 1.4, ease: "power3.out" }
+      );
+
+      // 3. Content Stagger
+      gsap.fromTo(
+        formRefs.current,
+        { opacity: 0, x: -20 },
+        {
+          opacity: 1,
+          x: 0,
+          duration: 0.8,
+          stagger: 0.08,
+          delay: 0.5,
+          ease: "power2.out",
+        }
+      );
+    }, containerRef);
+
+    return () => ctx.revert();
+  }, []);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  // --- BACKEND INTEGRATION ---
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setLoading(true);
+
+    if (formData.password !== formData.confirmPassword) {
+        setError("Passwords do not match");
+        setLoading(false);
+        return;
+    }
 
     try {
       const res = await fetch("http://localhost:5000/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          name: form.name,
-          email: form.email,
-          password: form.password,
+            name: formData.name,
+            email: formData.email,
+            password: formData.password
         }),
       });
 
@@ -27,100 +85,148 @@ function SignupPage() {
 
       if (!res.ok) {
         setError(data.message || "Signup failed");
+        gsap.fromTo(cardRef.current, { x: -10 }, { x: 10, duration: 0.1, repeat: 5, yoyo: true });
       } else {
+        // Login immediately or redirect to login
         localStorage.setItem("nf_token", data.token);
-        navigate("/");
+        localStorage.setItem("nf_user", JSON.stringify(data.user));
+        navigate("/"); 
       }
     } catch (err) {
-      setError("Network error. Please try again.");
+      setError("Unable to connect to server.");
     } finally {
       setLoading(false);
     }
-  }
-
-  function handleChange(e) {
-    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
-  }
+  };
 
   return (
-    <main className="relative w-full min-h-screen overflow-hidden bg-black text-white flex items-center justify-center px-4 pt-24">
-      <div className="w-full max-w-md bg-white/5 border border-white/10 rounded-2xl p-8 backdrop-blur-xl">
-        <h1 className="text-2xl font-semibold mb-6 text-center">Sign up</h1>
+    <main
+      ref={containerRef}
+      className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-[#05050A] text-white px-4 py-12"
+    >
+      {/* --- BACKGROUND FX --- */}
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="glow-orb-signup absolute top-[20%] right-[20%] w-[500px] h-[500px] bg-[#7d5fff]/15 blur-[140px] rounded-full" />
+        <div className="glow-orb-signup absolute bottom-[10%] left-[10%] w-[600px] h-[600px] bg-[#6dcffc]/10 blur-[140px] rounded-full" />
+        <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-20 mix-blend-overlay"></div>
+      </div>
 
-        {error && (
-          <div className="mb-4 text-sm text-red-400 bg-red-500/10 border border-red-500/40 rounded-lg px-3 py-2">
-            {error}
-          </div>
-        )}
+      {/* --- CARD --- */}
+      <div
+        ref={cardRef}
+        className="relative w-full max-w-[460px] rounded-[2.5rem] border border-white/10 bg-black/60 backdrop-blur-3xl shadow-[0_20px_80px_rgba(0,0,0,0.6)]"
+      >
+        {/* Top Accent Light */}
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/2 h-[2px] bg-gradient-to-r from-transparent via-white/50 to-transparent blur-[2px]"></div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="flex flex-col gap-1">
-            <label className="text-sm text-white/70" htmlFor="name">
-              Name
-            </label>
-            <input
-              id="name"
-              name="name"
-              type="text"
-              required
-              value={form.name}
-              onChange={handleChange}
-              className="w-full rounded-lg bg-black/40 border border-white/15 px-3 py-2 text-sm text-white outline-none focus:border-white/60 focus:ring-1 focus:ring-white/40"
-            />
-          </div>
-
-          <div className="flex flex-col gap-1">
-            <label className="text-sm text-white/70" htmlFor="email">
-              Email
-            </label>
-            <input
-              id="email"
-              name="email"
-              type="email"
-              required
-              value={form.email}
-              onChange={handleChange}
-              className="w-full rounded-lg bg-black/40 border border-white/15 px-3 py-2 text-sm text-white outline-none focus:border-white/60 focus:ring-1 focus:ring-white/40"
-            />
+        <div className="p-8 sm:p-12">
+          {/* Header */}
+          <div className="mb-8">
+            <p ref={el => formRefs.current[0] = el} className="text-[#6dcffc] text-xs font-bold tracking-[0.2em] mb-2">
+              NUEROFIN ID
+            </p>
+            <h1 ref={el => formRefs.current[1] = el} className="text-3xl sm:text-4xl font-light text-white tracking-tight">
+              Create your <br/> Money OS.
+            </h1>
           </div>
 
-          <div className="flex flex-col gap-1">
-            <label className="text-sm text-white/70" htmlFor="password">
-              Password
-            </label>
-            <input
-              id="password"
-              name="password"
-              type="password"
-              required
-              value={form.password}
-              onChange={handleChange}
-              className="w-full rounded-lg bg-black/40 border border-white/15 px-3 py-2 text-sm text-white outline-none focus:border-white/60 focus:ring-1 focus:ring-white/40"
-            />
+          {/* Error Message */}
+          {error && (
+            <div className="mb-6 text-xs text-red-400 bg-red-500/10 border border-red-500/20 p-3 rounded-lg text-center">
+              {error}
+            </div>
+          )}
+
+          <form onSubmit={handleSubmit} className="space-y-5">
+            
+            {/* Name */}
+            <div ref={el => formRefs.current[2] = el} className="group space-y-1">
+              <label className="text-[10px] font-semibold text-neutral-500 tracking-wider ml-3">FULL NAME</label>
+              <input
+                name="name"
+                type="text"
+                required
+                placeholder="Aditya Sharma"
+                onChange={handleChange}
+                className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm text-white placeholder:text-neutral-700 outline-none focus:border-white/30 focus:bg-white/10 transition-all"
+              />
+            </div>
+
+            {/* Email */}
+            <div ref={el => formRefs.current[3] = el} className="group space-y-1">
+              <label className="text-[10px] font-semibold text-neutral-500 tracking-wider ml-3">WORK OR PERSONAL EMAIL</label>
+              <input
+                name="email"
+                type="email"
+                required
+                placeholder="aditya@company.com"
+                onChange={handleChange}
+                className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm text-white placeholder:text-neutral-700 outline-none focus:border-white/30 focus:bg-white/10 transition-all"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              {/* Password */}
+              <div ref={el => formRefs.current[4] = el} className="group space-y-1">
+                <label className="text-[10px] font-semibold text-neutral-500 tracking-wider ml-3">khufiya CODE</label>
+                <input
+                  name="password"
+                  type="password"
+                  required
+                  placeholder="••••••"
+                  onChange={handleChange}
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm text-white placeholder:text-neutral-700 outline-none focus:border-white/30 focus:bg-white/10 transition-all"
+                />
+              </div>
+              {/* Confirm */}
+              <div ref={el => formRefs.current[5] = el} className="group space-y-1">
+                <label className="text-[10px] font-semibold text-neutral-500 tracking-wider ml-3">CONFIRM</label>
+                <input
+                  name="confirmPassword"
+                  type="password"
+                  required
+                  placeholder="••••••"
+                  onChange={handleChange}
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm text-white placeholder:text-neutral-700 outline-none focus:border-white/30 focus:bg-white/10 transition-all"
+                />
+              </div>
+            </div>
+
+            {/* Action Button */}
+            <div ref={el => formRefs.current[6] = el} className="pt-4">
+              <button
+                type="submit"
+                disabled={loading}
+                className="relative w-full group overflow-hidden rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 p-[1px] focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
+              >
+                <div className="relative rounded-full bg-black/50 backdrop-blur-md px-8 py-4 transition-all duration-300 group-hover:bg-transparent">
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="text-sm font-semibold text-white tracking-wide">
+                      {loading ? "Initializing..." : "Activate Account"}
+                    </span>
+                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="transition-transform group-hover:translate-x-1">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    </svg>
+                  </div>
+                </div>
+                {/* Internal Shine */}
+                <div className="absolute inset-0 -translate-x-full group-hover:animate-[shineSweep_1s_ease-in-out] bg-white/20 blur-md" />
+              </button>
+            </div>
+          </form>
+
+          {/* Footer Link */}
+          <div ref={el => formRefs.current[7] = el} className="mt-8 text-center">
+             <p className="text-xs text-neutral-500">
+              Already part of the cohort?{" "}
+              <Link to="/login" className="text-[#6dcffc] hover:text-white transition-colors font-medium">
+                Log in here
+              </Link>
+            </p>
           </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="w-full mt-2 rounded-lg bg-white text-black font-semibold py-2.5 text-sm shadow-[0_0_25px_rgba(255,255,255,0.35)] hover:shadow-[0_0_40px_rgba(255,255,255,0.6)] transition disabled:opacity-60 disabled:cursor-not-allowed"
-          >
-            {loading ? "Creating account..." : "Create account"}
-          </button>
-        </form>
-
-        <p className="mt-4 text-xs text-center text-white/60">
-          Already have an account?{" "}
-          <button
-            type="button"
-            onClick={() => navigate("/login")}
-            className="text-white underline-offset-2 hover:underline"
-          >
-            Log in
-          </button>
-        </p>
+        </div>
       </div>
     </main>
   );
 }
-
-export default SignupPage;
