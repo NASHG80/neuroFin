@@ -17,7 +17,6 @@ export default function LoginPage() {
   // --- ANIMATIONS ---
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // 1. Ambient Orbs Floating
       gsap.to(".glow-orb", {
         y: -40,
         duration: 5,
@@ -27,14 +26,12 @@ export default function LoginPage() {
         stagger: 1.5,
       });
 
-      // 2. Card Entrance
       gsap.fromTo(
         cardRef.current,
         { opacity: 0, y: 30, scale: 0.95 },
         { opacity: 1, y: 0, scale: 1, duration: 1.2, ease: "power3.out" }
       );
 
-      // 3. Staggered Form Elements
       gsap.fromTo(
         formRefs.current,
         { opacity: 0, y: 20 },
@@ -69,26 +66,33 @@ export default function LoginPage() {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/login", {
+      // CHANGED: Used relative path
+      const res = await fetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
-      const data = await res.json();
+      // Handle non-JSON responses
+      const contentType = res.headers.get("content-type");
+      let data;
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        data = await res.json();
+      } else {
+        throw new Error("Server returned a non-JSON response.");
+      }
 
       if (!res.ok) {
         setError(data.message || "Login failed");
-        // Shake animation on error
         gsap.fromTo(cardRef.current, { x: -10 }, { x: 10, duration: 0.1, repeat: 5, yoyo: true });
       } else {
         localStorage.setItem("nf_token", data.token);
-        // Optional: Store user info
         localStorage.setItem("nf_user", JSON.stringify(data.user));
         navigate("/");
       }
     } catch (err) {
-      setError("Unable to connect to server.");
+      console.error(err);
+      setError(err.message || "Unable to connect to server.");
     } finally {
       setLoading(false);
     }
@@ -100,18 +104,15 @@ export default function LoginPage() {
       onMouseMove={handleMouseMove}
       className="relative w-full min-h-screen flex items-center justify-center overflow-hidden bg-[#05050A] text-white px-4"
     >
-      {/* --- AMBIENT BACKGROUND GLOWS --- */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
         <div className="glow-orb absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-[#6dcffc]/20 blur-[120px] rounded-full mix-blend-screen" />
         <div className="glow-orb absolute bottom-[-10%] right-[-5%] w-[500px] h-[500px] bg-[#7d5fff]/20 blur-[120px] rounded-full mix-blend-screen" />
       </div>
 
-      {/* --- GLASS CARD --- */}
       <div
         ref={cardRef}
         className="relative w-full max-w-[420px] rounded-[2rem] border border-white/10 bg-black/40 backdrop-blur-2xl shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden group"
       >
-        {/* Spotlight Overlay */}
         <div
           ref={overlayRef}
           className="absolute inset-0 pointer-events-none transition-opacity duration-500 opacity-0 group-hover:opacity-100"
@@ -119,7 +120,6 @@ export default function LoginPage() {
 
         <div className="relative z-10 p-8 sm:p-10 space-y-8">
           
-          {/* Header */}
           <div className="text-center space-y-2">
             <div ref={(el) => (formRefs.current[0] = el)} className="inline-block mb-2">
               <div className="h-10 w-10 mx-auto bg-gradient-to-br from-white/20 to-white/5 rounded-xl border border-white/20 flex items-center justify-center shadow-[0_0_15px_rgba(255,255,255,0.1)]">
@@ -136,17 +136,14 @@ export default function LoginPage() {
             </p>
           </div>
 
-          {/* Error Message */}
           {error && (
             <div className="text-xs text-red-400 bg-red-500/10 border border-red-500/20 p-3 rounded-lg text-center">
               {error}
             </div>
           )}
 
-          {/* Form */}
           <form onSubmit={handleSubmit} className="space-y-5">
             
-            {/* Email Field */}
             <div ref={(el) => (formRefs.current[3] = el)} className="group/input space-y-1.5">
               <label className="text-xs font-medium text-neutral-500 ml-1 group-focus-within/input:text-[#6dcffc] transition-colors">
                 EMAIL
@@ -163,7 +160,6 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Password Field */}
             <div ref={(el) => (formRefs.current[4] = el)} className="group/input space-y-1.5">
               <div className="flex items-center justify-between ml-1">
                 <label className="text-xs font-medium text-neutral-500 group-focus-within/input:text-[#7d5fff] transition-colors">
@@ -185,7 +181,6 @@ export default function LoginPage() {
               </div>
             </div>
 
-            {/* Primary Button */}
             <div ref={(el) => (formRefs.current[5] = el)} className="pt-2">
               <button
                 type="submit"
@@ -198,7 +193,6 @@ export default function LoginPage() {
             </div>
           </form>
 
-          {/* Divider */}
           <div ref={(el) => (formRefs.current[6] = el)} className="relative py-2">
             <div className="absolute inset-0 flex items-center">
               <div className="w-full border-t border-white/10"></div>
@@ -210,7 +204,6 @@ export default function LoginPage() {
             </div>
           </div>
 
-          {/* Magic Link / Secondary */}
           <div ref={(el) => (formRefs.current[7] = el)} className="grid grid-cols-1 gap-3">
             <button
               type="button"
@@ -222,7 +215,6 @@ export default function LoginPage() {
             </button>
           </div>
 
-          {/* Footer */}
           <p ref={(el) => (formRefs.current[8] = el)} className="text-center text-xs text-neutral-500">
             New to Nuerofin?{" "}
             <Link to="/signup" className="text-white hover:underline underline-offset-4 decoration-neutral-500">

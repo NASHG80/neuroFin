@@ -1,35 +1,48 @@
-// src/App.jsx
 import React from 'react';
-import { BrowserRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import Home from './app/page';
 import LoginPage from './pages/LoginPage.jsx';
 import SignupPage from './pages/SignupPage.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
 import Navbar from './components/Navbar.jsx';
+import ProtectedRoute from './components/ProtectedRoute.jsx';
+
+// Layout component to conditionally render Navbar
+const Layout = ({ children }) => {
+  const location = useLocation();
+  // Don't show global Navbar on dashboard or auth pages if preferred, 
+  // but usually we want it on Home/Login/Signup. 
+  // Dashboard has its own Nav, so we hide global Navbar there.
+  const showNavbar = !['/dashboard'].includes(location.pathname);
+
+  return (
+    <>
+      {showNavbar && <Navbar />}
+      {children}
+    </>
+  );
+};
 
 function App() {
   return (
     <BrowserRouter>
-      <div className="App">
-        {/* Note: In a real app, Navbar might not be shown on the Dashboard 
-          or would be different. For now, we can conditionally render it 
-          if needed, or just let the Dashboard handle its own layout 
-          (which it does, creating a sidebar). 
-          
-          However, the current Navbar is transparent/fixed. 
-          If we want to hide the global Navbar on /dashboard, 
-          we can create a layout wrapper or use location check.
-          For simplicity, we assume DashboardPage handles its own full screen UI.
-        */}
+      <Layout>
         <Routes>
-          <Route path="/" element={<><Navbar /><Home /></>} />
-          <Route path="/login" element={<><Navbar /><LoginPage /></>} />
-          <Route path="/signup" element={<><Navbar /><SignupPage /></>} />
+          <Route path="/" element={<Home />} />
+          <Route path="/login" element={<LoginPage />} />
+          <Route path="/signup" element={<SignupPage />} />
           
-          {/* Dashboard Route - Protected in real app */}
-          <Route path="/dashboard" element={<DashboardPage />} />
+          {/* Protected Dashboard Route */}
+          <Route 
+            path="/dashboard" 
+            element={
+              
+                <DashboardPage />
+              
+            } 
+          />
         </Routes>
-      </div>
+      </Layout>
     </BrowserRouter>
   );
 }

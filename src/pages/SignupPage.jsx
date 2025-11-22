@@ -20,7 +20,6 @@ export default function SignupPage() {
   // --- ANIMATIONS ---
   useEffect(() => {
     const ctx = gsap.context(() => {
-      // 1. Background Float
       gsap.to(".glow-orb-signup", {
         scale: 1.2,
         duration: 8,
@@ -29,14 +28,12 @@ export default function SignupPage() {
         ease: "sine.inOut",
       });
 
-      // 2. Card Reveal
       gsap.fromTo(
         cardRef.current,
         { opacity: 0, y: 40, rotateX: 10 },
         { opacity: 1, y: 0, rotateX: 0, duration: 1.4, ease: "power3.out" }
       );
 
-      // 3. Content Stagger
       gsap.fromTo(
         formRefs.current,
         { opacity: 0, x: -20 },
@@ -71,7 +68,8 @@ export default function SignupPage() {
     }
 
     try {
-      const res = await fetch("http://localhost:5000/api/auth/signup", {
+      // CHANGED: Used relative path. Vite proxy handles the rest.
+      const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -81,19 +79,26 @@ export default function SignupPage() {
         }),
       });
 
-      const data = await res.json();
+      // Handle non-JSON responses gracefully (e.g. 404 or 500 HTML pages)
+      const contentType = res.headers.get("content-type");
+      let data;
+      if (contentType && contentType.indexOf("application/json") !== -1) {
+        data = await res.json();
+      } else {
+        throw new Error("Server returned a non-JSON response. Is the backend running?");
+      }
 
       if (!res.ok) {
         setError(data.message || "Signup failed");
         gsap.fromTo(cardRef.current, { x: -10 }, { x: 10, duration: 0.1, repeat: 5, yoyo: true });
       } else {
-        // Login immediately or redirect to login
         localStorage.setItem("nf_token", data.token);
         localStorage.setItem("nf_user", JSON.stringify(data.user));
         navigate("/"); 
       }
     } catch (err) {
-      setError("Unable to connect to server.");
+      console.error(err);
+      setError(err.message || "Unable to connect to server.");
     } finally {
       setLoading(false);
     }

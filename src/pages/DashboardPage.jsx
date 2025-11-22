@@ -1,22 +1,21 @@
-/* JSX version of provided TSX code (TypeScript annotations removed) */
 import { motion, AnimatePresence } from "framer-motion";
-import  FinancialHealthScore  from "../components/dashboard/FinancialHealthScore";
-import  SmartAccounts  from "../components/dashboard/SmartAccounts";
-import  SpendingGraph  from "../components/dashboard/SpendingGraph";
-import  FestivePlanner  from "../components/dashboard/FestivePlanner";
-import  FinancialChallenges  from "../components/dashboard/FinancialChallenges";
-import  FuturePlanning  from "../components/dashboard/FuturePlanning";
+import FinancialHealthScore from "../components/dashboard/FinancialHealthScore";
+import SmartAccounts from "../components/dashboard/SmartAccounts";
+import SpendingGraph from "../components/dashboard/SpendingGraph";
+import FestivePlanner from "../components/dashboard/FestivePlanner";
+import FinancialChallenges from "../components/dashboard/FinancialChallenges";
+import FuturePlanning from "../components/dashboard/FuturePlanning";
 import AutomationsHub from "../components/dashboard/AutomationsHub";
-import  NotificationsFeed  from "../components/dashboard/NotificationsFeed";
-import  GoalsSection  from "../components/dashboard/GoalsSection";
-import  MonthlyComparison  from "../components/dashboard/MonthlyComparison";
-import  CashFlowAnalysis  from "../components/dashboard/CashFlowAnalysis";
-import  InvestmentPortfolio  from "../components/dashboard/InvestmentPortfolio";
-import  SpendingHeatmap  from "../components/dashboard/SpendingHeatmap";
-import  TransactionFlow  from "../components/dashboard/TransactionFlow";
-import  SmartInsights  from "../components/dashboard/SmartInsights";
-import  VoiceOfMoney  from "../components/dashboard/VoiceOfMoney";
-import  FamilyFinance  from "../components/dashboard/FamilyFinance";
+import NotificationsFeed from "../components/dashboard/NotificationsFeed";
+import GoalsSection from "../components/dashboard/GoalsSection";
+import MonthlyComparison from "../components/dashboard/MonthlyComparison";
+import CashFlowAnalysis from "../components/dashboard/CashFlowAnalysis";
+import InvestmentPortfolio from "../components/dashboard/InvestmentPortfolio";
+import SpendingHeatmap from "../components/dashboard/SpendingHeatmap";
+import TransactionFlow from "../components/dashboard/TransactionFlow";
+import SmartInsights from "../components/dashboard/SmartInsights";
+import VoiceOfMoney from "../components/dashboard/VoiceOfMoney";
+import FamilyFinance from "../components/dashboard/FamilyFinance";
 import {
   Sparkles,
   Bell,
@@ -31,15 +30,34 @@ import {
   Share2,
   Users,
   Brain,
+  Menu,
+  X,
+  LogOut
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
+import { useNavigate } from "react-router-dom";
 
-export default function App() {
+export default function DashboardPage() {
+  const navigate = useNavigate();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [activeView, setActiveView] = useState("overview");
   const [notificationCount, setNotificationCount] = useState(3);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [userData, setUserData] = useState({ name: "User", email: "" });
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const containerRef = useRef(null);
+
+  // Load user data
+  useEffect(() => {
+    try {
+      const storedUser = localStorage.getItem("nf_user");
+      if (storedUser) {
+        setUserData(JSON.parse(storedUser));
+      }
+    } catch (e) {
+      console.error("Failed to parse user data");
+    }
+  }, []);
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 60000);
@@ -53,6 +71,12 @@ export default function App() {
     window.addEventListener("mousemove", handleMouseMove);
     return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem("nf_token");
+    localStorage.removeItem("nf_user");
+    navigate("/login");
+  };
 
   const getGreeting = () => {
     const hour = currentTime.getHours();
@@ -69,66 +93,48 @@ export default function App() {
   ];
 
   return (
-    <div ref={containerRef} className="min-h-screen bg-[#00010D] text-white overflow-x-hidden relative">
+    <div ref={containerRef} className="min-h-screen bg-[#00010D] text-white overflow-x-hidden relative pb-24 lg:pb-0">
       {/* Ambient Background */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         <motion.div
           animate={{ scale: [1, 1.2, 1], opacity: [0.15, 0.25, 0.15], x: [0, 50, 0], y: [0, -30, 0] }}
           transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-          className="absolute -top-40 -left-40 w-[800px] h-[800px] bg-[#7433FF] rounded-full blur-[200px]"
+          className="absolute -top-40 -left-40 w-[500px] lg:w-[800px] h-[500px] lg:h-[800px] bg-[#7433FF] rounded-full blur-[150px] lg:blur-[200px]"
         />
 
         <motion.div
           animate={{ scale: [1, 1.3, 1], opacity: [0.1, 0.2, 0.1], x: [0, -60, 0], y: [0, 40, 0] }}
           transition={{ duration: 18, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-          className="absolute top-1/3 right-0 w-[900px] h-[900px] bg-[#3BF7FF] rounded-full blur-[220px]"
+          className="absolute top-1/3 right-0 w-[600px] lg:w-[900px] h-[600px] lg:h-[900px] bg-[#3BF7FF] rounded-full blur-[180px] lg:blur-[220px]"
         />
 
         <motion.div
-          animate={{ scale: [1, 1.15, 1], opacity: [0.08, 0.18, 0.08], x: [0, 40, 0], y: [0, -50, 0] }}
-          transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 4 }}
-          className="absolute bottom-0 left-1/3 w-[700px] h-[700px] bg-[#E4C580] rounded-full blur-[210px]"
-        />
-
-        {[...Array(30)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1 h-1 rounded-full bg-white/20"
-            style={{ left: `${Math.random() * 100}%`, top: `${Math.random() * 100}%` }}
-            animate={{ y: [0, -100, 0], opacity: [0, 1, 0], scale: [0, 1.5, 0] }}
-            transition={{ duration: 5 + Math.random() * 5, repeat: Infinity, delay: Math.random() * 5, ease: "easeInOut" }}
-          />
-        ))}
-
-        <motion.div
-          className="absolute w-[600px] h-[600px] rounded-full blur-[150px] opacity-20"
+          className="hidden lg:block absolute w-[600px] h-[600px] rounded-full blur-[150px] opacity-20"
           style={{ background: "radial-gradient(circle, rgba(116,51,255,.4), transparent 70%)", left: mousePosition.x - 300, top: mousePosition.y - 300 }}
           transition={{ type: "spring", damping: 30, stiffness: 200 }}
         />
       </div>
 
-      {/* Nav Bar */}
+      {/* Desktop Nav Bar */}
       <motion.nav
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
-        className="relative z-50 border-b border-white/10 backdrop-blur-2xl bg-black/30 sticky top-0"
+        className="relative z-50 border-b border-white/10 backdrop-blur-2xl bg-black/30 sticky top-0 hidden lg:block"
         style={{ boxShadow: "0 10px 40px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.05) inset" }}
       >
         <div className="max-w-[2000px] mx-auto px-10 py-6 flex items-center justify-between">
-
           <div className="flex items-center gap-12">
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-4 cursor-pointer" onClick={() => navigate('/')}>
               <motion.div whileHover={{ scale: 1.05, rotate: 180 }} transition={{ duration: 0.6 }} className="relative w-12 h-12">
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#7433FF] via-[#3BF7FF] to-[#E4C580] p-0.5">
                   <div className="w-full h-full bg-[#00010D] rounded-[14px] flex items-center justify-center">
                     <Sparkles className="w-6 h-6 text-white" />
                   </div>
                 </div>
-                <motion.div animate={{ rotate: 360 }} transition={{ duration: 20, repeat: Infinity, ease: "linear" }} className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-[#7433FF] via-[#3BF7FF] to-[#E4C580] opacity-30 blur-lg" />
               </motion.div>
               <div>
                 <h1 className="text-2xl tracking-tight bg-gradient-to-r from-white via-white to-white/60 bg-clip-text text-transparent">Nuerofin</h1>
-                <p className="text-xs text-white/30 tracking-wide">NEXT-GEN MONEY OS</p>
+                <p className="text-xs text-white/30 tracking-wide">MONEY OS</p>
               </div>
             </div>
 
@@ -154,7 +160,6 @@ export default function App() {
                       <Icon className={`w-5 h-5 ${isActive ? "text-white" : "text-white/40"}`} />
                       <span className={`text-sm ${isActive ? "text-white" : "text-white/40"}`}>{item.label}</span>
                     </div>
-                    {!isActive && <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 rounded-2xl transition-opacity" />}
                   </motion.button>
                 );
               })}
@@ -162,24 +167,8 @@ export default function App() {
           </div>
 
           <div className="flex items-center gap-4">
-            <motion.div whileHover={{ scale: 1.02 }} className="relative">
-              <input type="text" placeholder="Search transactions..." className="w-64 px-4 py-2.5 pl-10 rounded-xl bg-white/5 border border-white/10 text-sm placeholder:text-white/30 focus:outline-none focus:border-[#7433FF]/50 transition-all" />
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/30" />
-            </motion.div>
-
             <div className="flex items-center gap-2">
-              <motion.button whileHover={{ scale: 1.05, rotate: 5 }} whileTap={{ scale: 0.95 }} className="p-3 rounded-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10">
-                <Download className="w-5 h-5" />
-              </motion.button>
-              <motion.button whileHover={{ scale: 1.05, rotate: -5 }} whileTap={{ scale: 0.95 }} className="p-3 rounded-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10">
-                <Share2 className="w-5 h-5" />
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                className="relative p-3 rounded-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10"
-                onClick={() => setNotificationCount(0)}
-              >
+              <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="relative p-3 rounded-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10" onClick={() => setNotificationCount(0)}>
                 <Bell className="w-5 h-5" />
                 {notificationCount > 0 && (
                   <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="absolute -top-1 -right-1 w-5 h-5 bg-gradient-to-br from-[#3BF7FF] to-[#7433FF] rounded-full flex items-center justify-center text-xs">
@@ -187,63 +176,132 @@ export default function App() {
                   </motion.div>
                 )}
               </motion.button>
-              <motion.button whileHover={{ scale: 1.05, rotate: 90 }} whileTap={{ scale: 0.95 }} className="p-3 rounded-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10">
-                <Settings className="w-5 h-5" />
+              <motion.button onClick={handleLogout} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="p-3 rounded-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10" title="Logout">
+                <LogOut className="w-5 h-5 text-white/60" />
               </motion.button>
             </div>
 
             <motion.div whileHover={{ scale: 1.02 }} className="flex items-center gap-3 px-4 py-2 rounded-xl bg-gradient-to-r from-white/10 to-white/5 border border-white/10 cursor-pointer">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#7433FF] to-[#3BF7FF] flex items-center justify-center text-lg">P</div>
+              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#7433FF] to-[#3BF7FF] flex items-center justify-center text-lg font-bold">
+                {userData.name ? userData.name[0].toUpperCase() : "U"}
+              </div>
               <div>
-                <p className="text-sm">Priya Sharma</p>
+                <p className="text-sm font-medium">{userData.name}</p>
                 <p className="text-xs text-white/40">Premium</p>
               </div>
             </motion.div>
           </div>
         </div>
-
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="border-t border-white/5 px-10 py-4">
-          <div className="max-w-[2000px] mx-auto flex items-center justify-between">
-            <div className="flex items-center gap-8">
-              {[
-                { label: "Net Worth", value: "₹46.6L", change: "+8.5%", color: "#3BF7FF", icon: Wallet },
-                { label: "Monthly Growth", value: "₹51.3k", change: "+12%", color: "#E4C580", icon: TrendingUp },
-                { label: "Active Goals", value: "3/4", change: "94%", color: "#7433FF", icon: Activity },
-                { label: "Automations", value: "5", change: "Running", color: "#3BF7FF", icon: Zap },
-              ].map((stat, i) => {
-                const Icon = stat.icon;
-                return (
-                  <motion.div key={stat.label} initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 + i * 0.1 }} className="flex items-center gap-3 group cursor-pointer">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `linear-gradient(135deg,${stat.color}20,${stat.color}10)`, boxShadow: `0 0 20px ${stat.color}20` }}>
-                      <Icon className="w-5 h-5" style={{ color: stat.color }} />
-                    </div>
-                    <div>
-                      <p className="text-xs text-white/40">{stat.label}</p>
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm">{stat.value}</p>
-                        <span className="text-xs" style={{ color: stat.color }}>{stat.change}</span>
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
-            <div className="text-sm text-white/30">
-              {currentTime.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })} • {currentTime.toLocaleDateString("en-IN", { month: "short", day: "numeric" })}
-            </div>
-          </div>
-        </motion.div>
       </motion.nav>
 
-      <div className="relative z-10 max-w-[2000px] mx-auto px-10 py-12">
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-12">
-          <div className="flex items-end justify-between">
+      {/* Mobile Header */}
+      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[#00010D]/80 backdrop-blur-xl border-b border-white/10 px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="relative w-9 h-9">
+            <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-[#7433FF] via-[#3BF7FF] to-[#E4C580] p-0.5">
+              <div className="w-full h-full bg-[#00010D] rounded-[10px] flex items-center justify-center">
+                <Sparkles className="w-5 h-5 text-white" />
+              </div>
+            </div>
+          </div>
+          <span className="text-lg font-medium bg-gradient-to-r from-white to-white/70 bg-clip-text text-transparent">Nuerofin</span>
+        </div>
+        <div className="flex items-center gap-3">
+          <button className="relative p-2" onClick={() => setNotificationCount(0)}>
+            <Bell className="w-6 h-6 text-white/80" />
+            {notificationCount > 0 && (
+              <div className="absolute top-1 right-1 w-2.5 h-2.5 bg-[#3BF7FF] rounded-full border border-black" />
+            )}
+          </button>
+          <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#7433FF] to-[#3BF7FF] flex items-center justify-center text-sm font-bold" onClick={() => setIsMobileMenuOpen(true)}>
+            {userData.name ? userData.name[0].toUpperCase() : "U"}
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile User Menu Overlay */}
+      <AnimatePresence>
+        {isMobileMenuOpen && (
+          <motion.div 
+            initial={{ opacity: 0, x: "100%" }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: "100%" }}
+            className="fixed inset-0 z-[60] bg-[#00010D] p-6 lg:hidden"
+          >
+            <div className="flex justify-end mb-8">
+              <button onClick={() => setIsMobileMenuOpen(false)} className="p-2 bg-white/10 rounded-full">
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="flex flex-col items-center gap-6">
+              <div className="w-24 h-24 rounded-3xl bg-gradient-to-br from-[#7433FF] to-[#3BF7FF] flex items-center justify-center text-4xl font-bold mb-2">
+                {userData.name ? userData.name[0].toUpperCase() : "U"}
+              </div>
+              <h2 className="text-2xl font-light">{userData.name}</h2>
+              <p className="text-white/50 -mt-4">{userData.email}</p>
+              
+              <div className="w-full h-px bg-white/10 my-4" />
+              
+              <button className="w-full p-4 rounded-2xl bg-white/5 flex items-center gap-4 text-lg">
+                <Settings className="w-6 h-6 text-white/70" />
+                Settings
+              </button>
+              <button className="w-full p-4 rounded-2xl bg-white/5 flex items-center gap-4 text-lg">
+                <Download className="w-6 h-6 text-white/70" />
+                Export Data
+              </button>
+              <button onClick={handleLogout} className="w-full p-4 rounded-2xl bg-red-500/10 text-red-400 flex items-center gap-4 text-lg mt-auto">
+                <LogOut className="w-6 h-6" />
+                Log Out
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Desktop Stats Bar */}
+      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="hidden lg:block border-t border-white/5 px-10 py-4 bg-black/20 backdrop-blur-md">
+        <div className="max-w-[2000px] mx-auto flex items-center justify-between">
+          <div className="flex items-center gap-8">
+            {[
+              { label: "Net Worth", value: "₹46.6L", change: "+8.5%", color: "#3BF7FF", icon: Wallet },
+              { label: "Monthly Growth", value: "₹51.3k", change: "+12%", color: "#E4C580", icon: TrendingUp },
+              { label: "Active Goals", value: "3/4", change: "94%", color: "#7433FF", icon: Activity },
+              { label: "Automations", value: "5", change: "Running", color: "#3BF7FF", icon: Zap },
+            ].map((stat, i) => {
+              const Icon = stat.icon;
+              return (
+                <motion.div key={stat.label} initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 + i * 0.1 }} className="flex items-center gap-3 group cursor-pointer">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `linear-gradient(135deg,${stat.color}20,${stat.color}10)`, boxShadow: `0 0 20px ${stat.color}20` }}>
+                    <Icon className="w-5 h-5" style={{ color: stat.color }} />
+                  </div>
+                  <div>
+                    <p className="text-xs text-white/40">{stat.label}</p>
+                    <div className="flex items-center gap-2">
+                      <p className="text-sm">{stat.value}</p>
+                      <span className="text-xs" style={{ color: stat.color }}>{stat.change}</span>
+                    </div>
+                  </div>
+                </motion.div>
+              );
+            })}
+          </div>
+          <div className="text-sm text-white/30">
+            {currentTime.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })} • {currentTime.toLocaleDateString("en-IN", { month: "short", day: "numeric" })}
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Main Content */}
+      <div className="relative z-10 max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12 mt-16 lg:mt-0">
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-8 lg:mb-12">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-2">
             <div>
-              <motion.h2 initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="text-6xl mb-3 tracking-tight bg-gradient-to-r from-white via-white to-white/40 bg-clip-text text-transparent">
-                {getGreeting()}, Priya
+              <motion.h2 initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} className="text-3xl lg:text-6xl mb-2 lg:mb-3 tracking-tight bg-gradient-to-r from-white via-white to-white/40 bg-clip-text text-transparent font-light">
+                {getGreeting()}, {userData.name ? userData.name.split(' ')[0] : 'Friend'}
               </motion.h2>
-              <motion.p initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className="text-white/50 text-xl">
-                Your financial universe • {currentTime.toLocaleDateString("en-IN", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
+              <motion.p initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: 0.1 }} className="text-white/50 text-sm lg:text-xl">
+                Your financial universe • {currentTime.toLocaleDateString("en-IN", { weekday: "long", month: "long", day: "numeric" })}
               </motion.p>
             </div>
           </div>
@@ -252,17 +310,19 @@ export default function App() {
         <AnimatePresence mode="wait">
           {activeView === "overview" && (
             <motion.div key="overview" initial={{ opacity: 0, x: -30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: 30 }} transition={{ duration: 0.4, ease: "easeInOut" }}>
-              <div className="grid grid-cols-12 gap-8">
-                <div className="col-span-12 xl:col-span-8 space-y-8">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+                {/* Left Column */}
+                <div className="lg:col-span-8 space-y-6 lg:space-y-8">
                   <FinancialHealthScore />
                   <SpendingGraph />
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
                     <FestivePlanner />
                     <MonthlyComparison />
                   </div>
                   <AutomationsHub />
                 </div>
-                <div className="col-span-12 xl:col-span-4 space-y-8">
+                {/* Right Column */}
+                <div className="lg:col-span-4 space-y-6 lg:space-y-8">
                   <SmartAccounts />
                   <GoalsSection />
                   <FinancialChallenges />
@@ -275,14 +335,14 @@ export default function App() {
 
           {activeView === "analytics" && (
             <motion.div key="analytics" initial={{ opacity: 0, x: 30 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -30 }} transition={{ duration: 0.4, ease: "easeInOut" }}>
-              <div className="grid grid-cols-12 gap-8">
-                <div className="col-span-12 xl:col-span-8 space-y-8">
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
+                <div className="lg:col-span-8 space-y-6 lg:space-y-8">
                   <CashFlowAnalysis />
                   <InvestmentPortfolio />
                   <SpendingHeatmap />
                   <TransactionFlow />
                 </div>
-                <div className="col-span-12 xl:col-span-4 space-y-8">
+                <div className="lg:col-span-4 space-y-6 lg:space-y-8">
                   <VoiceOfMoney />
                   <MonthlyComparison />
                   <GoalsSection />
@@ -304,6 +364,30 @@ export default function App() {
             </motion.div>
           )}
         </AnimatePresence>
+      </div>
+
+      {/* Mobile Bottom Navigation */}
+      <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-[#00010D]/90 backdrop-blur-xl border-t border-white/10 px-6 py-3 pb-6 z-50 safe-area-bottom">
+        <div className="flex justify-between items-center">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = activeView === item.id;
+            return (
+              <button
+                key={item.id}
+                onClick={() => setActiveView(item.id)}
+                className="flex flex-col items-center gap-1"
+              >
+                <div className={`p-2 rounded-xl transition-all duration-300 ${isActive ? "bg-white/10 text-[#3BF7FF]" : "text-white/40"}`}>
+                  <Icon className="w-6 h-6" />
+                </div>
+                <span className={`text-[10px] ${isActive ? "text-white" : "text-white/40"}`}>
+                  {item.label}
+                </span>
+              </button>
+            )
+          })}
+        </div>
       </div>
     </div>
   );
