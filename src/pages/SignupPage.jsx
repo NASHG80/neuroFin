@@ -68,7 +68,7 @@ export default function SignupPage() {
     }
 
     try {
-      // CHANGED: Used relative path. Vite proxy handles the rest.
+      // Ensure we are using the correct relative path that Vite proxies
       const res = await fetch("/api/auth/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -79,22 +79,32 @@ export default function SignupPage() {
         }),
       });
 
-      // Handle non-JSON responses gracefully (e.g. 404 or 500 HTML pages)
+      // Handle non-JSON responses gracefully
       const contentType = res.headers.get("content-type");
       let data;
       if (contentType && contentType.indexOf("application/json") !== -1) {
         data = await res.json();
       } else {
-        throw new Error("Server returned a non-JSON response. Is the backend running?");
+        // If the response is not JSON, it's likely an error page from the server (500, 404, etc.)
+        // We throw an error to be caught by the catch block
+        const text = await res.text(); 
+        throw new Error(`Server error: ${res.status} ${res.statusText}`); 
       }
 
       if (!res.ok) {
         setError(data.message || "Signup failed");
         gsap.fromTo(cardRef.current, { x: -10 }, { x: 10, duration: 0.1, repeat: 5, yoyo: true });
       } else {
-        localStorage.setItem("nf_token", data.token);
-        localStorage.setItem("nf_user", JSON.stringify(data.user));
-        navigate("/"); 
+        // SUCCESS: Store token and user data
+        if (data.token) {
+            localStorage.setItem("nf_token", data.token);
+            localStorage.setItem("nf_user", JSON.stringify(data.user));
+            // Redirect to dashboard
+            navigate("/dashboard"); 
+        } else {
+            // Fallback: If for some reason token isn't returned on signup, redirect to login
+            navigate("/login");
+        }
       }
     } catch (err) {
       console.error(err);

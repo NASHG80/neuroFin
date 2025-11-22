@@ -1,30 +1,31 @@
-import { motion } from "framer-motion"
-import { Target, Plus } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { Target, Plus, X } from "lucide-react"
+import { useState } from "react"
 
-const GoalsSection = () => {
-  const goals = [
-    {
-      name: "Dream Wedding",
-      target: 2000000,
-      current: 850000,
-      color: "#E4C580",
-      emoji: "💍"
-    },
-    {
-      name: "New Car",
-      target: 1200000,
-      current: 720000,
-      color: "#7433FF",
-      emoji: "🚗"
-    },
-    {
-      name: "Europe Trip",
-      target: 500000,
-      current: 380000,
-      color: "#3BF7FF",
-      emoji: "✈️"
-    }
-  ]
+const GoalsSection = ({ goals = [], onAddGoal }) => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newGoal, setNewGoal] = useState({ name: '', target: '', current: '', emoji: '🎯', color: '#3BF7FF' });
+
+  // Fallback data if no props passed
+  const displayGoals = goals.length > 0 ? goals : [
+    { name: "Dream Wedding", target: 2000000, current: 850000, color: "#E4C580", emoji: "💍" },
+    { name: "New Car", target: 1200000, current: 720000, color: "#7433FF", emoji: "🚗" }
+  ];
+
+  const handleAddGoal = (e) => {
+    e.preventDefault();
+    if (!onAddGoal) return;
+    onAddGoal({
+        id: Date.now(),
+        name: newGoal.name,
+        target: Number(newGoal.target),
+        current: Number(newGoal.current),
+        emoji: newGoal.emoji,
+        color: newGoal.color
+    });
+    setIsModalOpen(false);
+    setNewGoal({ name: '', target: '', current: '', emoji: '🎯', color: '#3BF7FF' });
+  };
 
   return (
     <motion.div
@@ -41,19 +42,64 @@ const GoalsSection = () => {
         <motion.button
           whileHover={{ scale: 1.1, rotate: 90 }}
           whileTap={{ scale: 0.9 }}
+          onClick={() => setIsModalOpen(true)}
           className="w-8 h-8 rounded-full bg-gradient-to-br from-[#7433FF] to-[#3BF7FF] flex items-center justify-center"
         >
           <Plus className="w-4 h-4" />
         </motion.button>
       </div>
 
+      {/* Add Goal Modal */}
+      <AnimatePresence>
+        {isModalOpen && (
+            <motion.div 
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+            >
+                <motion.div className="bg-[#0A0A10] border border-white/10 rounded-3xl p-6 w-full max-w-sm shadow-2xl">
+                    <div className="flex justify-between items-center mb-6">
+                        <h3 className="text-xl">New Goal</h3>
+                        <button onClick={() => setIsModalOpen(false)}><X className="w-5 h-5"/></button>
+                    </div>
+                    <form onSubmit={handleAddGoal} className="space-y-4">
+                        <input 
+                            type="text" placeholder="Goal Name (e.g. Goa Trip)" required
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none"
+                            value={newGoal.name} onChange={e => setNewGoal({...newGoal, name: e.target.value})}
+                        />
+                        <div className="grid grid-cols-2 gap-3">
+                            <input 
+                                type="number" placeholder="Target Amount" required
+                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none"
+                                value={newGoal.target} onChange={e => setNewGoal({...newGoal, target: e.target.value})}
+                            />
+                            <input 
+                                type="number" placeholder="Current Saved" required
+                                className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none"
+                                value={newGoal.current} onChange={e => setNewGoal({...newGoal, current: e.target.value})}
+                            />
+                        </div>
+                        <div className="flex gap-2">
+                            {['#3BF7FF', '#7433FF', '#E4C580', '#FF6B6B'].map(c => (
+                                <div key={c} onClick={() => setNewGoal({...newGoal, color: c})} 
+                                className={`w-8 h-8 rounded-full cursor-pointer border-2 ${newGoal.color === c ? 'border-white' : 'border-transparent'}`} 
+                                style={{backgroundColor: c}} />
+                            ))}
+                        </div>
+                        <button type="submit" className="w-full py-3 rounded-xl bg-gradient-to-r from-[#7433FF] to-[#3BF7FF] font-medium">Create Goal</button>
+                    </form>
+                </motion.div>
+            </motion.div>
+        )}
+      </AnimatePresence>
+
       <div className="space-y-4">
-        {goals.map((goal, index) => {
+        {displayGoals.map((goal, index) => {
           const percentage = (goal.current / goal.target) * 100
 
           return (
             <motion.div
-              key={goal.name}
+              key={index}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 0.7 + index * 0.1 }}
@@ -92,40 +138,7 @@ const GoalsSection = () => {
                       background: `radial-gradient(ellipse at center, ${goal.color}40 0%, transparent 70%)`
                     }}
                   />
-
-                  {/* Bubbles */}
-                  {[...Array(3)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      className="absolute w-2 h-2 rounded-full bg-white/30"
-                      style={{
-                        left: `${20 + i * 30}%`,
-                        bottom: 0
-                      }}
-                      animate={{
-                        y: [-160, -10],
-                        opacity: [0, 1, 0]
-                      }}
-                      transition={{
-                        duration: 3,
-                        delay: i * 0.8,
-                        repeat: Infinity,
-                        ease: "linear"
-                      }}
-                    />
-                  ))}
                 </motion.div>
-
-                {/* Ripple Effect on Hover */}
-                <motion.div
-                  className="absolute inset-0 opacity-0 group-hover:opacity-100"
-                  initial={{ scale: 0.8, opacity: 0 }}
-                  whileHover={{ scale: 1.1, opacity: [0, 0.5, 0] }}
-                  transition={{ duration: 0.8 }}
-                  style={{
-                    background: `radial-gradient(circle at center, ${goal.color}30, transparent 70%)`
-                  }}
-                />
 
                 {/* Goal Info Overlay */}
                 <div className="absolute inset-0 flex flex-col items-center justify-center p-4 z-10">
@@ -153,53 +166,11 @@ const GoalsSection = () => {
                     </p>
                   </div>
                 </div>
-
-                {/* Sparkle Effect */}
-                {percentage > 75 && (
-                  <motion.div
-                    className="absolute top-4 right-4"
-                    animate={{
-                      rotate: [0, 360],
-                      scale: [1, 1.2, 1]
-                    }}
-                    transition={{ duration: 3, repeat: Infinity }}
-                  >
-                    <Target className="w-5 h-5" style={{ color: goal.color }} />
-                  </motion.div>
-                )}
-              </div>
-
-              {/* Progress Bar Below */}
-              <div className="mt-2 flex items-center justify-between text-xs text-white/40">
-                <span>
-                  ₹{((goal.target - goal.current) / 1000).toFixed(0)}k to go
-                </span>
-                <span>
-                  Target:{" "}
-                  {new Date(
-                    Date.now() + 365 * 24 * 60 * 60 * 1000
-                  ).toLocaleDateString("en-IN", {
-                    month: "short",
-                    year: "numeric"
-                  })}
-                </span>
               </div>
             </motion.div>
           )
         })}
       </div>
-
-      {/* Quick Action */}
-      <motion.button
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1.2 }}
-        whileHover={{ scale: 1.02 }}
-        whileTap={{ scale: 0.98 }}
-        className="w-full mt-4 p-4 rounded-xl bg-gradient-to-r from-[#7433FF]/20 to-[#3BF7FF]/20 border border-[#7433FF]/30 hover:border-[#7433FF]/50 transition-all text-sm"
-      >
-        Add to Goals This Month
-      </motion.button>
     </motion.div>
   )
 }

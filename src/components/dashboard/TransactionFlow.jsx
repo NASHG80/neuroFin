@@ -1,94 +1,19 @@
-import { motion } from "framer-motion"
-import { ArrowUpRight, ArrowDownLeft, Zap } from "lucide-react"
+import { motion, AnimatePresence } from "framer-motion"
+import { ArrowUpRight, ArrowDownLeft, Zap, Plus, X } from "lucide-react"
 import { useState } from "react"
 
-const TransactionFlow = () => {
+const TransactionFlow = ({ transactions = [], onAddTransaction }) => {
   const [filter, setFilter] = useState("all")
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [newTx, setNewTx] = useState({ type: 'expense', amount: '', category: 'Food', description: '' });
 
-  const transactions = [
-    {
-      id: 1,
-      type: "income",
-      from: "TCS Salary",
-      to: "HDFC Account",
-      amount: 100000,
-      time: "2h ago",
-      category: "Salary",
-      status: "completed"
-    },
-    {
-      id: 2,
-      type: "expense",
-      from: "HDFC Account",
-      to: "Amazon",
-      amount: 3200,
-      time: "4h ago",
-      category: "Shopping",
-      status: "completed"
-    },
-    {
-      id: 3,
-      type: "expense",
-      from: "HDFC Account",
-      to: "Swiggy",
-      amount: 850,
-      time: "6h ago",
-      category: "Food",
-      status: "completed"
-    },
-    {
-      id: 4,
-      type: "income",
-      from: "Freelance",
-      to: "Paytm",
-      amount: 15000,
-      time: "1d ago",
-      category: "Freelance",
-      status: "completed"
-    },
-    {
-      id: 5,
-      type: "expense",
-      from: "HDFC Account",
-      to: "Uber",
-      amount: 420,
-      time: "1d ago",
-      category: "Transport",
-      status: "completed"
-    },
-    {
-      id: 6,
-      type: "expense",
-      from: "Credit Card",
-      to: "Netflix",
-      amount: 649,
-      time: "2d ago",
-      category: "Entertainment",
-      status: "pending"
-    },
-    {
-      id: 7,
-      type: "income",
-      from: "Dividend",
-      to: "Zerodha",
-      amount: 8500,
-      time: "2d ago",
-      category: "Investment",
-      status: "completed"
-    },
-    {
-      id: 8,
-      type: "expense",
-      from: "HDFC Account",
-      to: "Electricity Bill",
-      amount: 2100,
-      time: "3d ago",
-      category: "Bills",
-      status: "completed"
-    }
-  ]
+  // Use internal mock data if no props passed (for standalone testing)
+  const displayTransactions = transactions.length > 0 ? transactions : [
+    { id: 1, type: "income", from: "TCS Salary", to: "HDFC Account", amount: 100000, time: "2h ago", category: "Salary", status: "completed" },
+    { id: 2, type: "expense", from: "HDFC Account", to: "Amazon", amount: 3200, time: "4h ago", category: "Shopping", status: "completed" }
+  ];
 
-  const filteredTransactions = transactions.filter(
+  const filteredTransactions = displayTransactions.filter(
     t => filter === "all" || t.type === filter
   )
 
@@ -106,12 +31,30 @@ const TransactionFlow = () => {
     return colors[category] || "#FFFFFF"
   }
 
-  const totalIncome = transactions
+  const totalIncome = displayTransactions
     .filter(t => t.type === "income")
-    .reduce((sum, t) => sum + t.amount, 0)
-  const totalExpense = transactions
+    .reduce((sum, t) => sum + Number(t.amount), 0)
+  const totalExpense = displayTransactions
     .filter(t => t.type === "expense")
-    .reduce((sum, t) => sum + t.amount, 0)
+    .reduce((sum, t) => sum + Number(t.amount), 0)
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!onAddTransaction) return;
+    
+    onAddTransaction({
+        id: Date.now(),
+        type: newTx.type,
+        from: newTx.type === 'income' ? 'Manual Entry' : 'HDFC Account',
+        to: newTx.type === 'income' ? 'HDFC Account' : newTx.description,
+        amount: Number(newTx.amount),
+        time: 'Just now',
+        category: newTx.category,
+        status: 'completed'
+    });
+    setIsModalOpen(false);
+    setNewTx({ type: 'expense', amount: '', category: 'Food', description: '' });
+  };
 
   return (
     <motion.div
@@ -146,8 +89,68 @@ const TransactionFlow = () => {
               {f}
             </motion.button>
           ))}
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setIsModalOpen(true)}
+            className="px-3 py-2 rounded-xl bg-[#3BF7FF]/20 text-[#3BF7FF] border border-[#3BF7FF]/30 flex items-center justify-center"
+          >
+            <Plus className="w-4 h-4" />
+          </motion.button>
         </div>
       </div>
+
+      {/* Add Transaction Modal */}
+      <AnimatePresence>
+        {isModalOpen && (
+            <motion.div 
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+                className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+            >
+                <motion.div 
+                    initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
+                    className="bg-[#0A0A10] border border-white/10 rounded-3xl p-6 w-full max-w-md shadow-2xl"
+                >
+                    <div className="flex justify-between items-center mb-6">
+                        <h3 className="text-xl">Add Transaction</h3>
+                        <button onClick={() => setIsModalOpen(false)} className="p-2 bg-white/5 rounded-full"><X className="w-5 h-5"/></button>
+                    </div>
+                    <form onSubmit={handleSubmit} className="space-y-4">
+                        <div className="flex gap-2 p-1 bg-white/5 rounded-xl">
+                            {['expense', 'income'].map(t => (
+                                <button
+                                    key={t} type="button"
+                                    onClick={() => setNewTx({...newTx, type: t})}
+                                    className={`flex-1 py-2 rounded-lg capitalize text-sm transition-all ${newTx.type === t ? (t === 'income' ? 'bg-[#3BF7FF]/20 text-[#3BF7FF]' : 'bg-[#FF6B6B]/20 text-[#FF6B6B]') : 'text-white/50'}`}
+                                >{t}</button>
+                            ))}
+                        </div>
+                        <input 
+                            type="text" placeholder="Description (e.g. Uber, Salary)" required
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-[#7433FF]/50"
+                            value={newTx.description} onChange={e => setNewTx({...newTx, description: e.target.value})}
+                        />
+                        <input 
+                            type="number" placeholder="Amount" required
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-[#7433FF]/50"
+                            value={newTx.amount} onChange={e => setNewTx({...newTx, amount: e.target.value})}
+                        />
+                        <select 
+                            className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-[#7433FF]/50 appearance-none"
+                            value={newTx.category} onChange={e => setNewTx({...newTx, category: e.target.value})}
+                        >
+                            {['Food', 'Transport', 'Shopping', 'Salary', 'Freelance', 'Bills', 'Entertainment'].map(c => (
+                                <option key={c} value={c} className="bg-black">{c}</option>
+                            ))}
+                        </select>
+                        <button type="submit" className="w-full py-3 rounded-xl bg-gradient-to-r from-[#7433FF] to-[#3BF7FF] font-medium mt-2">
+                            Add Transaction
+                        </button>
+                    </form>
+                </motion.div>
+            </motion.div>
+        )}
+      </AnimatePresence>
 
       {/* Summary Cards */}
       <div className="grid grid-cols-2 gap-4 mb-8">
@@ -157,11 +160,6 @@ const TransactionFlow = () => {
           transition={{ delay: 0.6 }}
           className="p-6 rounded-2xl bg-gradient-to-br from-[#3BF7FF]/10 to-transparent border border-[#3BF7FF]/20 relative overflow-hidden"
         >
-          <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-[#3BF7FF]/10 blur-2xl"
-          />
           <div className="relative">
             <div className="flex items-center gap-2 mb-3">
               <ArrowDownLeft className="w-5 h-5 text-[#3BF7FF]" />
@@ -169,7 +167,7 @@ const TransactionFlow = () => {
             </div>
             <p className="text-3xl mb-2">₹{(totalIncome / 1000).toFixed(0)}k</p>
             <p className="text-xs text-[#3BF7FF]">
-              {transactions.filter(t => t.type === "income").length}{" "}
+              {displayTransactions.filter(t => t.type === "income").length}{" "}
               transactions
             </p>
           </div>
@@ -181,11 +179,6 @@ const TransactionFlow = () => {
           transition={{ delay: 0.7 }}
           className="p-6 rounded-2xl bg-gradient-to-br from-[#FF6B6B]/10 to-transparent border border-[#FF6B6B]/20 relative overflow-hidden"
         >
-          <motion.div
-            animate={{ rotate: -360 }}
-            transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-            className="absolute -top-10 -right-10 w-32 h-32 rounded-full bg-[#FF6B6B]/10 blur-2xl"
-          />
           <div className="relative">
             <div className="flex items-center gap-2 mb-3">
               <ArrowUpRight className="w-5 h-5 text-[#FF6B6B]" />
@@ -195,7 +188,7 @@ const TransactionFlow = () => {
               ₹{(totalExpense / 1000).toFixed(0)}k
             </p>
             <p className="text-xs text-[#FF6B6B]">
-              {transactions.filter(t => t.type === "expense").length}{" "}
+              {displayTransactions.filter(t => t.type === "expense").length}{" "}
               transactions
             </p>
           </div>
@@ -288,7 +281,7 @@ const TransactionFlow = () => {
                     }`}
                   >
                     {isIncome ? "+" : "-"}₹
-                    {transaction.amount.toLocaleString("en-IN")}
+                    {Number(transaction.amount).toLocaleString("en-IN")}
                   </p>
                   <div className="flex items-center gap-2 justify-end">
                     <span className="text-xs text-white/40">
@@ -309,79 +302,10 @@ const TransactionFlow = () => {
                   </div>
                 </div>
               </div>
-
-              {/* Particle Effect for Large Transactions */}
-              {transaction.amount > 10000 && (
-                <>
-                  {[...Array(3)].map((_, i) => (
-                    <motion.div
-                      key={i}
-                      className="absolute w-1 h-1 rounded-full"
-                      style={{ backgroundColor: color }}
-                      initial={{
-                        left: "50%",
-                        top: "50%",
-                        opacity: 1
-                      }}
-                      animate={{
-                        x: [0, (Math.random() - 0.5) * 100],
-                        y: [0, (Math.random() - 0.5) * 100],
-                        opacity: [1, 0],
-                        scale: [1, 0]
-                      }}
-                      transition={{
-                        duration: 2,
-                        delay: 1 + index * 0.05 + i * 0.2,
-                        repeat: Infinity,
-                        repeatDelay: 3
-                      }}
-                    />
-                  ))}
-                </>
-              )}
             </motion.div>
           )
         })}
       </div>
-
-      {/* Net Flow Indicator */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1.5 }}
-        className="mt-6 p-5 rounded-2xl bg-gradient-to-r from-[#3BF7FF]/10 to-[#E4C580]/10 border border-[#3BF7FF]/20"
-      >
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm text-white/50 mb-1">Net Cash Flow</p>
-            <p className="text-3xl text-[#3BF7FF]">
-              +₹{((totalIncome - totalExpense) / 1000).toFixed(0)}k
-            </p>
-          </div>
-          <div className="text-right">
-            <p className="text-sm text-white/50 mb-1">Flow Rate</p>
-            <div className="flex items-center gap-2">
-              <div className="w-24 h-2 bg-white/5 rounded-full overflow-hidden">
-                <motion.div
-                  initial={{ width: 0 }}
-                  animate={{
-                    width: `${((totalIncome - totalExpense) / totalIncome) *
-                      100}%`
-                  }}
-                  transition={{ duration: 1, delay: 1.6 }}
-                  className="h-full rounded-full bg-gradient-to-r from-[#3BF7FF] to-[#E4C580]"
-                />
-              </div>
-              <span className="text-sm text-[#3BF7FF]">
-                {(((totalIncome - totalExpense) / totalIncome) * 100).toFixed(
-                  0
-                )}
-                %
-              </span>
-            </div>
-          </div>
-        </div>
-      </motion.div>
     </motion.div>
   )
 }

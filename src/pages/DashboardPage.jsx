@@ -25,12 +25,9 @@ import {
   Wallet,
   Zap,
   Activity,
-  Search,
   Download,
-  Share2,
   Users,
   Brain,
-  Menu,
   X,
   LogOut
 } from "lucide-react";
@@ -46,6 +43,44 @@ export default function DashboardPage() {
   const [userData, setUserData] = useState({ name: "User", email: "" });
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const containerRef = useRef(null);
+
+  // --- GLOBAL DASHBOARD STATE ---
+  // In a real app, this would come from an API or Context
+  const [netWorth, setNetWorth] = useState(4664900);
+  const [monthlyGrowth, setMonthlyGrowth] = useState(51300);
+  const [activeGoalsCount, setActiveGoalsCount] = useState(3);
+  
+  const [transactions, setTransactions] = useState([
+    { id: 1, type: "income", from: "TCS Salary", to: "HDFC Account", amount: 100000, time: "2h ago", category: "Salary", status: "completed" },
+    { id: 2, type: "expense", from: "HDFC Account", to: "Amazon", amount: 3200, time: "4h ago", category: "Shopping", status: "completed" },
+    { id: 3, type: "expense", from: "HDFC Account", to: "Swiggy", amount: 850, time: "6h ago", category: "Food", status: "completed" },
+    { id: 4, type: "income", from: "Freelance", to: "Paytm", amount: 15000, time: "1d ago", category: "Freelance", status: "completed" },
+    { id: 5, type: "expense", from: "HDFC Account", to: "Uber", amount: 420, time: "1d ago", category: "Transport", status: "completed" },
+  ]);
+
+  const [goals, setGoals] = useState([
+    { id: 1, name: "Dream Wedding", target: 2000000, current: 850000, color: "#E4C580", emoji: "💍" },
+    { id: 2, name: "New Car", target: 1200000, current: 720000, color: "#7433FF", emoji: "🚗" },
+    { id: 3, name: "Europe Trip", target: 500000, current: 380000, color: "#3BF7FF", emoji: "✈️" }
+  ]);
+
+  // Function to add a new transaction (passed to child components)
+  const addTransaction = (newTx) => {
+    setTransactions([newTx, ...transactions]);
+    if(newTx.type === 'income') {
+        setNetWorth(prev => prev + newTx.amount);
+        setMonthlyGrowth(prev => prev + newTx.amount);
+    } else {
+        setNetWorth(prev => prev - newTx.amount);
+    }
+  };
+
+  // Function to add to a goal (could be used later)
+  const addGoal = (newGoal) => {
+      setGoals([...goals, newGoal]);
+      setActiveGoalsCount(prev => prev + 1);
+  };
+
 
   // Load user data
   useEffect(() => {
@@ -93,7 +128,7 @@ export default function DashboardPage() {
   ];
 
   return (
-    <div ref={containerRef} className="min-h-screen bg-[#00010D] text-white overflow-x-hidden relative pb-24 lg:pb-0">
+    <div ref={containerRef} className="min-h-screen bg-[#00010D] text-white overflow-x-hidden relative pb-40 lg:pb-0">
       {/* Ambient Background */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
         <motion.div
@@ -192,6 +227,38 @@ export default function DashboardPage() {
             </motion.div>
           </div>
         </div>
+
+        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="hidden lg:block border-t border-white/5 px-10 py-4 bg-black/20 backdrop-blur-md">
+          <div className="max-w-[2000px] mx-auto flex items-center justify-between">
+            <div className="flex items-center gap-8">
+              {[
+                { label: "Net Worth", value: `₹${(netWorth/100000).toFixed(2)}L`, change: "+8.5%", color: "#3BF7FF", icon: Wallet },
+                { label: "Monthly Growth", value: `₹${(monthlyGrowth/1000).toFixed(1)}k`, change: "+12%", color: "#E4C580", icon: TrendingUp },
+                { label: "Active Goals", value: `${activeGoalsCount}/4`, change: "94%", color: "#7433FF", icon: Activity },
+                { label: "Automations", value: "5", change: "Running", color: "#3BF7FF", icon: Zap },
+              ].map((stat, i) => {
+                const Icon = stat.icon;
+                return (
+                  <motion.div key={stat.label} initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 + i * 0.1 }} className="flex items-center gap-3 group cursor-pointer">
+                    <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `linear-gradient(135deg,${stat.color}20,${stat.color}10)`, boxShadow: `0 0 20px ${stat.color}20` }}>
+                      <Icon className="w-5 h-5" style={{ color: stat.color }} />
+                    </div>
+                    <div>
+                      <p className="text-xs text-white/40">{stat.label}</p>
+                      <div className="flex items-center gap-2">
+                        <p className="text-sm">{stat.value}</p>
+                        <span className="text-xs" style={{ color: stat.color }}>{stat.change}</span>
+                      </div>
+                    </div>
+                  </motion.div>
+                );
+              })}
+            </div>
+            <div className="text-sm text-white/30">
+              {currentTime.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })} • {currentTime.toLocaleDateString("en-IN", { month: "short", day: "numeric" })}
+            </div>
+          </div>
+        </motion.div>
       </motion.nav>
 
       {/* Mobile Header */}
@@ -259,39 +326,6 @@ export default function DashboardPage() {
         )}
       </AnimatePresence>
 
-      {/* Desktop Stats Bar */}
-      <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="hidden lg:block border-t border-white/5 px-10 py-4 bg-black/20 backdrop-blur-md">
-        <div className="max-w-[2000px] mx-auto flex items-center justify-between">
-          <div className="flex items-center gap-8">
-            {[
-              { label: "Net Worth", value: "₹46.6L", change: "+8.5%", color: "#3BF7FF", icon: Wallet },
-              { label: "Monthly Growth", value: "₹51.3k", change: "+12%", color: "#E4C580", icon: TrendingUp },
-              { label: "Active Goals", value: "3/4", change: "94%", color: "#7433FF", icon: Activity },
-              { label: "Automations", value: "5", change: "Running", color: "#3BF7FF", icon: Zap },
-            ].map((stat, i) => {
-              const Icon = stat.icon;
-              return (
-                <motion.div key={stat.label} initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 + i * 0.1 }} className="flex items-center gap-3 group cursor-pointer">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: `linear-gradient(135deg,${stat.color}20,${stat.color}10)`, boxShadow: `0 0 20px ${stat.color}20` }}>
-                    <Icon className="w-5 h-5" style={{ color: stat.color }} />
-                  </div>
-                  <div>
-                    <p className="text-xs text-white/40">{stat.label}</p>
-                    <div className="flex items-center gap-2">
-                      <p className="text-sm">{stat.value}</p>
-                      <span className="text-xs" style={{ color: stat.color }}>{stat.change}</span>
-                    </div>
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-          <div className="text-sm text-white/30">
-            {currentTime.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })} • {currentTime.toLocaleDateString("en-IN", { month: "short", day: "numeric" })}
-          </div>
-        </div>
-      </motion.div>
-
       {/* Main Content */}
       <div className="relative z-10 max-w-[2000px] mx-auto px-4 sm:px-6 lg:px-10 py-8 lg:py-12 mt-16 lg:mt-0">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-8 lg:mb-12">
@@ -313,7 +347,8 @@ export default function DashboardPage() {
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
                 {/* Left Column */}
                 <div className="lg:col-span-8 space-y-6 lg:space-y-8">
-                  <FinancialHealthScore />
+                  {/* Passing props to make components functional */}
+                  <FinancialHealthScore netWorth={netWorth} />
                   <SpendingGraph />
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
                     <FestivePlanner />
@@ -323,8 +358,8 @@ export default function DashboardPage() {
                 </div>
                 {/* Right Column */}
                 <div className="lg:col-span-4 space-y-6 lg:space-y-8">
-                  <SmartAccounts />
-                  <GoalsSection />
+                  <SmartAccounts netWorth={netWorth} />
+                  <GoalsSection goals={goals} onAddGoal={addGoal} />
                   <FinancialChallenges />
                   <FuturePlanning />
                   <NotificationsFeed />
@@ -340,12 +375,12 @@ export default function DashboardPage() {
                   <CashFlowAnalysis />
                   <InvestmentPortfolio />
                   <SpendingHeatmap />
-                  <TransactionFlow />
+                  <TransactionFlow transactions={transactions} onAddTransaction={addTransaction} />
                 </div>
                 <div className="lg:col-span-4 space-y-6 lg:space-y-8">
                   <VoiceOfMoney />
                   <MonthlyComparison />
-                  <GoalsSection />
+                  <GoalsSection goals={goals} onAddGoal={addGoal} />
                   <NotificationsFeed />
                 </div>
               </div>

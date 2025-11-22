@@ -9,14 +9,16 @@ import {
 } from "lucide-react"
 import { useState } from "react"
 
-const SmartAccounts = () => {
+const SmartAccounts = ({ netWorth }) => {
   const [balancesVisible, setBalancesVisible] = useState(true)
 
+  // We use the prop netWorth for total, but keep mock accounts for individual rows for now
+  // Ideally these would also be passed via props
   const accounts = [
     {
       name: "HDFC Savings",
       type: "Bank Account",
-      balance: 2847650,
+      balance: netWorth ? netWorth * 0.6 : 2847650, // Mock distribution
       change: 12500,
       icon: Building2,
       color: "#3BF7FF",
@@ -43,7 +45,7 @@ const SmartAccounts = () => {
     {
       name: "Zerodha",
       type: "Investment",
-      balance: 1850000,
+      balance: netWorth ? netWorth * 0.4 : 1850000, // Mock distribution
       change: 45000,
       icon: TrendingUp,
       color: "#3BF7FF",
@@ -116,14 +118,6 @@ const SmartAccounts = () => {
                 />
               )}
 
-              {/* Glow Effect */}
-              <motion.div
-                className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                style={{
-                  background: `radial-gradient(circle at 50% 50%, ${account.color}20, transparent 70%)`
-                }}
-              />
-
               <div className="relative z-10 flex items-center gap-4">
                 <motion.div
                   whileHover={{ rotate: 360 }}
@@ -182,26 +176,11 @@ const SmartAccounts = () => {
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
             >
-              {formatCurrency(4664900)}
+              {formatCurrency(netWorth || 4664900)}
             </motion.p>
             <p className="text-sm text-[#3BF7FF] mt-1">+₹51,300 this month</p>
           </div>
         </div>
-      </motion.div>
-
-      {/* Sync Status */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 1 }}
-        className="mt-4 flex items-center justify-center gap-2 text-sm text-white/40"
-      >
-        <motion.div
-          animate={{ scale: [1, 1.2, 1], opacity: [0.4, 1, 0.4] }}
-          transition={{ duration: 2, repeat: Infinity }}
-          className="w-2 h-2 rounded-full bg-[#3BF7FF]"
-        />
-        <span>Synced 2 minutes ago</span>
       </motion.div>
     </motion.div>
   )
