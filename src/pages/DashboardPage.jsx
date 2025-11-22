@@ -1,22 +1,22 @@
 /* JSX version of provided TSX code (TypeScript annotations removed) */
 import { motion, AnimatePresence } from "framer-motion";
-import { FinancialHealthScore } from "./components/FinancialHealthScore";
-import { SmartAccounts } from "./components/SmartAccounts";
-import { SpendingGraph } from "./components/SpendingGraph";
-import { FestivePlanner } from "./components/FestivePlanner";
-import { FinancialChallenges } from "./components/FinancialChallenges";
-import { FuturePlanning } from "./components/FuturePlanning";
-import { AutomationsHub } from "./components/AutomationsHub";
-import { NotificationsFeed } from "./components/NotificationsFeed";
-import { GoalsSection } from "./components/GoalsSection";
-import { MonthlyComparison } from "./components/MonthlyComparison";
-import { CashFlowAnalysis } from "./components/CashFlowAnalysis";
-import { InvestmentPortfolio } from "./components/InvestmentPortfolio";
-import { SpendingHeatmap } from "./components/SpendingHeatmap";
-import { TransactionFlow } from "./components/TransactionFlow";
-import { SmartInsights } from "./components/SmartInsights";
-import { VoiceOfMoney } from "./components/VoiceOfMoney";
-import { FamilyFinance } from "./components/FamilyFinance";
+import  FinancialHealthScore  from "../components/dashboard/FinancialHealthScore";
+import  SmartAccounts  from "../components/dashboard/SmartAccounts";
+import  SpendingGraph  from "../components/dashboard/SpendingGraph";
+import  FestivePlanner  from "../components/dashboard/FestivePlanner";
+import  FinancialChallenges  from "../components/dashboard/FinancialChallenges";
+import  FuturePlanning  from "../components/dashboard/FuturePlanning";
+import AutomationsHub from "../components/dashboard/AutomationsHub";
+import  NotificationsFeed  from "../components/dashboard/NotificationsFeed";
+import  GoalsSection  from "../components/dashboard/GoalsSection";
+import  MonthlyComparison  from "../components/dashboard/MonthlyComparison";
+import  CashFlowAnalysis  from "../components/dashboard/CashFlowAnalysis";
+import  InvestmentPortfolio  from "../components/dashboard/InvestmentPortfolio";
+import  SpendingHeatmap  from "../components/dashboard/SpendingHeatmap";
+import  TransactionFlow  from "../components/dashboard/TransactionFlow";
+import  SmartInsights  from "../components/dashboard/SmartInsights";
+import  VoiceOfMoney  from "../components/dashboard/VoiceOfMoney";
+import  FamilyFinance  from "../components/dashboard/FamilyFinance";
 import {
   Sparkles,
   Bell,
