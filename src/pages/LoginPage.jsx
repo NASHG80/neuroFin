@@ -1,12 +1,14 @@
 import React, { useEffect, useRef, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useNavigate, useLocation, Link } from "react-router-dom";
 import gsap from "gsap";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const location = useLocation();
   const containerRef = useRef(null);
   const cardRef = useRef(null);
   const overlayRef = useRef(null);
+
   const formRefs = useRef([]);
 
   const [email, setEmail] = useState("");
@@ -88,7 +90,8 @@ export default function LoginPage() {
       } else {
         localStorage.setItem("nf_token", data.token);
         localStorage.setItem("nf_user", JSON.stringify(data.user));
-        navigate("/");
+        const from = location.state?.from?.pathname || "/dashboard";
+        navigate(from, { replace: true });
       }
     } catch (err) {
       console.error(err);
