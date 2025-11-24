@@ -48,7 +48,7 @@ export default function DashboardPage() {
   // In a real app, this would come from an API or Context
   const [netWorth, setNetWorth] = useState(4664900);
   const [monthlyGrowth, setMonthlyGrowth] = useState(51300);
-  const [activeGoalsCount, setActiveGoalsCount] = useState(3);
+  const [activeGoalsCount, setActiveGoalsCount] = useState(0);
   
   const [transactions, setTransactions] = useState([
     { id: 1, type: "income", from: "TCS Salary", to: "HDFC Account", amount: 100000, time: "2h ago", category: "Salary", status: "completed" },
@@ -58,11 +58,7 @@ export default function DashboardPage() {
     { id: 5, type: "expense", from: "HDFC Account", to: "Uber", amount: 420, time: "1d ago", category: "Transport", status: "completed" },
   ]);
 
-  const [goals, setGoals] = useState([
-    { id: 1, name: "Dream Wedding", target: 2000000, current: 850000, color: "#E4C580", emoji: "💍" },
-    { id: 2, name: "New Car", target: 1200000, current: 720000, color: "#7433FF", emoji: "🚗" },
-    { id: 3, name: "Europe Trip", target: 500000, current: 380000, color: "#3BF7FF", emoji: "✈️" }
-  ]);
+  const [goals, setGoals] = useState([]);
 
   // Function to add a new transaction (passed to child components)
   const addTransaction = (newTx) => {
@@ -76,11 +72,77 @@ export default function DashboardPage() {
   };
 
   // Function to add to a goal (could be used later)
-  const addGoal = (newGoal) => {
-      setGoals([...goals, newGoal]);
-      setActiveGoalsCount(prev => prev + 1);
+  const addGoal = async (newGoal) => {
+      const token = localStorage.getItem("nf_token");
+
+      if (!token) {
+        setGoals(prev => [...prev, newGoal]);
+        setActiveGoalsCount(prev => prev + 1);
+        return;
+      }
+
+      try {
+        const res = await fetch("/api/goals", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify({
+            name: newGoal.name,
+            target: newGoal.target,
+            current: newGoal.current,
+            emoji: newGoal.emoji,
+            color: newGoal.color
+          })
+        });
+
+        if (!res.ok) {
+          setGoals(prev => [...prev, newGoal]);
+          setActiveGoalsCount(prev => prev + 1);
+          return;
+        }
+
+        const savedGoal = await res.json();
+        setGoals(prev => [...prev, savedGoal]);
+        setActiveGoalsCount(prev => prev + 1);
+      } catch (err) {
+        console.error("Failed to save goal", err);
+        setGoals(prev => [...prev, newGoal]);
+        setActiveGoalsCount(prev => prev + 1);
+      }
   };
 
+  const deleteGoal = async (goalToDelete) => {
+    setGoals(prev => prev.filter(g => g.id !== goalToDelete.id));
+    setActiveGoalsCount(prev => Math.max(0, prev - 1));
+
+    const token = localStorage.getItem("nf_token");
+    if (!token || !goalToDelete.id) return;
+
+    try {
+      const res = await fetch(`/api/goals/${goalToDelete.id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (!res.ok) {
+        // If delete failed, reload goals from server to resync state
+        const reload = await fetch("/api/goals", {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (reload.ok) {
+          const data = await reload.json();
+          setGoals(Array.isArray(data) ? data : []);
+          setActiveGoalsCount(Array.isArray(data) ? data.length : 0);
+        }
+      }
+    } catch (err) {
+      console.error("Failed to delete goal", err);
+    }
+  };
 
   // Load user data
   useEffect(() => {
@@ -92,6 +154,35 @@ export default function DashboardPage() {
     } catch (e) {
       console.error("Failed to parse user data");
     }
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("nf_token");
+    if (!token) return;
+
+    async function fetchGoals() {
+      try {
+        const res = await fetch("/api/goals", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        if (!res.ok) {
+          return;
+        }
+
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setGoals(data);
+          setActiveGoalsCount(data.length);
+        }
+      } catch (err) {
+        console.error("Failed to load goals", err);
+      }
+    }
+
+    fetchGoals();
   }, []);
 
   useEffect(() => {
@@ -359,7 +450,7 @@ export default function DashboardPage() {
                 {/* Right Column */}
                 <div className="lg:col-span-4 space-y-6 lg:space-y-8">
                   <SmartAccounts netWorth={netWorth} />
-                  <GoalsSection goals={goals} onAddGoal={addGoal} />
+                  <GoalsSection goals={goals} onAddGoal={addGoal} onDeleteGoal={deleteGoal} />
                   <FinancialChallenges />
                   <FuturePlanning />
                   <NotificationsFeed />
@@ -380,7 +471,7 @@ export default function DashboardPage() {
                 <div className="lg:col-span-4 space-y-6 lg:space-y-8">
                   <VoiceOfMoney />
                   <MonthlyComparison />
-                  <GoalsSection goals={goals} onAddGoal={addGoal} />
+                  <GoalsSection goals={goals} onAddGoal={addGoal} onDeleteGoal={deleteGoal} />
                   <NotificationsFeed />
                 </div>
               </div>
