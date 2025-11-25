@@ -2,15 +2,13 @@ import { motion, AnimatePresence } from "framer-motion"
 import { Target, Plus, X } from "lucide-react"
 import { useState } from "react"
 
-const GoalsSection = ({ goals = [], onAddGoal }) => {
+const GoalsSection = ({ goals = [], onAddGoal, onDeleteGoal }) => {
+
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newGoal, setNewGoal] = useState({ name: '', target: '', current: '', emoji: '🎯', color: '#3BF7FF' });
 
   // Fallback data if no props passed
-  const displayGoals = goals.length > 0 ? goals : [
-    { name: "Dream Wedding", target: 2000000, current: 850000, color: "#E4C580", emoji: "💍" },
-    { name: "New Car", target: 1200000, current: 720000, color: "#7433FF", emoji: "🚗" }
-  ];
+  const displayGoals = Array.isArray(goals) ? goals : [];
 
   const handleAddGoal = (e) => {
     e.preventDefault();
@@ -94,82 +92,97 @@ const GoalsSection = ({ goals = [], onAddGoal }) => {
       </AnimatePresence>
 
       <div className="space-y-4">
-        {displayGoals.map((goal, index) => {
-          const percentage = (goal.current / goal.target) * 100
+        {displayGoals.length === 0 ? (
+          <p className="text-sm text-white/60 text-center">Add your first goal</p>
+        ) : (
+          displayGoals.map((goal, index) => {
 
-          return (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.7 + index * 0.1 }}
-              whileHover={{ scale: 1.02 }}
-              className="relative cursor-pointer group"
-            >
-              {/* Jar Container */}
-              <div className="relative h-40 rounded-2xl bg-gradient-to-b from-white/5 to-white/10 border border-white/10 overflow-hidden">
-                {/* Liquid Fill */}
-                <motion.div
-                  initial={{ height: 0 }}
-                  animate={{ height: `${percentage}%` }}
-                  transition={{
-                    duration: 1.5,
-                    ease: "easeOut",
-                    delay: 0.8 + index * 0.1
-                  }}
-                  className="absolute bottom-0 left-0 right-0"
-                  style={{
-                    background: `linear-gradient(180deg, ${goal.color}80, ${goal.color}40)`,
-                    boxShadow: `0 -10px 40px ${goal.color}60`
-                  }}
-                >
-                  {/* Wave Effect */}
-                  <motion.div
-                    animate={{
-                      x: [0, 20, 0]
-                    }}
-                    transition={{
-                      duration: 3,
-                      repeat: Infinity,
-                      ease: "easeInOut"
-                    }}
-                    className="absolute top-0 left-0 right-0 h-8"
-                    style={{
-                      background: `radial-gradient(ellipse at center, ${goal.color}40 0%, transparent 70%)`
-                    }}
-                  />
-                </motion.div>
+            const percentage = (goal.current / goal.target) * 100
 
-                {/* Goal Info Overlay */}
-                <div className="absolute inset-0 flex flex-col items-center justify-center p-4 z-10">
-                  <motion.div
-                    animate={{ scale: [1, 1.1, 1] }}
-                    transition={{ duration: 2, repeat: Infinity }}
-                    className="text-3xl mb-2"
-                  >
-                    {goal.emoji}
-                  </motion.div>
-                  <p className="text-sm mb-1">{goal.name}</p>
-                  <p className="text-xs text-white/50 mb-2">
-                    {Math.round(percentage)}% Complete
-                  </p>
-
-                  <div className="text-center">
-                    <motion.p
-                      className="text-lg tracking-tight"
-                      style={{ color: goal.color }}
+            return (
+              <motion.div
+                key={goal.id ?? index}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.7 + index * 0.1 }}
+                whileHover={{ scale: 1.02 }}
+                className="relative cursor-pointer group"
+              >
+                {/* Jar Container */}
+                <div className="relative h-40 rounded-2xl bg-gradient-to-b from-white/5 to-white/10 border border-white/10 overflow-hidden">
+                  {onDeleteGoal && (
+                    <button
+                      type="button"
+                      onClick={(e) => { e.stopPropagation(); onDeleteGoal(goal); }}
+                      className="absolute top-2 right-2 z-20 w-6 h-6 rounded-full bg-black/40 border border-white/30 flex items-center justify-center text-xs text-white/70 hover:bg-red-500/70 hover:border-red-300"
                     >
-                      ₹{(goal.current / 1000).toFixed(0)}k
-                    </motion.p>
-                    <p className="text-xs text-white/40">
-                      of ₹{(goal.target / 1000).toFixed(0)}k
+                      <X className="w-3 h-3" />
+                    </button>
+                  )}
+
+                  {/* Liquid Fill */}
+                  <motion.div
+                    initial={{ height: 0 }}
+                    animate={{ height: `${percentage}%` }}
+                    transition={{
+                      duration: 1.5,
+                      ease: "easeOut",
+                      delay: 0.8 + index * 0.1
+                    }}
+                    className="absolute bottom-0 left-0 right-0"
+                    style={{
+                      background: `linear-gradient(180deg, ${goal.color}80, ${goal.color}40)`,
+                      boxShadow: `0 -10px 40px ${goal.color}60`
+                    }}
+                  >
+                    {/* Wave Effect */}
+                    <motion.div
+                      animate={{
+                        x: [0, 20, 0]
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: "easeInOut"
+                      }}
+                      className="absolute top-0 left-0 right-0 h-8"
+                      style={{
+                        background: `radial-gradient(ellipse at center, ${goal.color}40 0%, transparent 70%)`
+                      }}
+                    />
+                  </motion.div>
+
+                  {/* Goal Info Overlay */}
+                  <div className="absolute inset-0 flex flex-col items-center justify-center p-4 z-10">
+                    <motion.div
+                      animate={{ scale: [1, 1.1, 1] }}
+                      transition={{ duration: 2, repeat: Infinity }}
+                      className="text-3xl mb-2"
+                    >
+                      {goal.emoji}
+                    </motion.div>
+                    <p className="text-sm mb-1">{goal.name}</p>
+                    <p className="text-xs text-white/50 mb-2">
+                      {Math.round(percentage)}% Complete
                     </p>
+
+                    <div className="text-center">
+                      <motion.p
+                        className="text-lg tracking-tight"
+                        style={{ color: goal.color }}
+                      >
+                        ₹{(goal.current / 1000).toFixed(0)}k
+                      </motion.p>
+                      <p className="text-xs text-white/40">
+                        of ₹{(goal.target / 1000).toFixed(0)}k
+                      </p>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </motion.div>
-          )
-        })}
+              </motion.div>
+            )
+          })
+        )}
       </div>
     </motion.div>
   )
