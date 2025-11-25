@@ -70,13 +70,7 @@ export default function DashboardPage() {
     }
   };
 
-<<<<<<< HEAD
-  const addGoal = (newGoal) => {
-      setGoals([...goals, newGoal]);
-      setActiveGoalsCount(prev => prev + 1);
-  };
 
-=======
   // Function to add to a goal (could be used later)
   const addGoal = async (newGoal) => {
       const token = localStorage.getItem("nf_token");
@@ -151,7 +145,6 @@ export default function DashboardPage() {
   };
 
   // Load user data
->>>>>>> 1e059b871b2e3b3d493f9e6080cb6fcbd97e519a
   useEffect(() => {
     try {
       const storedUser = localStorage.getItem("nf_user");
