@@ -15,7 +15,7 @@ export default function TrackSection() {
   useEffect(() => {
     const ctx = gsap.context(() => {
       /* -----------------------------------
-         HEADING ANIMATION
+         HEADING ANIMATION .
       ----------------------------------- */
       gsap.from(".track-title", {
         opacity: 0,
