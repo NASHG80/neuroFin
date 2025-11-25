@@ -70,88 +70,11 @@ export default function DashboardPage() {
     }
   };
 
-<<<<<<< HEAD
   const addGoal = (newGoal) => {
       setGoals([...goals, newGoal]);
       setActiveGoalsCount(prev => prev + 1);
   };
 
-=======
-  // Function to add to a goal (could be used later)
-  const addGoal = async (newGoal) => {
-      const token = localStorage.getItem("nf_token");
-
-      if (!token) {
-        setGoals(prev => [...prev, newGoal]);
-        setActiveGoalsCount(prev => prev + 1);
-        return;
-      }
-
-      try {
-        const res = await fetch("/api/goals", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`
-          },
-          body: JSON.stringify({
-            name: newGoal.name,
-            target: newGoal.target,
-            current: newGoal.current,
-            emoji: newGoal.emoji,
-            color: newGoal.color
-          })
-        });
-
-        if (!res.ok) {
-          setGoals(prev => [...prev, newGoal]);
-          setActiveGoalsCount(prev => prev + 1);
-          return;
-        }
-
-        const savedGoal = await res.json();
-        setGoals(prev => [...prev, savedGoal]);
-        setActiveGoalsCount(prev => prev + 1);
-      } catch (err) {
-        console.error("Failed to save goal", err);
-        setGoals(prev => [...prev, newGoal]);
-        setActiveGoalsCount(prev => prev + 1);
-      }
-  };
-
-  const deleteGoal = async (goalToDelete) => {
-    setGoals(prev => prev.filter(g => g.id !== goalToDelete.id));
-    setActiveGoalsCount(prev => Math.max(0, prev - 1));
-
-    const token = localStorage.getItem("nf_token");
-    if (!token || !goalToDelete.id) return;
-
-    try {
-      const res = await fetch(`/api/goals/${goalToDelete.id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${token}`
-        }
-      });
-
-      if (!res.ok) {
-        // If delete failed, reload goals from server to resync state
-        const reload = await fetch("/api/goals", {
-          headers: { Authorization: `Bearer ${token}` }
-        });
-        if (reload.ok) {
-          const data = await reload.json();
-          setGoals(Array.isArray(data) ? data : []);
-          setActiveGoalsCount(Array.isArray(data) ? data.length : 0);
-        }
-      }
-    } catch (err) {
-      console.error("Failed to delete goal", err);
-    }
-  };
-
-  // Load user data
->>>>>>> 1e059b871b2e3b3d493f9e6080cb6fcbd97e519a
   useEffect(() => {
     try {
       const storedUser = localStorage.getItem("nf_user");
