@@ -1,21 +1,24 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
-import Home from './app/page';
-import LoginPage from './pages/LoginPage.jsx';
-import SignupPage from './pages/SignupPage.jsx';
-import DashboardPage from './pages/DashboardPage.jsx';
-import AssistantPage from './pages/AssistantPage.jsx'; // Make sure to import this
-import Navbar from './components/Navbar.jsx';
-import ProtectedRoute from './components/ProtectedRoute.jsx';
-import LaunchNotesSection from './components/LaunchNotesSection'; 
-import ForCompaniesSection from './components/ForCompaniesSection';
-import SpendsBudgetsSection from './components/SpendsBudgetsSection';
+import React from "react";
+import { BrowserRouter, Routes, Route, useLocation } from "react-router-dom";
+import Home from "./app/page";
+import LoginPage from "./pages/LoginPage.jsx";
+import SignupPage from "./pages/SignupPage.jsx";
+import DashboardPage from "./pages/DashboardPage.jsx";
+import AssistantPage from "./pages/AssistantPage.jsx"; // Make sure to import this
+import Navbar from "./components/Navbar.jsx";
+import ProtectedRoute from "./components/ProtectedRoute.jsx";
+import LaunchNotesSection from "./components/LaunchNotesSection";
+import ForCompaniesSection from "./components/ForCompaniesSection";
+import SpendsBudgetsSection from "./components/SpendsBudgetsSection";
+import UPIBillsSection from "./components/UPIBillsSection";
+import FamilySpaceSection from "./components/FamilySpaceSection";
+import FuturePlannerSection from "./components/FuturePlannerSection";
 // Layout component to conditionally render Navbar
 const Layout = ({ children }) => {
   const location = useLocation();
-  
+
   // Hide global Navbar on Dashboard AND Assistant pages
-  const showNavbar = !['/dashboard', '/assistant'].includes(location.pathname);
+  const showNavbar = !["/dashboard", "/assistant"].includes(location.pathname);
 
   return (
     <>
@@ -33,26 +36,29 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
-          <Route path="/launch" element={<LaunchNotesSection />} /> 
+          <Route path="/launch" element={<LaunchNotesSection />} />
           <Route path="/for-companies" element={<ForCompaniesSection />} />
           <Route path="/spends-budgets" element={<SpendsBudgetsSection />} />
-          
+          <Route path="/Upi-Bills" element={<UPIBillsSection />} />
+          <Route path="/Family-Space" element={<FamilySpaceSection />} />
+           <Route path="/Future-Planner" element={<FuturePlannerSection />} />
+
           {/* Protected Routes */}
-          <Route 
-            path="/dashboard" 
+          <Route
+            path="/dashboard"
             element={
               <ProtectedRoute>
                 <DashboardPage />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/assistant" 
+          <Route
+            path="/assistant"
             element={
               <ProtectedRoute>
                 <AssistantPage />
               </ProtectedRoute>
-            } 
+            }
           />
         </Routes>
       </Layout>

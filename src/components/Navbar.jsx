@@ -277,9 +277,12 @@ export default function Navbar() {
         <div className="flex flex-col gap-4 text-white/80 text-sm">
           <a className="hover:text-white transition"
            onClick={() => navigate("/spends-budgets")}>📊 Spends & Budgets</a>
-          <a className="hover:text-white transition">💸 UPI & Bills</a>
-          <a className="hover:text-white transition">🔮 Future Planner</a>
-          <a className="hover:text-white transition">👨‍👩‍👧 Family Spaces</a>
+          <a className="hover:text-white transition"
+          onClick={() => navigate("/Upi-Bills")}>💸 UPI & Bills</a>
+          <a className="hover:text-white transition"
+          onClick={() => navigate("/Future-Planner")}>🔮 Future Planner</a>
+          <a className="hover:text-white transition"
+          onClick={() => navigate("/Family-Space")}>👨‍👩‍👧 Family Spaces</a>
         </div>
       </div>
     </header>
