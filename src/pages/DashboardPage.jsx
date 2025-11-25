@@ -29,7 +29,8 @@ import {
   Users,
   Brain,
   X,
-  LogOut
+  LogOut,
+  MessageSquareText
 } from "lucide-react";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
@@ -45,7 +46,6 @@ export default function DashboardPage() {
   const containerRef = useRef(null);
 
   // --- GLOBAL DASHBOARD STATE ---
-  // In a real app, this would come from an API or Context
   const [netWorth, setNetWorth] = useState(4664900);
   const [monthlyGrowth, setMonthlyGrowth] = useState(51300);
   const [activeGoalsCount, setActiveGoalsCount] = useState(3);
@@ -64,7 +64,6 @@ export default function DashboardPage() {
     { id: 3, name: "Europe Trip", target: 500000, current: 380000, color: "#3BF7FF", emoji: "✈️" }
   ]);
 
-  // Function to add a new transaction (passed to child components)
   const addTransaction = (newTx) => {
     setTransactions([newTx, ...transactions]);
     if(newTx.type === 'income') {
@@ -75,14 +74,11 @@ export default function DashboardPage() {
     }
   };
 
-  // Function to add to a goal (could be used later)
   const addGoal = (newGoal) => {
       setGoals([...goals, newGoal]);
       setActiveGoalsCount(prev => prev + 1);
   };
 
-
-  // Load user data
   useEffect(() => {
     try {
       const storedUser = localStorage.getItem("nf_user");
@@ -159,7 +155,8 @@ export default function DashboardPage() {
       >
         <div className="max-w-[2000px] mx-auto px-10 py-6 flex items-center justify-between">
           <div className="flex items-center gap-12">
-            <div className="flex items-center gap-4 cursor-pointer" onClick={() => navigate('/')}>
+            {/* CHANGED: onClick now navigates to /dashboard instead of / */}
+            <div className="flex items-center gap-4 cursor-pointer" onClick={() => navigate('/dashboard')}>
               <motion.div whileHover={{ scale: 1.05, rotate: 180 }} transition={{ duration: 0.6 }} className="relative w-12 h-12">
                 <div className="absolute inset-0 rounded-2xl bg-gradient-to-br from-[#7433FF] via-[#3BF7FF] to-[#E4C580] p-0.5">
                   <div className="w-full h-full bg-[#00010D] rounded-[14px] flex items-center justify-center">
@@ -263,7 +260,8 @@ export default function DashboardPage() {
 
       {/* Mobile Header */}
       <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[#00010D]/80 backdrop-blur-xl border-b border-white/10 px-4 py-3 flex items-center justify-between">
-        <div className="flex items-center gap-3">
+        {/* CHANGED: Added cursor-pointer and onClick handler to navigate to /dashboard */}
+        <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/dashboard')}>
           <div className="relative w-9 h-9">
             <div className="absolute inset-0 rounded-xl bg-gradient-to-br from-[#7433FF] via-[#3BF7FF] to-[#E4C580] p-0.5">
               <div className="w-full h-full bg-[#00010D] rounded-[10px] flex items-center justify-center">
@@ -347,7 +345,6 @@ export default function DashboardPage() {
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
                 {/* Left Column */}
                 <div className="lg:col-span-8 space-y-6 lg:space-y-8">
-                  {/* Passing props to make components functional */}
                   <FinancialHealthScore netWorth={netWorth} />
                   <SpendingGraph />
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
@@ -400,6 +397,17 @@ export default function DashboardPage() {
           )}
         </AnimatePresence>
       </div>
+
+      <motion.button
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={() => navigate('/assistant')}
+        className="fixed bottom-24 lg:bottom-10 right-6 lg:right-10 z-40 w-14 h-14 rounded-full bg-gradient-to-r from-[#7433FF] to-[#3BF7FF] flex items-center justify-center shadow-[0_0_40px_rgba(116,51,255,0.5)] border border-white/20"
+      >
+        <MessageSquareText className="w-7 h-7 text-white" />
+      </motion.button>
 
       {/* Mobile Bottom Navigation */}
       <div className="lg:hidden fixed bottom-0 left-0 right-0 bg-[#00010D]/90 backdrop-blur-xl border-t border-white/10 px-6 py-3 pb-6 z-50 safe-area-bottom">
