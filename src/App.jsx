@@ -4,16 +4,16 @@ import Home from './app/page';
 import LoginPage from './pages/LoginPage.jsx';
 import SignupPage from './pages/SignupPage.jsx';
 import DashboardPage from './pages/DashboardPage.jsx';
+import AssistantPage from './pages/AssistantPage.jsx'; // Make sure to import this
 import Navbar from './components/Navbar.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
 
 // Layout component to conditionally render Navbar
 const Layout = ({ children }) => {
   const location = useLocation();
-  // Don't show global Navbar on dashboard or auth pages if preferred, 
-  // but usually we want it on Home/Login/Signup. 
-  // Dashboard has its own Nav, so we hide global Navbar there.
-  const showNavbar = !['/dashboard'].includes(location.pathname);
+  
+  // Hide global Navbar on Dashboard AND Assistant pages
+  const showNavbar = !['/dashboard', '/assistant'].includes(location.pathname);
 
   return (
     <>
@@ -32,12 +32,20 @@ function App() {
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           
-          {/* Protected Dashboard Route */}
+          {/* Protected Routes */}
           <Route 
             path="/dashboard" 
             element={
               <ProtectedRoute>
                 <DashboardPage />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/assistant" 
+            element={
+              <ProtectedRoute>
+                <AssistantPage />
               </ProtectedRoute>
             } 
           />
