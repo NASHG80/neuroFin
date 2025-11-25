@@ -1,0 +1,201 @@
+transaction_id,date,time,amount,type,method,upi_vpa,card_brand,card_last4,merchant,category,account_used,status,notes,is_recurring
+212c1f7e-5660-42f8-bb12-b18f139819fc,2025-07-13,06:22:25,44946.22,debit,CARD,,Amex,4842,IRCTC,Health,Paytm Wallet,success,Health via IRCTC,False
+bbbf4f23-4c7e-4e2e-9c5c-558ecaa1ef78,2025-11-14,06:22:25,23525.45,debit,UPI,shop@icici,,,Flipkart,Travel,HDFC Savings,success,Travel via Flipkart,False
+f609570d-171d-412e-887a-08bf6aafdf9a,2025-06-14,06:22:25,41373.21,debit,CARD,,Amex,6368,Tata Cliq,Misc,ICICI Credit Card,success,Misc via Tata Cliq,True
+e4332f7d-58bd-46fe-a110-a7cc39ea9a14,2025-10-13,06:22:25,35928.04,debit,UPI,shop@icici,,,Tata Cliq,Travel,HDFC Savings,success,Travel via Tata Cliq,True
+f063ae21-8af7-40df-8598-1a8ad7558e27,2025-07-21,06:22:25,30642.06,debit,UPI,test@payu,,,Ola,Shopping,Paytm Wallet,failed,Shopping via Ola,True
+8bc8655e-739b-440d-a7c8-adc64407fc5c,2025-06-22,06:22:25,48425.57,debit,UPI,amit@okaxis,,,Flipkart,Investments,ICICI Credit Card,failed,Investments via Flipkart,True
+757063b9-b1fc-47df-bacf-7790913f854d,2025-06-23,06:22:25,18173.2,debit,UPI,rahul@ybl,,,Amazon,Health,HDFC Savings,failed,Health via Amazon,True
+d93490fc-20cc-4a3c-b0b5-5b4312825733,2025-08-31,06:22:25,35575.03,debit,UPI,test@payu,,,Zomato,Shopping,ICICI Credit Card,success,Shopping via Zomato,False
+857531aa-a267-4078-b614-a96327c810a0,2025-10-06,06:22:25,36065.07,debit,UPI,amit@okaxis,,,Ola,Groceries,Zerodha Investments,success,Groceries via Ola,False
+095e22d8-7718-4a90-90d8-012455377ce1,2025-07-26,06:22:25,26624.65,debit,CARD,,Amex,5110,Amazon,Travel,Zerodha Investments,success,Travel via Amazon,False
+f7877521-18d2-43f8-a46d-ff766c2c49de,2025-11-16,06:22:25,3997.19,debit,CARD,,RuPay,8978,Myntra,Health,Zerodha Investments,failed,Health via Myntra,False
+f93556a5-94bb-4fc7-8a68-08bf7f1ec070,2025-10-28,06:22:25,33671.64,debit,CARD,,Amex,1323,Uber,Entertainment,Zerodha Investments,success,Entertainment via Uber,True
+050bff48-f62a-4b43-b27c-2e05cd670082,2025-09-09,06:22:25,25974.41,debit,UPI,neha@oksbi,,,Zomato,Fuel,Zerodha Investments,success,Fuel via Zomato,True
+2bec7f7a-aaba-4d87-a5ba-c52f4eec1b8f,2025-08-02,06:22:25,21602.63,debit,UPI,shop@icici,,,MakeMyTrip,Entertainment,Paytm Wallet,failed,Entertainment via MakeMyTrip,True
+bdbaaf0f-8fea-4f21-9f2c-d26541d5a262,2025-10-13,06:22:25,17769.4,debit,UPI,rahul@ybl,,,Amazon,Fuel,ICICI Credit Card,success,Fuel via Amazon,True
+d13bd49e-7824-4323-882c-e2dc1c5c233f,2025-10-19,06:22:25,21074.89,debit,UPI,amit@okaxis,,,Myntra,Shopping,ICICI Credit Card,failed,Shopping via Myntra,False
+274b4e70-7dd4-497e-a617-7a43082dcfcf,2025-10-01,06:22:25,15954.04,debit,UPI,rahul@ybl,,,Uber,Fuel,Paytm Wallet,success,Fuel via Uber,False
+6cacb880-6f16-493d-abb6-9b9e2e2d1ba1,2025-10-23,06:22:25,24779.15,debit,CARD,,Visa,7914,IRCTC,Shopping,Paytm Wallet,failed,Shopping via IRCTC,True
+159376e4-c0c3-4d56-9f07-e829049bf92c,2025-06-20,06:22:25,7211.59,debit,UPI,shop@icici,,,Blinkit,Health,Zerodha Investments,failed,Health via Blinkit,False
+aea3fe21-56b1-40ce-8604-c35010580421,2025-07-12,06:22:25,5492.89,debit,CARD,,Amex,4410,Swiggy,Groceries,Paytm Wallet,success,Groceries via Swiggy,True
+ab016b30-b267-4b62-8066-b84f195edb28,2025-07-15,06:22:25,20249.67,debit,UPI,test@payu,,,IRCTC,Groceries,Paytm Wallet,failed,Groceries via IRCTC,False
+43943197-08d0-4ae9-b006-04e36c8c22c5,2025-09-05,06:22:25,45756.1,debit,UPI,test@payu,,,Myntra,Fuel,Paytm Wallet,failed,Fuel via Myntra,False
+d4a4e044-09a4-45c4-9319-5ca0ded56050,2025-08-19,06:22:25,48578.6,debit,UPI,neha@oksbi,,,Uber,Investments,Zerodha Investments,failed,Investments via Uber,True
+4f761fda-31cf-49a4-9851-ae41ee341f75,2025-08-24,06:22:25,22149.72,debit,CARD,,RuPay,9002,MakeMyTrip,Shopping,HDFC Savings,success,Shopping via MakeMyTrip,True
+b5b1ea49-9a00-4376-aab2-1c44c5889ad0,2025-09-05,06:22:25,44636.29,debit,UPI,rahul@ybl,,,Uber,Bills,Zerodha Investments,success,Bills via Uber,False
+7f88d8bf-3d4c-4cf0-8309-3216a2414716,2025-10-22,06:22:25,16153.33,debit,UPI,shop@icici,,,IRCTC,Misc,HDFC Savings,success,Misc via IRCTC,False
+88a9242d-7195-459d-85a1-3f67a76133b2,2025-10-22,06:22:25,8260.34,credit,CARD,,Visa,2233,Flipkart,Investments,HDFC Savings,success,Investments via Flipkart,True
+67f47f9f-8ed0-42cf-b644-29f800d3bcbb,2025-09-26,06:22:25,19098.33,debit,UPI,neha@oksbi,,,Tata Cliq,Shopping,HDFC Savings,failed,Shopping via Tata Cliq,True
+799d8f28-2885-4279-afa8-e8ad95624c30,2025-07-04,06:22:25,9291.79,debit,CARD,,Visa,7749,Amazon,Health,HDFC Savings,success,Health via Amazon,True
+f05841d3-62d0-4733-9bae-84884f81cccb,2025-10-08,06:22:25,14285.95,debit,CARD,,Amex,2008,Swiggy,Fuel,Paytm Wallet,failed,Fuel via Swiggy,False
+c8d60637-6bee-4dfe-9541-36e8533e4c7c,2025-11-13,06:22:25,41724.68,debit,CARD,,Visa,2845,IRCTC,Misc,ICICI Credit Card,success,Misc via IRCTC,True
+67ad00dd-5f35-45e6-bbd7-f505359044e2,2025-09-14,06:22:25,30194.18,debit,CARD,,RuPay,7284,Flipkart,Groceries,Paytm Wallet,failed,Groceries via Flipkart,False
+5043ce56-e554-4a8a-bc45-051e85954177,2025-08-16,06:22:25,22615.23,debit,CARD,,Mastercard,5686,MakeMyTrip,Entertainment,Paytm Wallet,failed,Entertainment via MakeMyTrip,True
+496ffd77-db0f-42a6-9d17-18e5d310e961,2025-09-02,06:22:25,10000.16,debit,UPI,test@payu,,,Myntra,Groceries,HDFC Savings,failed,Groceries via Myntra,False
+dc879299-4a27-45f5-8fca-0471c790f96c,2025-11-22,06:22:25,34880.0,debit,CARD,,Mastercard,2102,Amazon,Groceries,ICICI Credit Card,failed,Groceries via Amazon,False
+b2aad4b4-49ed-4e18-9d49-566ce775ac84,2025-10-03,06:22:25,9557.31,debit,UPI,test@payu,,,Ola,Travel,Paytm Wallet,success,Travel via Ola,False
+abdcce1a-16c4-4000-8e6f-c2d2a6b3fb4d,2025-05-31,06:22:25,48583.68,debit,UPI,rahul@ybl,,,MakeMyTrip,Misc,ICICI Credit Card,failed,Misc via MakeMyTrip,False
+c963f8e3-be78-439d-b5f0-0ed0b77a8325,2025-06-04,06:22:25,43883.29,debit,CARD,,RuPay,8580,Ola,Entertainment,Paytm Wallet,success,Entertainment via Ola,False
+035edbf4-21d5-4d58-833c-957b371e1ec9,2025-11-06,06:22:25,30154.42,debit,UPI,amit@okaxis,,,Swiggy,Fuel,ICICI Credit Card,failed,Fuel via Swiggy,True
+9ba4690d-74aa-4b9b-ab40-6b1905a16c06,2025-07-29,06:22:25,34918.52,debit,UPI,shop@icici,,,BigBasket,Groceries,Zerodha Investments,failed,Groceries via BigBasket,False
+bcf52be9-3e69-4f4b-a80b-e75ae66dd573,2025-08-05,06:22:25,43855.02,credit,CARD,,Amex,3447,Ola,Investments,Zerodha Investments,failed,Investments via Ola,False
+6b6ed478-4963-459c-b218-6d78cd5cf60e,2025-09-10,06:22:25,16681.33,debit,UPI,shop@icici,,,Uber,Misc,ICICI Credit Card,failed,Misc via Uber,True
+6d696b0b-eabb-43e9-8a07-506f95acbbf6,2025-06-03,06:22:25,38853.54,debit,CARD,,RuPay,6129,Flipkart,Dining,HDFC Savings,failed,Dining via Flipkart,True
+69fc61ba-12b0-4d97-9081-15e86c2538e5,2025-08-15,06:22:25,35954.83,debit,UPI,amit@okaxis,,,IRCTC,Shopping,Paytm Wallet,failed,Shopping via IRCTC,False
+9c2fa887-6195-412f-8271-205e576358d7,2025-09-24,06:22:25,27814.65,debit,UPI,test@payu,,,Tata Cliq,Investments,Zerodha Investments,failed,Investments via Tata Cliq,False
+469dc3bb-22ae-4973-af65-44404ea43d90,2025-10-25,06:22:25,36301.75,debit,UPI,rahul@ybl,,,Tata Cliq,Fuel,Paytm Wallet,success,Fuel via Tata Cliq,True
+79abd4a1-c16b-427e-90ad-63abb64dd85a,2025-06-23,06:22:25,32459.81,debit,UPI,neha@oksbi,,,Ola,Dining,Paytm Wallet,success,Dining via Ola,True
+678b11f1-0069-4eae-bb85-a4e9aae9206b,2025-08-14,06:22:25,275.39,debit,CARD,,Visa,5345,Swiggy,Groceries,ICICI Credit Card,failed,Groceries via Swiggy,True
+5ed5210d-7486-4e24-924b-3ecc9a820873,2025-06-12,06:22:25,34495.0,debit,CARD,,Amex,4929,Myntra,Shopping,Zerodha Investments,success,Shopping via Myntra,False
+af3202f8-a0de-4d26-9be1-db93acb59836,2025-05-30,06:22:25,45020.6,debit,CARD,,RuPay,5488,BigBasket,Health,ICICI Credit Card,success,Health via BigBasket,True
+4c227003-a98d-4f2d-b889-7f9f7b8e1339,2025-08-24,06:22:25,2318.31,debit,CARD,,Mastercard,7008,Tata Cliq,Bills,ICICI Credit Card,success,Bills via Tata Cliq,False
+af396527-8c00-43c7-b72a-18454440a40c,2025-09-25,06:22:25,15389.12,debit,UPI,shop@icici,,,Blinkit,Dining,Zerodha Investments,failed,Dining via Blinkit,False
+3bd8ced5-45b7-4511-8839-22d287ba9ab9,2025-06-22,06:22:25,44928.38,debit,UPI,rahul@ybl,,,BigBasket,Dining,Zerodha Investments,failed,Dining via BigBasket,True
+a20156a0-264f-4cb1-b68a-fd514853c7e7,2025-06-18,06:22:25,9310.53,debit,UPI,rahul@ybl,,,Tata Cliq,Misc,HDFC Savings,failed,Misc via Tata Cliq,True
+2d262c23-31ca-45c4-908a-feaa8b7d34eb,2025-08-11,06:22:25,46805.77,debit,CARD,,Amex,7383,MakeMyTrip,Misc,Zerodha Investments,failed,Misc via MakeMyTrip,True
+846048fb-891d-4550-a497-eca8c6703556,2025-09-23,06:22:25,38421.93,debit,UPI,test@payu,,,MakeMyTrip,Groceries,ICICI Credit Card,success,Groceries via MakeMyTrip,False
+21605062-b273-4b84-b448-6a24cb9d8420,2025-10-05,06:22:25,35679.11,debit,CARD,,Amex,8135,Uber,Misc,HDFC Savings,success,Misc via Uber,False
+c04343d6-5184-4f15-8f34-e399a0354005,2025-08-05,06:22:25,43114.79,debit,CARD,,Visa,5563,BigBasket,Dining,Zerodha Investments,success,Dining via BigBasket,False
+9476fba6-2e38-46c8-acf6-ccc20a6d1d98,2025-06-12,06:22:25,24771.06,debit,UPI,amit@okaxis,,,MakeMyTrip,Fuel,Paytm Wallet,failed,Fuel via MakeMyTrip,True
+f7e89afe-dbbd-49e0-9880-da297b224cb1,2025-11-17,06:22:25,38739.01,debit,CARD,,Mastercard,7428,IRCTC,Misc,Zerodha Investments,failed,Misc via IRCTC,False
+5382d7cf-8710-4b4b-a920-4f9362095757,2025-05-30,06:22:25,17566.99,debit,CARD,,Mastercard,9719,Flipkart,Shopping,Zerodha Investments,success,Shopping via Flipkart,True
+bcc60370-3e94-486e-b32f-fb5f72c26363,2025-11-01,06:22:25,25253.19,debit,UPI,neha@oksbi,,,Uber,Entertainment,ICICI Credit Card,failed,Entertainment via Uber,True
+629318b4-4dc6-4f78-9f39-a72d4f66d996,2025-10-31,06:22:25,13265.62,debit,CARD,,RuPay,7131,Uber,Groceries,Zerodha Investments,success,Groceries via Uber,True
+53f3d977-ee92-457f-bbd4-025b81e509f1,2025-06-02,06:22:25,12421.2,debit,UPI,test@payu,,,Flipkart,Travel,Paytm Wallet,failed,Travel via Flipkart,True
+adb0970a-2608-4ede-a130-d317b9933736,2025-08-26,06:22:25,29129.16,debit,CARD,,RuPay,1555,Swiggy,Bills,Zerodha Investments,success,Bills via Swiggy,False
+f629abe4-3113-4871-8a0e-c16355506e16,2025-10-03,06:22:25,19023.33,credit,CARD,,Amex,8395,Ola,Investments,ICICI Credit Card,failed,Investments via Ola,True
+75c6dd95-e59b-4d6d-860a-b63945367e98,2025-06-25,06:22:25,46979.16,debit,UPI,shop@icici,,,Blinkit,Shopping,HDFC Savings,failed,Shopping via Blinkit,True
+304eac23-18bc-49c5-879c-6da4161bf402,2025-09-20,06:22:25,46154.33,debit,CARD,,Amex,9082,Zomato,Health,Zerodha Investments,success,Health via Zomato,True
+b0c57bab-eae5-493c-b998-165e22bd7a71,2025-08-08,06:22:25,34293.34,debit,UPI,rahul@ybl,,,IRCTC,Fuel,Zerodha Investments,success,Fuel via IRCTC,True
+4ce42326-55c1-4e54-a22c-a5c2614fce2d,2025-07-18,06:22:25,48446.05,debit,CARD,,Amex,4055,Swiggy,Health,Paytm Wallet,success,Health via Swiggy,True
+b903a019-2c31-440f-994a-878574b5ac96,2025-06-30,06:22:25,557.25,debit,UPI,amit@okaxis,,,Flipkart,Fuel,Paytm Wallet,success,Fuel via Flipkart,True
+7a0b3a18-f2cd-4664-94a1-8644ea338d8a,2025-11-21,06:22:25,47750.79,debit,UPI,rahul@ybl,,,Zomato,Dining,Zerodha Investments,success,Dining via Zomato,False
+502d84d7-eb62-40e4-bc1b-17d63e99e793,2025-10-12,06:22:25,12762.88,debit,UPI,shop@icici,,,Ola,Dining,HDFC Savings,success,Dining via Ola,True
+8896eae5-5da6-41d7-9f19-d12237e52622,2025-09-21,06:22:25,33283.3,debit,CARD,,Amex,9408,MakeMyTrip,Misc,Paytm Wallet,success,Misc via MakeMyTrip,True
+2477fa32-5407-41f2-bbe6-6510e811f3f0,2025-10-27,06:22:25,15263.27,debit,UPI,neha@oksbi,,,Blinkit,Shopping,ICICI Credit Card,failed,Shopping via Blinkit,True
+1c870104-cd44-4b06-ade3-b197f2dd9865,2025-07-21,06:22:25,32928.51,debit,UPI,neha@oksbi,,,Amazon,Entertainment,Zerodha Investments,success,Entertainment via Amazon,True
+2b59a020-a19f-4f2e-9209-2ebf2fa67f8d,2025-11-18,06:22:25,5238.32,debit,UPI,rahul@ybl,,,IRCTC,Investments,ICICI Credit Card,failed,Investments via IRCTC,False
+654c88f0-c69c-45eb-97a4-e08570371eb6,2025-10-14,06:22:25,25225.54,credit,CARD,,RuPay,9849,Flipkart,Investments,ICICI Credit Card,failed,Investments via Flipkart,True
+b6931e74-8ff8-415e-8a48-cb1ace6b1851,2025-09-08,06:22:25,8653.33,debit,UPI,neha@oksbi,,,Ola,Investments,Paytm Wallet,success,Investments via Ola,True
+45164c62-16b3-4803-a2e7-d9da49647421,2025-10-22,06:22:25,41924.38,debit,CARD,,Mastercard,9944,IRCTC,Entertainment,HDFC Savings,failed,Entertainment via IRCTC,True
+70b9dc00-18b3-441e-9a05-42b048422f7b,2025-11-14,06:22:25,30508.87,debit,CARD,,Visa,8378,Blinkit,Entertainment,HDFC Savings,success,Entertainment via Blinkit,False
+76a59f21-8417-4201-8997-58c81f80aff4,2025-10-09,06:22:25,39392.85,debit,CARD,,Visa,8929,Tata Cliq,Fuel,HDFC Savings,failed,Fuel via Tata Cliq,False
+e275f65e-73ad-4068-a70e-4606189f88b8,2025-11-16,06:22:25,33376.47,debit,UPI,test@payu,,,MakeMyTrip,Health,ICICI Credit Card,failed,Health via MakeMyTrip,True
+97acdb03-35a3-4001-bbab-26af0ce3aa5e,2025-08-12,06:22:25,49555.21,debit,UPI,amit@okaxis,,,Swiggy,Fuel,Zerodha Investments,failed,Fuel via Swiggy,True
+a907a05f-2473-4e5b-bbc8-46bd15415400,2025-09-09,06:22:25,43510.48,debit,CARD,,Visa,5625,MakeMyTrip,Groceries,HDFC Savings,failed,Groceries via MakeMyTrip,True
+8ce35b79-a8b3-4423-bc8e-a1302ceba26e,2025-10-07,06:22:25,13497.55,debit,UPI,test@payu,,,Amazon,Health,Zerodha Investments,success,Health via Amazon,False
+98259cad-a960-4a5b-a37e-fb5230c1bfb4,2025-10-24,06:22:25,39206.08,debit,UPI,test@payu,,,MakeMyTrip,Investments,Zerodha Investments,failed,Investments via MakeMyTrip,False
+57c0fd30-7754-4c87-a272-abb1133e83bf,2025-10-10,06:22:25,13849.64,debit,UPI,shop@icici,,,IRCTC,Dining,HDFC Savings,success,Dining via IRCTC,False
+a058edb8-ecec-492f-9e14-b0182403030a,2025-06-19,06:22:25,20706.67,debit,UPI,shop@icici,,,Ola,Fuel,ICICI Credit Card,failed,Fuel via Ola,False
+db12fd99-4b24-4c7c-8449-eae9c2a95ba8,2025-08-25,06:22:25,41861.43,debit,CARD,,RuPay,3390,Blinkit,Health,Paytm Wallet,failed,Health via Blinkit,False
+03e97d84-d5e1-4a91-a7cf-c7d5c8a740ae,2025-08-07,06:22:25,15299.86,debit,UPI,shop@icici,,,Blinkit,Health,Paytm Wallet,success,Health via Blinkit,False
+eaa590bc-ef62-4524-852b-ad029dfc06d6,2025-10-25,06:22:25,31177.02,debit,UPI,test@payu,,,Zomato,Misc,Paytm Wallet,success,Misc via Zomato,False
+255422ec-f700-4693-a56b-d55ab2a41dab,2025-10-24,06:22:25,9645.98,debit,CARD,,Amex,7692,BigBasket,Groceries,Paytm Wallet,success,Groceries via BigBasket,True
+42d6bb5e-b9a0-4f85-8484-f50468b65d57,2025-07-05,06:22:25,22153.81,credit,CARD,,RuPay,7224,Flipkart,Investments,Zerodha Investments,failed,Investments via Flipkart,True
+5d79a0b0-412b-4886-a89b-e2a8f07ee53c,2025-10-25,06:22:25,41346.83,debit,UPI,neha@oksbi,,,Zomato,Misc,ICICI Credit Card,success,Misc via Zomato,True
+75fffd55-f48d-458c-a869-3ccb80f6d83f,2025-10-04,06:22:25,3262.24,debit,UPI,amit@okaxis,,,IRCTC,Fuel,ICICI Credit Card,failed,Fuel via IRCTC,False
+6d260d34-c077-4a78-a037-4fcf6a747a49,2025-06-24,06:22:25,4883.07,debit,CARD,,RuPay,5703,Flipkart,Groceries,Zerodha Investments,failed,Groceries via Flipkart,False
+43965e1d-cd25-4c04-8efd-4f31e25f04fe,2025-06-18,06:22:25,8573.25,debit,CARD,,RuPay,8896,Amazon,Bills,Paytm Wallet,success,Bills via Amazon,False
+397f024a-4ba8-4cb0-bcd5-a5d3ea9c183f,2025-11-03,06:22:25,4033.89,debit,UPI,test@payu,,,Swiggy,Misc,HDFC Savings,success,Misc via Swiggy,True
+51143c75-c512-4bd0-83ca-185c5bd2854b,2025-08-25,06:22:25,20083.18,debit,CARD,,RuPay,9575,Blinkit,Dining,ICICI Credit Card,failed,Dining via Blinkit,False
+53bf5fc5-e99b-45e7-b69d-ad8eaaa9f5f6,2025-07-19,06:22:25,1549.73,credit,CARD,,Mastercard,1841,IRCTC,Investments,Zerodha Investments,failed,Investments via IRCTC,False
+94bfebfb-e868-4b8b-8538-148d96713c72,2025-09-23,06:22:25,19869.83,debit,CARD,,Amex,1688,Flipkart,Dining,HDFC Savings,failed,Dining via Flipkart,False
+1736327b-c564-44d7-8c46-0926c068a13b,2025-07-18,06:22:25,824.6,debit,CARD,,Visa,5619,Tata Cliq,Misc,HDFC Savings,failed,Misc via Tata Cliq,False
+6598731a-9b39-4c95-aa5a-71d53ce4ca24,2025-09-03,06:22:25,14621.45,debit,UPI,test@payu,,,Amazon,Shopping,Paytm Wallet,success,Shopping via Amazon,True
+7c283835-ec7e-4438-bf44-098196d77c4d,2025-08-31,06:22:25,9424.69,debit,UPI,amit@okaxis,,,Ola,Dining,Paytm Wallet,success,Dining via Ola,False
+669f0e41-6763-4df1-9f45-0d5e2cf16efc,2025-06-05,06:22:25,14051.47,debit,UPI,shop@icici,,,BigBasket,Groceries,ICICI Credit Card,success,Groceries via BigBasket,False
+4b8ca2af-5596-4c32-94d7-ce17d7ed67f5,2025-08-13,06:22:25,44515.69,debit,CARD,,Amex,5570,Swiggy,Bills,ICICI Credit Card,failed,Bills via Swiggy,True
+203ffb81-b426-468d-81a0-01bbd6f55d69,2025-09-29,06:22:25,21119.47,debit,UPI,test@payu,,,Ola,Dining,Paytm Wallet,failed,Dining via Ola,False
+d74644d9-261c-42d2-b7fd-19f64b10e6d7,2025-11-12,06:22:25,20313.07,debit,UPI,test@payu,,,Swiggy,Dining,HDFC Savings,failed,Dining via Swiggy,True
+11b83f14-fb2e-4197-a529-03824db13967,2025-10-02,06:22:25,25805.84,debit,CARD,,Amex,4807,Amazon,Bills,Zerodha Investments,success,Bills via Amazon,False
+92271cd0-d9a4-4b34-8a62-3454ecafd0e0,2025-11-01,06:22:25,12872.7,debit,CARD,,RuPay,1563,Myntra,Shopping,Paytm Wallet,failed,Shopping via Myntra,True
+e849da27-055e-406e-9845-cd880f10cdcc,2025-10-20,06:22:25,38822.4,debit,UPI,neha@oksbi,,,Myntra,Bills,Paytm Wallet,failed,Bills via Myntra,True
+cd5e03cb-d84d-497e-b93e-1d995d7a6269,2025-09-03,06:22:25,43718.85,debit,UPI,neha@oksbi,,,BigBasket,Travel,ICICI Credit Card,failed,Travel via BigBasket,True
+73138159-5602-4e5f-89bc-bcfc73a82b54,2025-07-04,06:22:25,15610.0,debit,CARD,,Visa,3465,Myntra,Entertainment,Zerodha Investments,failed,Entertainment via Myntra,False
+267d3f67-93ed-420a-b8bb-b504e0d22c69,2025-08-14,06:22:25,48855.42,debit,UPI,rahul@ybl,,,Blinkit,Health,HDFC Savings,success,Health via Blinkit,False
+b908e626-b13d-4269-a6d6-76dcba40b73b,2025-11-08,06:22:25,45091.07,debit,CARD,,Amex,2136,Zomato,Entertainment,Paytm Wallet,failed,Entertainment via Zomato,True
+5b3eb0bd-6023-4028-bc45-d8422255b339,2025-10-11,06:22:25,38036.62,debit,CARD,,RuPay,7065,Uber,Fuel,Zerodha Investments,failed,Fuel via Uber,True
+64f01beb-b406-4e15-908b-de5635cd9613,2025-10-17,06:22:25,3772.67,debit,CARD,,Mastercard,5751,MakeMyTrip,Fuel,Paytm Wallet,failed,Fuel via MakeMyTrip,True
+a8e6379a-b0ab-400e-a20e-0a809b4cf6bd,2025-09-09,06:22:25,11617.2,debit,UPI,test@payu,,,IRCTC,Health,Zerodha Investments,failed,Health via IRCTC,False
+0120385c-32e7-4a0d-89cd-0b2f8c9de8d6,2025-10-31,06:22:25,37230.72,debit,CARD,,Visa,8157,IRCTC,Shopping,ICICI Credit Card,failed,Shopping via IRCTC,False
+7c1a84e3-06d6-4fea-a844-850ad0686550,2025-09-11,06:22:25,41831.22,debit,CARD,,Amex,7620,Tata Cliq,Bills,Zerodha Investments,failed,Bills via Tata Cliq,False
+f38c1ee8-ceb9-4e59-8284-633cbf21013d,2025-06-26,06:22:25,1440.76,debit,CARD,,Amex,7060,Zomato,Entertainment,HDFC Savings,success,Entertainment via Zomato,True
+8b2e8987-bb7b-47c7-9c76-c3c35c5fe63d,2025-10-31,06:22:25,40098.51,debit,UPI,amit@okaxis,,,Blinkit,Bills,HDFC Savings,failed,Bills via Blinkit,False
+534d49f4-fa7b-41c9-b2bd-bb1fa6c71955,2025-07-31,06:22:25,1893.97,debit,UPI,test@payu,,,Uber,Travel,HDFC Savings,success,Travel via Uber,False
+e8df5f19-1c36-4a0f-ad7c-bda816e86bfd,2025-06-13,06:22:25,38435.75,debit,UPI,shop@icici,,,Myntra,Travel,ICICI Credit Card,failed,Travel via Myntra,False
+e4537603-3033-4d65-8068-76c0cdc8c77f,2025-11-10,06:22:25,24580.2,debit,CARD,,Mastercard,3146,Myntra,Travel,Zerodha Investments,success,Travel via Myntra,True
+abc80290-6284-4e61-ac3f-f411ac846255,2025-11-19,06:22:25,29984.86,debit,CARD,,Visa,1519,Uber,Travel,ICICI Credit Card,failed,Travel via Uber,False
+d470a2d3-803a-4293-b6ef-1687f7feeda6,2025-10-08,06:22:25,23743.28,debit,CARD,,Mastercard,4382,Ola,Dining,HDFC Savings,success,Dining via Ola,True
+e2e32608-f2a7-499e-8bd7-1118eabe4313,2025-10-17,06:22:25,48477.42,debit,UPI,neha@oksbi,,,Amazon,Entertainment,Paytm Wallet,failed,Entertainment via Amazon,True
+7e2d72da-4535-4f23-800f-5eff2f72401b,2025-08-23,06:22:25,13313.6,debit,UPI,rahul@ybl,,,Blinkit,Health,ICICI Credit Card,failed,Health via Blinkit,True
+e42169cf-1115-4b25-b08e-ccb21966962c,2025-05-30,06:22:25,33843.38,debit,UPI,shop@icici,,,Tata Cliq,Fuel,Paytm Wallet,failed,Fuel via Tata Cliq,False
+331ff130-7ae6-4112-9eb8-720115574891,2025-08-10,06:22:25,10245.53,debit,UPI,rahul@ybl,,,Blinkit,Health,HDFC Savings,failed,Health via Blinkit,True
+0e633b46-84f2-46ed-89cf-638e2f44ab18,2025-08-08,06:22:25,49658.02,debit,CARD,,RuPay,6563,Flipkart,Misc,Paytm Wallet,failed,Misc via Flipkart,True
+f74118b1-7fb1-4fac-9f7a-a7789ebf9e10,2025-11-16,06:22:25,22485.02,debit,CARD,,Mastercard,7651,Myntra,Bills,HDFC Savings,failed,Bills via Myntra,True
+6178fabe-03c0-4302-bbc4-d65a43645e50,2025-10-22,06:22:25,33250.35,debit,UPI,amit@okaxis,,,Zomato,Bills,HDFC Savings,failed,Bills via Zomato,False
+703d32bb-213f-4b6c-85b6-2103fdabc786,2025-06-29,06:22:25,46394.28,debit,CARD,,Mastercard,7865,Myntra,Fuel,Zerodha Investments,success,Fuel via Myntra,False
+f7961560-0a71-4cac-adc0-b3c02d06d2df,2025-10-17,06:22:25,37225.03,debit,CARD,,Visa,1707,Blinkit,Dining,Zerodha Investments,failed,Dining via Blinkit,True
+760ee00f-60c6-4d92-9974-36cda2e86e3a,2025-08-17,06:22:25,38129.64,debit,UPI,rahul@ybl,,,Ola,Dining,Zerodha Investments,success,Dining via Ola,True
+27d3ba92-2e3a-4528-b2a5-e4ce67bea46e,2025-06-12,06:22:25,31211.79,debit,UPI,neha@oksbi,,,Flipkart,Misc,Paytm Wallet,failed,Misc via Flipkart,False
+28faf6ca-06d2-4339-971c-20b73ae7a1f0,2025-06-12,06:22:25,18427.69,debit,UPI,rahul@ybl,,,Blinkit,Travel,Paytm Wallet,success,Travel via Blinkit,True
+46167abc-4059-44b7-b22e-621e243806bb,2025-10-16,06:22:25,27857.89,debit,CARD,,RuPay,5935,Amazon,Shopping,Paytm Wallet,success,Shopping via Amazon,True
+fe98d2a9-aad9-4630-8d3d-36ef5e73a7e6,2025-07-27,06:22:25,45143.98,debit,CARD,,Visa,5119,Uber,Dining,ICICI Credit Card,failed,Dining via Uber,False
+62dcce74-36ed-4e5c-b768-97f39eea6d27,2025-09-17,06:22:25,8006.51,debit,UPI,test@payu,,,Tata Cliq,Health,Paytm Wallet,success,Health via Tata Cliq,False
+698b679a-95db-4d59-b666-e6b77a058c88,2025-10-12,06:22:25,8886.87,debit,UPI,test@payu,,,Tata Cliq,Misc,Zerodha Investments,success,Misc via Tata Cliq,True
+439e02cb-8ca7-440c-8e8c-c939613f4d7e,2025-07-23,06:22:25,39890.79,debit,CARD,,Mastercard,1629,Blinkit,Bills,ICICI Credit Card,success,Bills via Blinkit,False
+87f4b2d1-b3a6-4177-bbce-5a166bf85fa1,2025-05-31,06:22:25,23705.89,debit,UPI,amit@okaxis,,,Uber,Groceries,Paytm Wallet,failed,Groceries via Uber,False
+abc64b64-32de-4763-b4d8-6f95419e818b,2025-10-21,06:22:25,42984.73,debit,UPI,amit@okaxis,,,Uber,Travel,Zerodha Investments,failed,Travel via Uber,False
+ba8fa824-c8cf-4f88-b869-5aca7856a1f1,2025-07-16,06:22:25,30636.66,debit,UPI,amit@okaxis,,,Flipkart,Groceries,Zerodha Investments,failed,Groceries via Flipkart,True
+e09b7a1a-61f1-49e9-aaec-a22d782d5246,2025-07-23,06:22:25,39012.85,debit,CARD,,Visa,8227,BigBasket,Shopping,HDFC Savings,success,Shopping via BigBasket,True
+33d3b1b7-fdad-4db4-9615-0815bfdd44ef,2025-08-12,06:22:25,13424.09,debit,CARD,,Visa,5522,Flipkart,Misc,Zerodha Investments,success,Misc via Flipkart,False
+629c2eac-5fe0-4f43-94b5-c3cde9969d46,2025-09-04,06:22:25,48245.88,debit,UPI,amit@okaxis,,,IRCTC,Fuel,ICICI Credit Card,failed,Fuel via IRCTC,True
+4414aa57-4ce9-482e-afea-4e06c7c0660f,2025-11-21,06:22:25,27680.06,debit,CARD,,Mastercard,9273,IRCTC,Bills,ICICI Credit Card,success,Bills via IRCTC,True
+03696c0e-038e-48a4-9730-5160e04ea86e,2025-07-04,06:22:25,47399.95,debit,CARD,,RuPay,6321,MakeMyTrip,Entertainment,Zerodha Investments,success,Entertainment via MakeMyTrip,True
+5954bce8-852c-47c1-85c8-39070846b39d,2025-11-12,06:22:25,14013.66,debit,UPI,shop@icici,,,Swiggy,Health,ICICI Credit Card,success,Health via Swiggy,True
+e28a23e0-97be-4c85-ae45-44345700cc50,2025-10-12,06:22:25,32170.86,debit,UPI,shop@icici,,,Ola,Entertainment,HDFC Savings,failed,Entertainment via Ola,False
+6ffc32b9-aec3-488a-83f2-547a266eddf7,2025-06-28,06:22:25,10173.46,debit,CARD,,Mastercard,1133,IRCTC,Entertainment,Paytm Wallet,success,Entertainment via IRCTC,True
+f3f6bb10-fe10-4c25-af9c-9ff63c0ba1c0,2025-06-08,06:22:25,8161.13,credit,CARD,,RuPay,6482,Zomato,Investments,HDFC Savings,failed,Investments via Zomato,True
+b035e4d3-0087-4995-a089-813b6d3ff6d3,2025-11-05,06:22:25,33176.0,debit,CARD,,Amex,5721,BigBasket,Travel,Paytm Wallet,failed,Travel via BigBasket,True
+afc7b1fb-1478-403c-a99c-7af8ca40cec7,2025-08-15,06:22:25,36042.99,debit,CARD,,Mastercard,2860,Ola,Entertainment,Paytm Wallet,success,Entertainment via Ola,True
+c5f5ba36-ff60-419e-8ce4-5db09a912cc7,2025-07-13,06:22:25,18935.16,debit,UPI,amit@okaxis,,,Flipkart,Groceries,Zerodha Investments,success,Groceries via Flipkart,False
+82b2aab2-e453-4640-92c7-79b56a33223b,2025-06-09,06:22:25,43679.28,debit,UPI,rahul@ybl,,,Tata Cliq,Fuel,HDFC Savings,success,Fuel via Tata Cliq,True
+2da25fd4-59bb-4893-bf7f-88253ae4660f,2025-11-22,06:22:25,15648.85,debit,UPI,rahul@ybl,,,Amazon,Health,Zerodha Investments,failed,Health via Amazon,False
+834d8574-af3f-4fc9-936d-5882f82daed9,2025-07-11,06:22:25,12398.32,debit,CARD,,Amex,5258,Myntra,Shopping,ICICI Credit Card,failed,Shopping via Myntra,False
+bc029af9-b210-4c5e-aa8a-6e28bba899e3,2025-06-23,06:22:25,26570.3,debit,CARD,,Mastercard,4870,IRCTC,Entertainment,Paytm Wallet,success,Entertainment via IRCTC,True
+2f3c5d58-32d2-4169-a33b-9b1531c674a2,2025-09-24,06:22:25,42693.04,debit,CARD,,Visa,3599,Swiggy,Dining,Paytm Wallet,success,Dining via Swiggy,False
+780b8f1c-83f5-4c59-a282-c29fd32d8b02,2025-10-06,06:22:25,35916.5,debit,UPI,amit@okaxis,,,Zomato,Shopping,ICICI Credit Card,failed,Shopping via Zomato,True
+13595fe8-6577-4955-85e6-2f9199fad022,2025-10-14,06:22:25,19501.42,debit,CARD,,Amex,8334,Zomato,Misc,Zerodha Investments,success,Misc via Zomato,False
+06cbb22a-1bf8-4ad4-93da-c8d3f51284b5,2025-07-27,06:22:25,8692.95,debit,UPI,shop@icici,,,Amazon,Shopping,HDFC Savings,failed,Shopping via Amazon,False
+7bda4205-9e87-4fd5-a0db-847b7403bbfb,2025-06-27,06:22:25,7974.74,debit,CARD,,Visa,1683,Uber,Entertainment,Zerodha Investments,failed,Entertainment via Uber,False
+8b068e5c-0a0c-4a30-a787-a496568a43c8,2025-09-11,06:22:25,4375.65,debit,UPI,rahul@ybl,,,Zomato,Entertainment,Zerodha Investments,failed,Entertainment via Zomato,False
+ff6201d7-c663-45e2-b854-d05739b3521b,2025-08-29,06:22:25,26001.35,debit,UPI,shop@icici,,,Uber,Health,HDFC Savings,failed,Health via Uber,False
+320b66bd-ee37-4fa6-a1ed-adeb2c64757a,2025-09-03,06:22:25,12330.83,debit,UPI,amit@okaxis,,,Myntra,Groceries,HDFC Savings,failed,Groceries via Myntra,False
+1d1ac486-d459-45d3-ad1f-d435ea285a7e,2025-06-09,06:22:25,28010.24,debit,CARD,,Visa,8478,Blinkit,Bills,ICICI Credit Card,failed,Bills via Blinkit,False
+4d3d82d2-91ae-421c-a2e8-9875c49139b7,2025-10-12,06:22:25,2302.77,debit,UPI,rahul@ybl,,,Blinkit,Groceries,HDFC Savings,success,Groceries via Blinkit,True
+4622fe67-ff32-4eea-85ab-7c185fe765d5,2025-06-11,06:22:25,11118.28,debit,UPI,amit@okaxis,,,BigBasket,Travel,ICICI Credit Card,failed,Travel via BigBasket,False
+4604061c-4c7b-434b-9c76-9ad91c34c72c,2025-11-05,06:22:25,49460.18,debit,CARD,,Visa,7000,Myntra,Health,Paytm Wallet,failed,Health via Myntra,True
+6a9481f5-dfc5-4436-88aa-ab96236d9afd,2025-06-24,06:22:25,26933.11,debit,UPI,shop@icici,,,BigBasket,Travel,HDFC Savings,success,Travel via BigBasket,True
+31cbe610-41bf-4fa1-9669-0ba7e077cd3b,2025-09-26,06:22:25,4125.21,debit,UPI,amit@okaxis,,,IRCTC,Bills,HDFC Savings,failed,Bills via IRCTC,True
+14aad201-9b91-4022-a8d4-5508386928aa,2025-11-05,06:22:25,41444.49,debit,UPI,neha@oksbi,,,MakeMyTrip,Misc,ICICI Credit Card,failed,Misc via MakeMyTrip,True
+28387d59-ca13-4125-955c-bffe2b8071a1,2025-08-21,06:22:25,23393.45,debit,UPI,amit@okaxis,,,Ola,Fuel,Paytm Wallet,failed,Fuel via Ola,True
+a7b65a80-f16a-46cf-a778-b6a6ffc655ea,2025-10-02,06:22:25,29571.92,debit,CARD,,RuPay,3078,Ola,Dining,Zerodha Investments,failed,Dining via Ola,True
+0be0fc51-877f-4a13-a061-919c047d041d,2025-09-30,06:22:25,38544.67,debit,CARD,,RuPay,5997,Uber,Travel,HDFC Savings,failed,Travel via Uber,True
+7bcb0721-d0a7-4b54-bd80-b2130cad10af,2025-05-28,06:22:25,7322.1,debit,CARD,,Amex,3799,Zomato,Bills,Zerodha Investments,success,Bills via Zomato,False
+456e2da0-4412-4a78-96f7-abf91fdb2a4b,2025-07-27,06:22:25,4206.62,debit,CARD,,Visa,2325,Tata Cliq,Misc,Paytm Wallet,failed,Misc via Tata Cliq,True
+f47cf412-ab73-4767-a3b8-e8fb6aefc616,2025-09-19,06:22:25,16986.31,debit,CARD,,Visa,5070,BigBasket,Bills,HDFC Savings,failed,Bills via BigBasket,False
+3241a979-2616-4ef0-9a93-a5c6c773ff1a,2025-09-02,06:22:25,7151.44,debit,UPI,rahul@ybl,,,MakeMyTrip,Groceries,Paytm Wallet,failed,Groceries via MakeMyTrip,False
+fd23d12c-ec15-4c2c-a454-b744ea986337,2025-07-14,06:22:25,44316.22,debit,UPI,amit@okaxis,,,Blinkit,Entertainment,ICICI Credit Card,failed,Entertainment via Blinkit,False
+4b08263f-868b-42e9-9002-ea97ae3397d2,2025-08-15,06:22:25,34663.76,debit,UPI,shop@icici,,,Flipkart,Entertainment,ICICI Credit Card,failed,Entertainment via Flipkart,False
+70c4d1d1-4c62-4ec0-8493-618192063fcc,2025-10-26,06:22:25,25898.81,debit,CARD,,Mastercard,3712,Myntra,Shopping,ICICI Credit Card,success,Shopping via Myntra,True
+f8a7024a-c575-495f-b6f0-d3236ae0d853,2025-06-23,06:22:25,9635.44,debit,CARD,,Visa,5166,Blinkit,Bills,Paytm Wallet,success,Bills via Blinkit,False
+32e7c2c0-e565-4641-91ad-90e5e4a6ad15,2025-06-09,06:22:25,32678.26,debit,CARD,,Visa,1197,Blinkit,Groceries,Zerodha Investments,failed,Groceries via Blinkit,False
+7b4200a4-e7d1-495d-92a1-13271db28bed,2025-08-25,06:22:25,12539.78,debit,CARD,,Mastercard,6561,Blinkit,Dining,ICICI Credit Card,failed,Dining via Blinkit,False
+6a1054c0-0c17-4d56-94a1-c79b062c6ef8,2025-09-28,06:22:25,2764.47,debit,UPI,test@payu,,,Ola,Fuel,HDFC Savings,failed,Fuel via Ola,False
+373935d0-82e5-4c5c-8cf3-e7087a41d34a,2025-09-07,06:22:25,42055.97,debit,UPI,shop@icici,,,MakeMyTrip,Travel,Zerodha Investments,failed,Travel via MakeMyTrip,False
+5f784c2b-5a6e-498e-849b-062d5a444aa3,2025-11-19,06:22:25,28117.85,debit,CARD,,Mastercard,4944,IRCTC,Shopping,Zerodha Investments,success,Shopping via IRCTC,True
+1e4a634a-ef92-4230-bdd3-ff36b89e602c,2025-07-03,06:22:25,34578.86,debit,UPI,neha@oksbi,,,Uber,Bills,Paytm Wallet,failed,Bills via Uber,True
+c349f5a6-cd90-43be-8203-08a1295380a1,2025-05-31,06:22:25,17540.28,debit,CARD,,RuPay,1170,Blinkit,Health,Zerodha Investments,success,Health via Blinkit,False
+8ce07ce1-5ce9-4af6-b7df-b67661169df3,2025-06-01,06:22:25,34148.25,debit,UPI,neha@oksbi,,,Ola,Fuel,Zerodha Investments,failed,Fuel via Ola,False
+563f0e49-4707-4eac-92d4-014c5dfceb01,2025-07-24,06:22:25,7917.35,debit,CARD,,RuPay,5151,Amazon,Misc,Zerodha Investments,success,Misc via Amazon,False
+6327d856-7acb-4397-9aca-5205294057ef,2025-09-16,06:22:25,42226.93,debit,UPI,shop@icici,,,Tata Cliq,Travel,Zerodha Investments,failed,Travel via Tata Cliq,False
