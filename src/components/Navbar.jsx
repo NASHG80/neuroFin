@@ -13,7 +13,7 @@ export default function Navbar() {
   const [lastScroll, setLastScroll] = useState(0);
   const [hidden, setHidden] = useState(false);
   const [hoveringService, setHoveringService] = useState(false);
-
+ const [serviceOpen, setServiceOpen] = useState(false);  // 👈 NEW
   const navigate = useNavigate();
 
   /* ────────────────────────────────────────────────
@@ -107,18 +107,17 @@ export default function Navbar() {
   /* ────────────────────────────────────────────────
       Dropdown Animation (Service)
   ──────────────────────────────────────────────── */
-  useEffect(() => {
+ useEffect(() => {
     if (!dropdownRef.current) return;
 
     gsap.to(dropdownRef.current, {
-      opacity: hoveringService ? 1 : 0,
-      y: hoveringService ? 0 : -10,
-      pointerEvents: hoveringService ? "auto" : "none",
+      opacity: hoveringService || serviceOpen ? 1 : 0,          // 👈 UPDATED
+      y: hoveringService || serviceOpen ? 0 : -10,               // 👈 UPDATED
+      pointerEvents: hoveringService || serviceOpen ? "auto" : "none", // 👈 UPDATED
       duration: 0.25,
       ease: "power2.out",
     });
-  }, [hoveringService]);
-
+  }, [hoveringService, serviceOpen]); // 👈 UPDATED
   /* ────────────────────────────────────────────────
       JSX
   ──────────────────────────────────────────────── */
@@ -149,14 +148,16 @@ export default function Navbar() {
       <div className="max-w-6xl mx-auto px-6 h-16 flex items-center">
 
         {/* LEFT — LOGO */}
-        <div className="flex items-center gap-3 flex-none">
+        <div className="flex items-center gap-3 flex-none"
+        onClick={() => navigate("/")}>
           <div className="w-9 h-9 bg-white/10 rounded-xl border border-white/20 
                           flex items-center justify-center backdrop-blur-xl 
                           shadow-[0_0_25px_rgba(255,255,255,0.1)]">
             <span className="text-xs text-white font-bold tracking-widest">NF</span>
           </div>
 
-          <span className="text-sm tracking-[0.22em] font-medium text-white/90">
+          <span className="text-sm tracking-[0.22em] font-medium text-white/90"
+          onClick={() => navigate("/")}>
             NUEROFIN
           </span>
         </div>
@@ -188,6 +189,7 @@ export default function Navbar() {
           <button
             ref={(el) => (linksRef.current[1] = el)}
             className="px-1 py-2 hover:text-white transition"
+            onClick={() => navigate("/for-companies")}
           >
             For Companies
           </button>
@@ -195,6 +197,7 @@ export default function Navbar() {
           <button
             ref={(el) => (linksRef.current[2] = el)}
             className="px-1 py-2 hover:text-white transition"
+            onClick={() => navigate("/launch")}
           >
             Launch Notes
           </button>
@@ -272,7 +275,8 @@ export default function Navbar() {
                    opacity-0 pointer-events-none"
       >
         <div className="flex flex-col gap-4 text-white/80 text-sm">
-          <a className="hover:text-white transition">📊 Spends & Budgets</a>
+          <a className="hover:text-white transition"
+           onClick={() => navigate("/spends-budgets")}>📊 Spends & Budgets</a>
           <a className="hover:text-white transition">💸 UPI & Bills</a>
           <a className="hover:text-white transition">🔮 Future Planner</a>
           <a className="hover:text-white transition">👨‍👩‍👧 Family Spaces</a>

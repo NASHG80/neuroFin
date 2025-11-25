@@ -7,7 +7,9 @@ import DashboardPage from './pages/DashboardPage.jsx';
 import AssistantPage from './pages/AssistantPage.jsx'; // Make sure to import this
 import Navbar from './components/Navbar.jsx';
 import ProtectedRoute from './components/ProtectedRoute.jsx';
-
+import LaunchNotesSection from './components/LaunchNotesSection'; 
+import ForCompaniesSection from './components/ForCompaniesSection';
+import SpendsBudgetsSection from './components/SpendsBudgetsSection';
 // Layout component to conditionally render Navbar
 const Layout = ({ children }) => {
   const location = useLocation();
@@ -31,6 +33,9 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
+          <Route path="/launch" element={<LaunchNotesSection />} /> 
+          <Route path="/for-companies" element={<ForCompaniesSection />} />
+          <Route path="/spends-budgets" element={<SpendsBudgetsSection />} />
           
           {/* Protected Routes */}
           <Route 
