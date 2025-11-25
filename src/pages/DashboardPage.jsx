@@ -70,6 +70,7 @@ export default function DashboardPage() {
     }
   };
 
+
   // Function to add to a goal (could be used later)
   const addGoal = async (newGoal) => {
       const token = localStorage.getItem("nf_token");

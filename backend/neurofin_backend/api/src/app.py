@@ -1,15 +1,21 @@
 # api/src/app.py
 import sys, os
 from flask_cors import CORS
+from dotenv import load_dotenv
+load_dotenv()
 
 
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), "../.."))
 sys.path.append(ROOT)
 
+
 import os
 from flask import Flask, jsonify
 from routes.advice_route import bp_advice
 from routes.health_score_route import bp_health
+from routes.voice_answer_route import bp_voice_answer
+
+
 
 
 # ensure src is importable when running from repo root or container
@@ -22,8 +28,9 @@ if root not in sys.path:
 # create app
 app = Flask(__name__)
 CORS(app, resources={r"/api/*": {"origins": "*"}})
-app.register_blueprint(bp_advice)
-app.register_blueprint(bp_health)
+app.register_blueprint(bp_advice, url_prefix="/api/v1")
+app.register_blueprint(bp_health, url_prefix="/api/v1")
+app.register_blueprint(bp_voice_answer, url_prefix="/api/v1")
 
 
 
