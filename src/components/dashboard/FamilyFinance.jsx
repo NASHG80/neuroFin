@@ -20,11 +20,16 @@ import {
 } from "lucide-react"
 import { useState } from "react"
 
-const FamilyFinance = ({ members = [], onAddMember }) => {
+const FamilyFinance = ({ members = [], onAddMember, transactions = [], onAddTransaction, onUpdateTransaction, onDeleteMember, goals = [], onAddGoal }) => {
   const [selectedMember, setSelectedMember] = useState("priya")
   const [view, setView] = useState("overview")
   const [isAddMemberOpen, setIsAddMemberOpen] = useState(false)
   const [newMember, setNewMember] = useState({ name: '', role: '', relation: 'Member', color: '#3BF7FF' })
+  const [isTxModalOpen, setIsTxModalOpen] = useState(false)
+  const [editingTransaction, setEditingTransaction] = useState(null)
+  const [txForm, setTxForm] = useState({ from: '', to: '', amount: '', type: '', time: '', recurring: false, flow: 'out' })
+  const [isAddGoalOpen, setIsAddGoalOpen] = useState(false)
+  const [newGoal, setNewGoal] = useState({ name: "", target: "", current: "0", color: "#3BF7FF" })
 
   // Fallback if no props passed
   const familyMembers = members.length > 0 ? members : [
@@ -76,7 +81,7 @@ const FamilyFinance = ({ members = [], onAddMember }) => {
     setNewMember({ name: '', role: '', relation: 'Member', color: '#3BF7FF' })
   }
 
-  const sharedGoals = [
+  const staticSharedGoals = [
     {
       id: 1,
       name: "Dream House Purchase",
@@ -100,24 +105,41 @@ const FamilyFinance = ({ members = [], onAddMember }) => {
       priority: "high"
     },
     {
-        id: 3,
-        name: "Europe Trip",
-        target: 500000,
-        current: 150000,
-        contributors: ["priya", "rahul"],
-        deadline: "2025-08",
-        icon: Gift,
-        color: "#FF6B6B",
-        priority: "medium"
+      id: 3,
+      name: "Europe Trip",
+      target: 500000,
+      current: 150000,
+      contributors: ["priya", "rahul"],
+      deadline: "2025-08",
+      icon: Gift,
+      color: "#FF6B6B",
+      priority: "medium"
     }
   ]
 
-  const familyTransactions = [
-    { from: "Priya", to: "Mother", amount: 5000, type: "Sent to Mom", time: "Yesterday", recurring: false, flow: "out" },
-    { from: "Rahul", to: "House Fund", amount: 50000, type: "Savings", time: "5h ago", recurring: true, flow: "in" },
-    { from: "Priya", to: "Account", amount: 85000, type: "Salary Credit", time: "1st Nov", recurring: true, flow: "in" },
-    { from: "Father", to: "Wedding Fund", amount: 13000, type: "Contribution", time: "2d ago", recurring: true, flow: "in" }
+  const sharedGoals = goals.length > 0
+    ? goals.map((g, idx) => ({
+      id: g.id || idx,
+      name: g.name,
+      target: g.target,
+      current: g.current,
+      // simple mapping: treat all family members as contributors for now
+      contributors: familyMembers.map(m => m.name.split(" ")[0]).slice(0, 3),
+      deadline: "--",
+      icon: Home,
+      color: g.color || "#3BF7FF",
+      priority: "medium"
+    }))
+    : staticSharedGoals
+
+  const defaultFamilyTransactions = [
+    { id: "t1", from: "Priya", to: "Mother", amount: 5000, type: "Sent to Mom", time: "Yesterday", recurring: false, flow: "out" },
+    { id: "t2", from: "Rahul", to: "House Fund", amount: 50000, type: "Savings", time: "5h ago", recurring: true, flow: "in" },
+    { id: "t3", from: "Priya", to: "Account", amount: 85000, type: "Salary Credit", time: "1st Nov", recurring: true, flow: "in" },
+    { id: "t4", from: "Father", to: "Wedding Fund", amount: 13000, type: "Contribution", time: "2d ago", recurring: true, flow: "in" }
   ]
+
+  const familyTransactions = transactions.length > 0 ? transactions : defaultFamilyTransactions
 
   const selectedMemberData = familyMembers.find(m => m.id === selectedMember) || familyMembers[0]
 
@@ -125,6 +147,74 @@ const FamilyFinance = ({ members = [], onAddMember }) => {
   const memberTransactions = familyTransactions.filter(tx => 
     tx.from.toLowerCase().includes(selectedMemberData.name.split(' ')[0].toLowerCase())
   );
+
+  const handleOpenAddTx = () => {
+    setEditingTransaction(null)
+    setTxForm({
+      from: selectedMemberData ? selectedMemberData.name.split(' ')[0] : '',
+      to: '',
+      amount: '',
+      type: '',
+      time: '',
+      recurring: false,
+      flow: 'out'
+    })
+    setIsTxModalOpen(true)
+  }
+
+  const handleOpenEditTx = (tx) => {
+    setEditingTransaction(tx)
+    setTxForm({
+      from: tx.from || '',
+      to: tx.to || '',
+      amount: tx.amount != null ? String(tx.amount) : '',
+      type: tx.type || '',
+      time: tx.time || '',
+      recurring: !!tx.recurring,
+      flow: tx.flow || 'out'
+    })
+    setIsTxModalOpen(true)
+  }
+
+  const handleSubmitTransaction = (e) => {
+    e.preventDefault()
+    const payload = {
+      from: txForm.from,
+      to: txForm.to,
+      amount: Number(txForm.amount) || 0,
+      type: txForm.type,
+      time: txForm.time,
+      recurring: txForm.recurring,
+      flow: txForm.flow
+    }
+
+    if (editingTransaction && onUpdateTransaction) {
+      onUpdateTransaction({ ...editingTransaction, ...payload })
+    } else if (!editingTransaction && onAddTransaction) {
+      onAddTransaction({ id: Date.now().toString(), ...payload })
+    }
+
+    setIsTxModalOpen(false)
+    setEditingTransaction(null)
+    setTxForm({ from: '', to: '', amount: '', type: '', time: '', recurring: false, flow: 'out' })
+  }
+
+  const handleSubmitGoal = (e) => {
+    e.preventDefault()
+    if (!onAddGoal) return
+
+    const payload = {
+      name: newGoal.name,
+      target: Number(newGoal.target) || 0,
+      current: Number(newGoal.current) || 0,
+      emoji: "🎯",
+      color: newGoal.color
+    }
+
+    onAddGoal(payload)
+    setIsAddGoalOpen(false)
+    setNewGoal({ name: "", target: "", current: "0", color: "#3BF7FF" })
+  }
 
   const totalFamilyIncome = familyMembers.reduce((sum, m) => sum + m.contribution, 0)
   const totalFamilySavings = familyMembers.reduce((sum, m) => sum + m.savings, 0)
@@ -250,6 +340,164 @@ const FamilyFinance = ({ members = [], onAddMember }) => {
           )}
         </AnimatePresence>
 
+        <AnimatePresence>
+          {isTxModalOpen && (
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
+            >
+              <motion.div
+                initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
+                className="bg-[#0A0A10] border border-white/10 rounded-3xl p-6 w-full max-w-sm shadow-2xl relative"
+              >
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-xl">{editingTransaction ? "Edit Transaction" : "Add Transaction"}</h3>
+                  <button onClick={() => { setIsTxModalOpen(false); setEditingTransaction(null) }} className="p-2 bg-white/5 rounded-full hover:bg-white/10"><X className="w-5 h-5" /></button>
+                </div>
+                <form onSubmit={handleSubmitTransaction} className="space-y-4">
+                  <div className="space-y-1">
+                    <label className="text-xs text-white/50 ml-1">From</label>
+                    <input
+                      type="text"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-[#7433FF]/50 transition-colors"
+                      value={txForm.from}
+                      onChange={e => setTxForm({ ...txForm, from: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs text-white/50 ml-1">To</label>
+                    <input
+                      type="text"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-[#7433FF]/50 transition-colors"
+                      value={txForm.to}
+                      onChange={e => setTxForm({ ...txForm, to: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs text-white/50 ml-1">Amount</label>
+                    <input
+                      type="number"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-[#7433FF]/50 transition-colors"
+                      value={txForm.amount}
+                      onChange={e => setTxForm({ ...txForm, amount: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-1">
+                    <label className="text-xs text-white/50 ml-1">Label</label>
+                    <input
+                      type="text"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-[#7433FF]/50 transition-colors"
+                      value={txForm.type}
+                      onChange={e => setTxForm({ ...txForm, type: e.target.value })}
+                    />
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="flex-1 space-y-1">
+                      <label className="text-xs text-white/50 ml-1">Flow</label>
+                      <select
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-[#7433FF]/50 transition-colors text-sm"
+                        value={txForm.flow}
+                        onChange={e => setTxForm({ ...txForm, flow: e.target.value })}
+                      >
+                        <option value="out">Out</option>
+                        <option value="in">In</option>
+                      </select>
+                    </div>
+                    <div className="flex-1 flex items-end">
+                      <label className="flex items-center gap-2 text-xs text-white/60 mb-1">
+                        <input
+                          type="checkbox"
+                          className="w-3 h-3"
+                          checked={txForm.recurring}
+                          onChange={e => setTxForm({ ...txForm, recurring: e.target.checked })}
+                        />
+                        Recurring
+                      </label>
+                    </div>
+                  </div>
+
+                  <button type="submit" className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#7433FF] to-[#3BF7FF] font-medium mt-4 hover:shadow-lg hover:shadow-[#7433FF]/25 transition-all">
+                    {editingTransaction ? "Save Changes" : "Add Transaction"}
+                  </button>
+                </form>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        <AnimatePresence>
+          {isAddGoalOpen && (
+            <motion.div
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-md p-4"
+            >
+              <motion.div
+                initial={{ scale: 0.9, y: 20 }} animate={{ scale: 1, y: 0 }} exit={{ scale: 0.9, y: 20 }}
+                className="bg-[#0A0A10] border border-white/10 rounded-3xl p-6 w-full max-w-sm shadow-2xl relative"
+              >
+                <div className="flex justify-between items-center mb-6">
+                  <h3 className="text-xl">Add Goal</h3>
+                  <button onClick={() => setIsAddGoalOpen(false)} className="p-2 bg-white/5 rounded-full hover:bg-white/10"><X className="w-5 h-5" /></button>
+                </div>
+                <form onSubmit={handleSubmitGoal} className="space-y-4">
+                  <div className="space-y-1">
+                    <label className="text-xs text-white/50 ml-1">Goal name</label>
+                    <input
+                      type="text"
+                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-[#7433FF]/50 transition-colors"
+                      value={newGoal.name}
+                      onChange={e => setNewGoal({ ...newGoal, name: e.target.value })}
+                      required
+                    />
+                  </div>
+                  <div className="flex gap-3">
+                    <div className="flex-1 space-y-1">
+                      <label className="text-xs text-white/50 ml-1">Target (₹)</label>
+                      <input
+                        type="number"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-[#7433FF]/50 transition-colors"
+                        value={newGoal.target}
+                        onChange={e => setNewGoal({ ...newGoal, target: e.target.value })}
+                        required
+                      />
+                    </div>
+                    <div className="flex-1 space-y-1">
+                      <label className="text-xs text-white/50 ml-1">Current (₹)</label>
+                      <input
+                        type="number"
+                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 outline-none focus:border-[#7433FF]/50 transition-colors"
+                        value={newGoal.current}
+                        onChange={e => setNewGoal({ ...newGoal, current: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs text-white/50 ml-1">Theme Color</label>
+                    <div className="flex gap-3">
+                      {["#3BF7FF", "#7433FF", "#E4C580", "#FF6B6B"].map(c => (
+                        <button
+                          key={c}
+                          type="button"
+                          onClick={() => setNewGoal({ ...newGoal, color: c })}
+                          className={`w-8 h-8 rounded-full border-2 ${newGoal.color === c ? "border-white scale-110" : "border-transparent"}`}
+                          style={{ backgroundColor: c }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+
+                  <button type="submit" className="w-full py-3.5 rounded-xl bg-gradient-to-r from-[#7433FF] to-[#3BF7FF] font-medium mt-4 hover:shadow-lg hover:shadow-[#7433FF]/25 transition-all">
+                    Add Goal
+                  </button>
+                </form>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
         <AnimatePresence mode="wait">
           {view === "overview" && (
             <motion.div
@@ -323,6 +571,14 @@ const FamilyFinance = ({ members = [], onAddMember }) => {
                         {member.status === "primary" && (
                           <div className="absolute top-3 right-3"><Crown className="w-3 h-3 md:w-4 md:h-4 text-[#E4C580]" /></div>
                         )}
+                        {onDeleteMember && member.status !== "primary" && (
+                          <button
+                            onClick={(e) => { e.stopPropagation(); onDeleteMember(member) }}
+                            className="absolute top-3 right-3 p-1 rounded-full bg-black/40 hover:bg-black/70"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        )}
                         <div className="w-12 h-12 md:w-16 md:h-16 rounded-2xl mx-auto mb-3 md:mb-4 flex items-center justify-center text-xl md:text-2xl font-bold text-white" style={{ background: `linear-gradient(135deg, ${member.color}40, ${member.color}20)`, boxShadow: `0 0 30px ${member.color}30` }}>
                           {member.avatar}
                         </div>
@@ -358,7 +614,7 @@ const FamilyFinance = ({ members = [], onAddMember }) => {
                     whileHover={{ scale: 1.02, y: -2 }}
                     className="p-4 rounded-2xl cursor-pointer border border-dashed border-white/20 hover:border-white/40 flex flex-col items-center justify-center gap-2 md:gap-3 min-h-[160px] md:min-h-[200px] group"
                   >
-                    <div className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/5 group-hover:bg-white/10 flex items-center justify-center transition-colors">
+                    <div className="w-10 h-10 rounded-full bg-white/5 group-hover:bg-white/10 flex items-center justify-center transition-colors">
                         <Plus className="w-5 h-5 md:w-6 md:h-6 text-white/50 group-hover:text-white" />
                     </div>
                     <span className="text-xs md:text-sm text-white/50 group-hover:text-white transition-colors text-center">Add Member</span>
@@ -429,17 +685,27 @@ const FamilyFinance = ({ members = [], onAddMember }) => {
               exit={{ opacity: 0, x: -20 }}
             >
                 <div className="mb-8">
-                   <h4 className="text-xl mb-6 flex items-center gap-2">
-                      <ArrowRightLeft className="w-5 h-5 text-[#3BF7FF]" />
-                      Family Money Flow
+                   <h4 className="text-xl mb-6 flex items-center justify-between">
+                      <span className="flex items-center gap-2">
+                        <ArrowRightLeft className="w-5 h-5 text-[#3BF7FF]" />
+                        Family Money Flow
+                      </span>
+                      {onAddTransaction && (
+                        <button
+                          onClick={handleOpenAddTx}
+                          className="px-3 py-1.5 rounded-lg bg-white/10 border border-white/20 text-xs text-white/80 hover:bg-white/15"
+                        >
+                          <Plus className="w-3 h-3 inline-block mr-1" /> Add
+                        </button>
+                      )}
                    </h4>
                    <div className="space-y-4">
                       {familyTransactions.map((tx, index) => {
                          const member = familyMembers.find(m => m.name.includes(tx.from)) || familyMembers[0];
-                         const color = member.color || "#3BF7FF";
-                         return (
+                          const color = member.color || "#3BF7FF";
+                          return (
                             <div key={index} className="relative p-4 rounded-2xl bg-white/5 border border-white/5 flex items-center justify-between">
-                               <div className="flex items-center gap-4">
+                                <div className="flex items-center gap-4">
                                   <div className="w-10 h-10 rounded-full flex items-center justify-center text-lg font-bold" style={{background: `${color}20`, color: color}}>
                                     {tx.flow === "in" ? <ArrowDownLeft className="w-5 h-5" /> : <ArrowUpRight className="w-5 h-5" />}
                                   </div>
@@ -448,11 +714,19 @@ const FamilyFinance = ({ members = [], onAddMember }) => {
                                      <p className="text-xs text-white/40">{tx.time} • {tx.type}</p>
                                   </div>
                                </div>
-                               <div className="text-right">
+                               <div className="text-right flex flex-col items-end gap-1">
                                   <p className={`font-medium ${tx.flow === "in" ? "text-[#E4C580]" : "text-white"}`}>
                                     {tx.flow === "in" ? "+" : "-"}₹{tx.amount.toLocaleString()}
                                   </p>
                                   {tx.recurring && <span className="text-[10px] bg-[#3BF7FF]/10 text-[#3BF7FF] px-1.5 py-0.5 rounded">Recurring</span>}
+                                  {onUpdateTransaction && (
+                                    <button
+                                      onClick={() => handleOpenEditTx(tx)}
+                                      className="p-1 rounded-full bg-black/40 hover:bg-black/70"
+                                    >
+                                      <MoreHorizontal className="w-3 h-3" />
+                                    </button>
+                                  )}
                                </div>
                             </div>
                          )
@@ -511,7 +785,10 @@ const FamilyFinance = ({ members = [], onAddMember }) => {
                    })}
                    
                    {/* Add Goal Card */}
-                   <div className="p-6 rounded-2xl border border-dashed border-white/20 flex flex-col items-center justify-center gap-2 text-white/40 hover:text-white hover:border-white/40 cursor-pointer transition-all min-h-[180px]">
+                   <div
+                     className="p-6 rounded-2xl border border-dashed border-white/20 flex flex-col items-center justify-center gap-2 text-white/40 hover:text-white hover:border-white/40 cursor-pointer transition-all min-h-[180px]"
+                     onClick={() => onAddGoal && setIsAddGoalOpen(true)}
+                   >
                       <Plus className="w-8 h-8" />
                       <span className="text-sm">Add New Goal</span>
                    </div>

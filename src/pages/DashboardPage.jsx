@@ -59,6 +59,8 @@ export default function DashboardPage() {
   ]);
 
   const [goals, setGoals] = useState([]);
+  const [familyMembers, setFamilyMembers] = useState([]);
+  const [familyTransactions, setFamilyTransactions] = useState([]);
 
   const addTransaction = (newTx) => {
     setTransactions([newTx, ...transactions]);
@@ -70,6 +72,108 @@ export default function DashboardPage() {
     }
   };
 
+  const addFamilyMember = async (newMember) => {
+    setFamilyMembers(prev => [...prev, newMember]);
+
+    const token = localStorage.getItem("nf_token");
+    if (!token) return;
+
+    try {
+      const res = await fetch("/api/family/members", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(newMember)
+      });
+
+      if (!res.ok) {
+        return;
+      }
+
+      const savedMember = await res.json();
+      setFamilyMembers(prev => prev.map(m => (m.id === newMember.id ? savedMember : m)));
+    } catch (err) {
+      console.error("Failed to save family member", err);
+    }
+  };
+
+  const deleteFamilyMember = async (memberToDelete) => {
+    setFamilyMembers(prev => prev.filter(m => m.id !== memberToDelete.id));
+
+    const token = localStorage.getItem("nf_token");
+    if (!token || !memberToDelete.id) return;
+
+    try {
+      const res = await fetch(`/api/family/members/${memberToDelete.id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${token}`
+        }
+      });
+
+      if (!res.ok) {
+        return;
+      }
+    } catch (err) {
+      console.error("Failed to delete family member", err);
+    }
+  };
+
+  const addFamilyTransaction = async (newTx) => {
+    setFamilyTransactions(prev => [newTx, ...prev]);
+
+    const token = localStorage.getItem("nf_token");
+    if (!token) return;
+
+    try {
+      const res = await fetch("/api/family/transactions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(newTx)
+      });
+
+      if (!res.ok) {
+        return;
+      }
+
+      const savedTx = await res.json();
+      setFamilyTransactions(prev => prev.map(tx => (tx.id === newTx.id ? savedTx : tx)));
+    } catch (err) {
+      console.error("Failed to save family transaction", err);
+    }
+  };
+
+  const updateFamilyTransaction = async (updatedTx) => {
+    setFamilyTransactions(prev => prev.map(tx => (tx.id === updatedTx.id ? updatedTx : tx)));
+
+    const token = localStorage.getItem("nf_token");
+    if (!token || !updatedTx.id) return;
+
+    try {
+      const res = await fetch(`/api/family/transactions/${updatedTx.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(updatedTx)
+      });
+
+      if (!res.ok) {
+        return;
+      }
+
+      const savedTx = await res.json();
+      setFamilyTransactions(prev => prev.map(tx => (tx.id === updatedTx.id ? savedTx : tx)));
+    } catch (err) {
+      console.error("Failed to update family transaction", err);
+    }
+  };
 
   // Function to add to a goal (could be used later)
   const addGoal = async (newGoal) => {
@@ -183,6 +287,62 @@ export default function DashboardPage() {
     }
 
     fetchGoals();
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("nf_token");
+    if (!token) return;
+
+    async function fetchFamilyMembers() {
+      try {
+        const res = await fetch("/api/family/members", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        if (!res.ok) {
+          return;
+        }
+
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setFamilyMembers(data);
+        }
+      } catch (err) {
+        console.error("Failed to load family members", err);
+      }
+    }
+
+    fetchFamilyMembers();
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("nf_token");
+    if (!token) return;
+
+    async function fetchFamilyTransactions() {
+      try {
+        const res = await fetch("/api/family/transactions", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        if (!res.ok) {
+          return;
+        }
+
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setFamilyTransactions(data);
+        }
+      } catch (err) {
+        console.error("Failed to load family transactions", err);
+      }
+    }
+
+    fetchFamilyTransactions();
   }, []);
 
   useEffect(() => {
@@ -354,7 +514,7 @@ export default function DashboardPage() {
       </motion.nav>
 
       {/* Mobile Header */}
-      <div className="lg:hidden fixed top-0 left-0 right-0 z-50 bg-[#00010D]/80 backdrop-blur-xl border-b border-white/10 px-4 py-3 flex items-center justify-between">
+      <div className="lg:hidden fixed top-0 left-0 right-0 bg-[#00010D]/80 backdrop-blur-xl border-b border-white/10 px-4 py-3 pb-6 z-50 safe-area-bottom">
         {/* CHANGED: Added cursor-pointer and onClick handler to navigate to /dashboard */}
         <div className="flex items-center gap-3 cursor-pointer" onClick={() => navigate('/dashboard')}>
           <div className="relative w-9 h-9">
@@ -481,7 +641,16 @@ export default function DashboardPage() {
 
           {activeView === "family" && (
             <motion.div key="family" initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }} transition={{ duration: 0.4, ease: "easeInOut" }}>
-              <FamilyFinance />
+              <FamilyFinance
+                members={familyMembers}
+                onAddMember={addFamilyMember}
+                transactions={familyTransactions}
+                onAddTransaction={addFamilyTransaction}
+                onUpdateTransaction={updateFamilyTransaction}
+                onDeleteMember={deleteFamilyMember}
+                goals={goals}
+                onAddGoal={addGoal}
+              />
             </motion.div>
           )}
 
