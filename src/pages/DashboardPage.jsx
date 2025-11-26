@@ -50,25 +50,42 @@ export default function DashboardPage() {
   const [monthlyGrowth, setMonthlyGrowth] = useState(51300);
   const [activeGoalsCount, setActiveGoalsCount] = useState(0);
   
-  const [transactions, setTransactions] = useState([
-    { id: 1, type: "income", from: "TCS Salary", to: "HDFC Account", amount: 100000, time: "2h ago", category: "Salary", status: "completed" },
-    { id: 2, type: "expense", from: "HDFC Account", to: "Amazon", amount: 3200, time: "4h ago", category: "Shopping", status: "completed" },
-    { id: 3, type: "expense", from: "HDFC Account", to: "Swiggy", amount: 850, time: "6h ago", category: "Food", status: "completed" },
-    { id: 4, type: "income", from: "Freelance", to: "Paytm", amount: 15000, time: "1d ago", category: "Freelance", status: "completed" },
-    { id: 5, type: "expense", from: "HDFC Account", to: "Uber", amount: 420, time: "1d ago", category: "Transport", status: "completed" },
-  ]);
+  const [transactions, setTransactions] = useState([]);
 
   const [goals, setGoals] = useState([]);
   const [familyMembers, setFamilyMembers] = useState([]);
   const [familyTransactions, setFamilyTransactions] = useState([]);
 
-  const addTransaction = (newTx) => {
-    setTransactions([newTx, ...transactions]);
-    if(newTx.type === 'income') {
-        setNetWorth(prev => prev + newTx.amount);
-        setMonthlyGrowth(prev => prev + newTx.amount);
+  const addTransaction = async (newTx) => {
+    setTransactions(prev => [newTx, ...prev]);
+    if (newTx.type === 'income') {
+      setNetWorth(prev => prev + newTx.amount);
+      setMonthlyGrowth(prev => prev + newTx.amount);
     } else {
-        setNetWorth(prev => prev - newTx.amount);
+      setNetWorth(prev => prev - newTx.amount);
+    }
+
+    const token = localStorage.getItem("nf_token");
+    if (!token) return;
+
+    try {
+      const res = await fetch("/api/transactions", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(newTx)
+      });
+
+      if (!res.ok) {
+        return;
+      }
+
+      const savedTx = await res.json();
+      setTransactions(prev => prev.map(tx => (tx.id === newTx.id ? savedTx : tx)));
+    } catch (err) {
+      console.error("Failed to save transaction", err);
     }
   };
 
@@ -343,6 +360,34 @@ export default function DashboardPage() {
     }
 
     fetchFamilyTransactions();
+  }, []);
+
+  useEffect(() => {
+    const token = localStorage.getItem("nf_token");
+    if (!token) return;
+
+    async function fetchTransactions() {
+      try {
+        const res = await fetch("/api/transactions", {
+          headers: {
+            Authorization: `Bearer ${token}`
+          }
+        });
+
+        if (!res.ok) {
+          return;
+        }
+
+        const data = await res.json();
+        if (Array.isArray(data) && data.length > 0) {
+          setTransactions(data);
+        }
+      } catch (err) {
+        console.error("Failed to load transactions", err);
+      }
+    }
+
+    fetchTransactions();
   }, []);
 
   useEffect(() => {

@@ -7,11 +7,7 @@ const TransactionFlow = ({ transactions = [], onAddTransaction }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [newTx, setNewTx] = useState({ type: 'expense', amount: '', category: 'Food', description: '' });
 
-  // Use internal mock data if no props passed (for standalone testing)
-  const displayTransactions = transactions.length > 0 ? transactions : [
-    { id: 1, type: "income", from: "TCS Salary", to: "HDFC Account", amount: 100000, time: "2h ago", category: "Salary", status: "completed" },
-    { id: 2, type: "expense", from: "HDFC Account", to: "Amazon", amount: 3200, time: "4h ago", category: "Shopping", status: "completed" }
-  ];
+  const displayTransactions = transactions || [];
 
   const filteredTransactions = displayTransactions.filter(
     t => filter === "all" || t.type === filter
@@ -45,11 +41,12 @@ const TransactionFlow = ({ transactions = [], onAddTransaction }) => {
     onAddTransaction({
         id: Date.now(),
         type: newTx.type,
-        from: newTx.type === 'income' ? 'Manual Entry' : 'HDFC Account',
+        from: newTx.type === 'income' ? newTx.description : 'HDFC Account',
         to: newTx.type === 'income' ? 'HDFC Account' : newTx.description,
         amount: Number(newTx.amount),
         time: 'Just now',
         category: newTx.category,
+        description: newTx.description,
         status: 'completed'
     });
     setIsModalOpen(false);
