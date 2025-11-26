@@ -13,12 +13,13 @@ import SpendsBudgetsSection from "./components/SpendsBudgetsSection";
 import UPIBillsSection from "./components/UPIBillsSection";
 import FamilySpaceSection from "./components/FamilySpaceSection";
 import FuturePlannerSection from "./components/FuturePlannerSection";
+import Details from "./components/Details.jsx";
 // Layout component to conditionally render Navbar
 const Layout = ({ children }) => {
   const location = useLocation();
 
   // Hide global Navbar on Dashboard AND Assistant pages
-  const showNavbar = !["/dashboard", "/assistant"].includes(location.pathname);
+  const showNavbar = !["/dashboard", "/assistant", "/details"].includes(location.pathname);
 
   return (
     <>
@@ -41,7 +42,8 @@ function App() {
           <Route path="/spends-budgets" element={<SpendsBudgetsSection />} />
           <Route path="/Upi-Bills" element={<UPIBillsSection />} />
           <Route path="/Family-Space" element={<FamilySpaceSection />} />
-           <Route path="/Future-Planner" element={<FuturePlannerSection />} />
+          <Route path="/Future-Planner" element={<FuturePlannerSection />} />
+          <Route path="/details" element={<Details />} />
 
           {/* Protected Routes */}
           <Route
