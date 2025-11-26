@@ -7,7 +7,7 @@ import requests
 LLM_PROVIDER = os.getenv("LLM_PROVIDER", "groq").lower()
 OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
 GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-MODEL = os.getenv("LLM_MODEL", "llama3-70b-8192")
+MODEL = os.getenv("LLM_MODEL", "llama-3.1-8b-instant")
 
 
 def call_llm(prompt: str) -> str:

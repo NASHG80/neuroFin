@@ -1,27 +1,23 @@
-import requests
-import json
-
 def classifier_agent(description: str):
     """
-    Calls API classifier: /api/v1/classify
+    Classifies spending category using rules.
     """
-    try:
-        payload = {
-            "description": description,
-            "amount": 0,
-            "direction": "debit"
-        }
 
-        r = requests.post(
-            "http://api:4000/api/v1/classify",
-            json=payload,
-            timeout=5
-        )
+    desc = description.lower()
 
-        if r.status_code == 200:
-            return r.json().get("result")
+    if any(w in desc for w in ["food", "restaurant", "cafe", "pizza", "burger"]):
+        return "Food & Drink"
 
-        return {"error": "classifier_error", "status": r.status_code}
+    if any(w in desc for w in ["uber", "ola", "bus", "train"]):
+        return "Transport"
 
-    except Exception as e:
-        return {"error": str(e)}
+    if any(w in desc for w in ["zara", "shopping", "clothes"]):
+        return "Shopping"
+
+    if any(w in desc for w in ["rent", "house", "flat"]):
+        return "Rent"
+
+    if any(w in desc for w in ["doctor", "pharmacy", "hospital"]):
+        return "Health"
+
+    return "Others"

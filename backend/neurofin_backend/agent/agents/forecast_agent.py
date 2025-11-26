@@ -1,98 +1,110 @@
-import requests
+from pymongo import MongoClient
 import numpy as np
 from datetime import datetime, timedelta
+import os
 
-API_BASE = "http://api:4000"      # Node API
-FORECAST_BASE = "http://forecast:5000"  # Python forecast service
+from api.src.memory import fix_mongo_ids
 
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
+DB = MongoClient(MONGO_URI)["neurofin"]
+transactions = DB["transactions"]
 
-def forecaster_agent(user_id: str) -> dict:
-    """
-    Uses smoothed data + forecast service + simple trend logic
-    to estimate user's future financial condition.
-    """
-
-    # ---- 1) Fetch smoothed historical values ----
+def safe_polyfit(x, y, deg):
+    """Safe wrapper around np.polyfit to avoid SVD errors."""
     try:
-        r = requests.get(f"{API_BASE}/api/v1/smoothed/{user_id}?limit=30", timeout=8)
-        smoothed = r.json() if r.status_code == 200 else []
+        return np.polyfit(x, y, deg)
     except Exception:
-        smoothed = []
+        # fallback: zero slope
+        return [0, float(np.mean(y))]  
 
-    balances = []
-    dates = []
 
-    for entry in smoothed:
-        bal = entry.get("smoothed_balance") or entry.get("balance")
-        ts = entry.get("as_of") or entry.get("timestamp")
-        if bal is None or ts is None:
-            continue
-        try:
-            balances.append(float(bal))
-            dates.append(datetime.fromisoformat(ts.replace("Z", "")))
-        except Exception:
-            continue
+def forecast_agent(user_id: str) -> dict:
+    """
+    Safe financial forecast that NEVER crashes due to SVD issues.
+    """
 
-    # Fallback if no smoothed data
-    if len(balances) < 3:
+    txs = list(transactions.find({"user_id": user_id}))
+
+    if len(txs) < 5:
         return {
             "summary": "Insufficient data for forecast",
             "trend": "unknown",
-            "predicted_next_30_days": [],
             "burn_rate": 0,
+            "predicted_next_30_days": [],
             "runout_date": None
         }
 
-    # ---- 2) Fetch forecast from ML service ----
-    try:
-        r = requests.get(f"{FORECAST_BASE}/forecast/{user_id}", timeout=10)
-        fcast = r.json() if r.status_code == 200 else {}
-    except Exception:
-        fcast = {}
+    # Aggregate daily balances
+    daily_map = {}
+    for t in txs:
+        amt = float(t.get("amount", 0))
+        if t.get("direction") == "credit":
+            amt = -abs(amt)
 
-    fcast_values = fcast.get("forecast", [])
-    fcast_dates = fcast.get("dates", [])
+        ts = str(t.get("timestamp", ""))[:10]
 
-    # ---- 3) Compute trend direction ----
-    # simple slope calculation
-    x = np.arange(len(balances))
-    y = np.array(balances)
+        # skip invalid dates
+        try:
+            datetime.fromisoformat(ts)
+        except:
+            continue
 
-    slope = np.polyfit(x, y, 1)[0]
+        daily_map[ts] = daily_map.get(ts, 0) + amt
 
-    if slope > 5:
+    # Clean daily values
+    dates = sorted(daily_map.keys())
+    y = np.array([daily_map[d] for d in dates], dtype=float)
+
+    # Remove NaNs and infs
+    y = y[~np.isnan(y)]
+    y = y[np.isfinite(y)]
+
+    if len(y) < 3:
+        return {
+            "summary": "Not enough clean data for forecast",
+            "trend": "unknown",
+            "burn_rate": 0,
+            "predicted_next_30_days": [],
+            "runout_date": None
+        }
+
+    # Slope using safe polyfit
+    x = np.arange(len(y))
+    slope, intercept = safe_polyfit(x, y, 1)
+
+    if slope > 0:
         trend = "UPWARD"
-    elif slope < -5:
+    elif slope < 0:
         trend = "DOWNWARD"
     else:
         trend = "STABLE"
 
-    # ---- 4) Compute burn rate (daily change) ----
-    daily_diffs = np.diff(y)
-    burn_rate = float(np.mean(daily_diffs))  # positive = gaining, negative = losing
+    burn_rate = float(y[-1] - y[-2]) if len(y) > 1 else 0
+    burn_rate = round(burn_rate, 2)
 
-    # ---- 5) Predict runout date ----
     current_balance = y[-1]
-    runout_date = None
 
-    if burn_rate < -50:  # losing ₹50/day or more
+    # Predicted runout date
+    runout_date = None
+    if burn_rate < -50:
         days_left = int(current_balance / abs(burn_rate))
         runout_date = (datetime.utcnow() + timedelta(days=days_left)).isoformat()
 
-    # ---- Prepare next 30 days data ----
+    # Predictions
     next_30 = []
-    for i, val in enumerate(fcast_values[:30]):
-        date_str = fcast_dates[i] if i < len(fcast_dates) else f"+{i}d"
+    for i in range(1, 31):
         next_30.append({
-            "date": date_str,
-            "predicted_balance": val
+            "day": i,
+            "predicted_balance": round(current_balance + burn_rate * i, 2)
         })
 
-    return {
-        "summary": f"Trend: {trend}, Burn rate: {round(burn_rate, 2)}",
+    result = {
+        "summary": f"Trend: {trend}, Burn rate: {burn_rate}",
         "trend": trend,
-        "burn_rate": round(burn_rate, 2),
+        "burn_rate": burn_rate,
         "current_balance": round(float(current_balance), 2),
         "runout_date": runout_date,
         "predicted_next_30_days": next_30
     }
+
+    return fix_mongo_ids(result)

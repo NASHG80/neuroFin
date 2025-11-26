@@ -1,79 +1,100 @@
-import requests
+from pymongo import MongoClient
 import numpy as np
+import os
+from datetime import datetime
 
-API_BASE = "http://api:4000"
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
+db = MongoClient(MONGO_URI)["neurofin"]
+
+transactions = db["transactions"]
 
 def analyst_agent(user_id: str) -> dict:
     """
-    Analyzes spending patterns using user's transaction history.
-    Returns summary, category breakdown, trends, and insights.
+    Corrected Analyst Agent:
+    - Converts negative expenses to positive spend
+    - Ignores income (Salary, Refund)
+    - Groups spending Mon–Sun (REAL weekly analysis)
     """
 
-    # Fetch last 200 transactions
-    try:
-        r = requests.get(f"{API_BASE}/api/v1/transactions/{user_id}?limit=200", timeout=10)
-        txs = r.json() if r.status_code == 200 else []
-    except Exception:
-        txs = []
+    txs = list(transactions.find({"user_id": user_id}))
 
-    if not isinstance(txs, list) or len(txs) == 0:
+    if not txs:
         return {
-            "summary": "No transaction data found for the user.",
+            "summary": "No transaction data.",
+            "total_spent": 0,
+            "daily_avg": 0,
             "categories": {},
             "top_spends": [],
-            "daily_avg": 0,
-            "insights": []
+            "merchant_summary": {},
+            "weekly": {
+                "Mon": 0, "Tue": 0, "Wed": 0,
+                "Thu": 0, "Fri": 0, "Sat": 0, "Sun": 0
+            }
         }
 
-    # ---- Category totals ----
+    # Weekly slots
+    weekly = {
+        "Mon": 0, "Tue": 0, "Wed": 0,
+        "Thu": 0, "Fri": 0, "Sat": 0, "Sun": 0
+    }
+
     category_totals = {}
+    merchant_totals = {}
+    daily_totals = {}
+
     for t in txs:
+        raw_amt = float(t.get("amount", 0))
+        ts = t.get("timestamp")
+        
+        # Parse date from both CSV + Mongo
+        if isinstance(ts, str):
+            try:
+                ts = datetime.fromisoformat(ts)
+            except:
+                continue
+
+        weekday = ts.strftime("%a")  # Mon/Tue/...
+
+        # Normalize values:
+        # If amount < 0 = Expense → convert to positive spend
+        # If amount > 0 = Income → skip from "spending" metrics
+        if raw_amt < 0:
+            amt = abs(raw_amt)
+        else:
+            continue  # income, salary, refunds → ignore in spending
+
+        # category total
         cat = t.get("category", "Other")
-        amt = t.get("amount", 0)
-        direction = t.get("direction", "debit")
-
-        if direction == "credit":
-            amt = -amt  # credits reduce spending
-
         category_totals[cat] = category_totals.get(cat, 0) + amt
 
-    # ---- Top spending categories ----
-    sorted_cats = sorted(category_totals.items(), key=lambda x: x[1], reverse=True)
-    top_spends = sorted_cats[:3]
+        # merchant total
+        merchant = t.get("merchant", "Unknown")
+        merchant_totals[merchant] = merchant_totals.get(merchant, 0) + amt
 
-    # ---- Daily spending trend ----
-    # gather amounts grouped by date
-    daily_map = {}
-    for t in txs:
-        ts = (t.get("timestamp") or t.get("created_at") or "")[:10]  # YYYY-MM-DD
-        amt = t.get("amount", 0)
-        direction = t.get("direction", "debit")
-        if direction == "credit":
-            amt = -amt
+        # daily
+        date_key = ts.strftime("%Y-%m-%d")
+        daily_totals[date_key] = daily_totals.get(date_key, 0) + amt
 
-        daily_map[ts] = daily_map.get(ts, 0) + amt
+        # weekly
+        weekly[weekday] += amt
 
-    daily_values = list(daily_map.values())
-    daily_avg = np.mean(daily_values) if daily_values else 0
+    total_spent = sum(category_totals.values())
 
-    # ---- Insights ----
-    insights = []
+    daily_avg = float(np.mean(list(daily_totals.values()))) if daily_totals else 0
 
-    if top_spends:
-        insights.append(f"Your highest spending category is **{top_spends[0][0]}**.")
-
-    if daily_avg > 1500:
-        insights.append("Your average daily spending is higher than usual — consider reducing discretionary purchases.")
-    elif daily_avg < 500:
-        insights.append("Your daily spending is stable and low — good control over expenses.")
-
-    if "Food & Drink" in category_totals and category_totals["Food & Drink"] > 0.25 * sum(category_totals.values()):
-        insights.append("A significant portion of spending is on Food & Drink — consider cooking more at home.")
+    # Top 3 spend categories
+    top_spends = sorted(
+        category_totals.items(),
+        key=lambda x: x[1],
+        reverse=True
+    )[:3]
 
     return {
         "summary": f"Analyzed {len(txs)} transactions.",
+        "total_spent": round(total_spent, 2),
+        "daily_avg": round(daily_avg, 2),
         "categories": category_totals,
-        "top_spends": [{"category": c, "total": t} for c, t in top_spends],
-        "daily_avg": round(float(daily_avg), 2),
-        "insights": insights
+        "top_spends": [{"category": c, "total": round(v, 2)} for c, v in top_spends],
+        "merchant_summary": {k: round(v, 2) for k, v in merchant_totals.items()},
+        "weekly": {k: round(v, 2) for k, v in weekly.items()}
     }

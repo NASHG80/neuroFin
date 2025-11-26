@@ -6,7 +6,7 @@ from respond import bp as respond_bp
 from agent.agents.llm import call_llm  
 load_dotenv()
 
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+OPENAI_API_KEY = os.getenv("GROQ")
 API_BASE = os.getenv("NEUROFIN_API", "http://api:4000")
 RISK_AGENT_URL = os.getenv("RISK_AGENT_URL", "http://risk:7000/agent/risk/check")
 #LLM_MODEL = os.getenv("LLM_MODEL", "gpt-4o-mini")  # adjust

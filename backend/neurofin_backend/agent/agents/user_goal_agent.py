@@ -1,19 +1,45 @@
-import requests
+from pymongo import MongoClient
 import os
+import datetime
 
-API_BASE = os.getenv("NEUROFIN_API", "http://api:4000")
+# ---- MongoDB Setup ----
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
+MONGO_DB = os.getenv("MONGO_DB", "neurofin")
+
+client = MongoClient(MONGO_URI)
+db = client[MONGO_DB]
+
+memory_goals = db["memory_goals"]
+
 
 def get_user_goal_summary(user_id: str):
     """
-    Fetch user financial goals from API (or fallback).
+    Summarizes user's financial goals stored in MongoDB.
+    Used by the advisor agent.
     """
-    try:
-        r = requests.get(f"{API_BASE}/api/v1/goals/{user_id}", timeout=5)
 
-        if r.status_code == 200:
-            return r.json()
+    goals = list(memory_goals.find({"user_id": user_id}))
 
-        return {"goal": None, "status": "no_goal_found"}
+    if not goals:
+        return {
+            "has_goals": False,
+            "goal_count": 0,
+            "summary": "No financial goals added yet."
+        }
 
-    except Exception as e:
-        return {"error": str(e), "goal": None}
+    # Format goals
+    formatted = []
+    for g in goals:
+        formatted.append({
+            "title": g.get("title"),
+            "amount": g.get("amount"),
+            "deadline": g.get("deadline"),
+            "created_at": g.get("created_at")
+        })
+
+    return {
+        "has_goals": True,
+        "goal_count": len(goals),
+        "goals": formatted,
+        "summary": f"You have {len(goals)} financial goal(s) saved."
+    }

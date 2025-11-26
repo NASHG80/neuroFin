@@ -1,11 +1,12 @@
 # agent/langgraph_flow.py
+print("🔥 Flask is starting langgraph_flow.py ...", flush=True)
+
 import os
 import json
 import logging
 from datetime import datetime
 from flask import Flask, request, jsonify
 import requests
-import openai
 import re
 from respond import bp as respond_bp
 
@@ -23,13 +24,13 @@ app.register_blueprint(respond_bp)
 # --- config ---
 API_BASE = os.environ.get("NEUROFIN_API", "http://api:4000")
 RISK_AGENT_URL = os.environ.get("RISK_AGENT_URL", "http://risk:7000/agent/risk/check")
-OPENAI_API_KEY = os.environ.get("OPENAI_API_KEY", "")
-OPENAI_MODEL = os.environ.get("OPENAI_MODEL", "gpt-4o-mini")
+GROQ_API_KEY = os.environ.get("GROQ_API_KEY", "")
+GROQ_MODEL = os.environ.get("GROQ_MODEL", "llama-3.1-8b-instant")
 
-openai.api_key = OPENAI_API_KEY
+if not GROQ_API_KEY:
+    logger.warning("GROQ_API_KEY is missing – agentic AI will not respond.")
 
-if not OPENAI_API_KEY:
-    logger.warning("OPENAI_API_KEY is not set. LLM calls will fail until a key is provided.")
+
 
 # --- import langgraph after app exists (so any decorators inside won't break) ---
 from langgraph.graph import StateGraph, START, END
@@ -160,109 +161,76 @@ Be concise and conservative.
     return {"ok": True}
 
 def call_openai_node(state: MessagesState):
+    """
+    Groq Llama-3.x node for LangGraph.
+    """
+    import requests, time, random, json
+
     prompt = state.context.get("prompt")
     if not prompt:
         return {"error": "no prompt"}
-    if not OPENAI_API_KEY:
-        logger.error("call_openai_node aborted: no OPENAI_API_KEY")
-        return {"error": "openai_api_key_missing"}
 
-    # Use the same HTTP-with-retries approach as call_llm above
-    try:
-        # inline the call to call_llm-like logic but return {"ok": True} and set llm_advice
-        # to keep the state machine flow consistent.
-        text = call_llm(prompt)  # call_llm is defined as above in same module or imported
-        # If call_llm returned an error-like string starting with "LLM call failed", surface it
-        if isinstance(text, str) and text.startswith("LLM call failed:") and "http_attempts_last" in text:
-            # bubble up error
-            return {"error": text}
-        # attempt to parse JSON advice inside text
-        parsed = extract_json_from_text(text) if isinstance(text, str) else None
-        if parsed is None:
-            parsed = {"raw": (text or "").strip()}
-        state.context["llm_advice"] = parsed
-        return {"ok": True}
-    except Exception as e:
-        logger.exception("openai call failed in call_openai_node")
-        return {"error": f"openai_call_failed: {str(e)}"}
+    if not GROQ_API_KEY:
+        return {"error": "groq_key_missing"}
 
-    if not prompt:
-        return {"error": "no prompt"}
-    if not OPENAI_API_KEY:
-        logger.error("call_openai_node aborted: no OPENAI_API_KEY")
-        return {"error": "openai_api_key_missing"}
+    url = "https://api.groq.com/openai/v1/chat/completions"
+    headers = {
+        "Authorization": f"Bearer {GROQ_API_KEY}",
+        "Content-Type": "application/json",
+    }
 
-    model_name = OPENAI_MODEL
-    try:
-        # Attempt new OpenAI client first
+    payload = {
+        "model": GROQ_MODEL,
+        "messages": [
+            {"role": "system", "content": "You are NeuroFin AI Assistant."},
+            {"role": "user", "content": prompt},
+        ],
+        "max_tokens": 500,
+        "temperature": 0.4,
+    }
+
+    max_attempts = 5
+    attempt = 0
+    last_error = None
+
+    while attempt < max_attempts:
+        attempt += 1
         try:
-            from openai import OpenAI as _OpenAIClient
-            client = _OpenAIClient(api_key=OPENAI_API_KEY) if OPENAI_API_KEY else _OpenAIClient()
-            resp = client.responses.create(model=model_name, input=prompt, max_tokens=400)
-            # extract textual output
-            content = ""
-            try:
-                output = getattr(resp, "output", None)
-                if output:
-                    for item in output:
-                        if isinstance(item, dict):
-                            for c in item.get("content", []):
-                                if isinstance(c, dict) and "text" in c:
-                                    content += c.get("text", "")
-                                elif isinstance(c, str):
-                                    content += c
-                        elif isinstance(item, str):
-                            content += item
-                if not content and isinstance(resp, dict):
-                    content = resp.get("output_text") or ""
-                    if not content:
-                        for item in resp.get("output", []) or resp.get("data", []):
-                            if isinstance(item, dict):
-                                for c in item.get("content", []):
-                                    if isinstance(c, dict) and "text" in c:
-                                        content += c.get("text", "")
-                                    elif isinstance(c, str):
-                                        content += c
-                            elif isinstance(item, str):
-                                content += item
-            except Exception:
-                content = ""
-            content = (content or "").strip()
-            if not content:
-                content = str(resp)
-        except Exception as e_new:
-            # Fallback to legacy openai package
-            try:
-                import openai as _openai_legacy
-                if OPENAI_API_KEY:
-                    try:
-                        _openai_legacy.api_key = OPENAI_API_KEY
-                    except Exception:
-                        pass
-                resp = _openai_legacy.ChatCompletion.create(
-                    model=model_name,
-                    messages=[{"role": "user", "content": prompt}],
-                    temperature=0.1,
-                    max_tokens=400,
-                )
+            r = requests.post(url, json=payload, headers=headers, timeout=20)
+
+            if r.status_code == 200:
+                data = r.json()
                 try:
-                    content = resp.choices[0].message.content
-                except Exception:
-                    content = (resp.get("choices") or [{}])[0].get("message", {}).get("content") or (resp.get("choices") or [{}])[0].get("text") or str(resp)
-            except Exception as e_legacy:
-                raise RuntimeError(f"openai client error: new_client_err={e_new}; legacy_err={e_legacy}")
+                    text = data["choices"][0]["message"]["content"]
+                except:
+                    return {"error": "groq_parse_failed"}
 
-        # parse content and continue existing logic
-        content = content or ""
-        parsed = extract_json_from_text(content)
-        if parsed is None:
-            parsed = {"raw": content.strip()}
+                # Extract JSON from LLM output (your helper)
+                parsed = extract_json_from_text(text)
+                if parsed is None:
+                    parsed = {"raw": text.strip()}
 
-        state.context["llm_advice"] = parsed
-        return {"ok": True}
-    except Exception as e:
-        logger.exception("openai call failed")
-        return {"error": f"openai_call_failed: {str(e)}"}
+                state.context["llm_advice"] = parsed
+                return {"ok": True}
+
+            if r.status_code == 429:
+                time.sleep(1 + random.random())
+                continue
+
+            if 500 <= r.status_code < 600:
+                time.sleep(1 + random.random())
+                continue
+
+            last_error = f"{r.status_code}: {r.text[:500]}"
+            break
+
+        except Exception as e:
+            last_error = str(e)
+            time.sleep(1)
+            continue
+
+    return {"error": f"groq_failed_after_retries: {last_error}"}
+
 
 
 def risk_check_node(state: MessagesState):
@@ -469,7 +437,10 @@ def agent_respond():
 # lightweight health
 @app.route("/health", methods=["GET"])
 def health():
-    return jsonify({"status": "ok", "openai_key_present": bool(OPENAI_API_KEY)})
+    return jsonify({
+        "status": "ok",
+        "groq_key_present": bool(GROQ_API_KEY)
+    })
 
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 6000))
