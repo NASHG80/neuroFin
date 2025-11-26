@@ -265,6 +265,33 @@ export default function DashboardPage() {
     }
   };
 
+  const updateGoal = async (updatedGoal) => {
+    setGoals(prev => prev.map(g => (g.id === updatedGoal.id ? updatedGoal : g)));
+
+    const token = localStorage.getItem("nf_token");
+    if (!token || !updatedGoal.id) return;
+
+    try {
+      const res = await fetch(`/api/goals/${updatedGoal.id}`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`
+        },
+        body: JSON.stringify(updatedGoal)
+      });
+
+      if (!res.ok) {
+        return;
+      }
+
+      const savedGoal = await res.json();
+      setGoals(prev => prev.map(g => (g.id === savedGoal.id ? savedGoal : g)));
+    } catch (err) {
+      console.error("Failed to update goal", err);
+    }
+  };
+
   // Load user data
   useEffect(() => {
     try {
@@ -656,7 +683,7 @@ export default function DashboardPage() {
                 {/* Right Column */}
                 <div className="lg:col-span-4 space-y-6 lg:space-y-8">
                   <SmartAccounts netWorth={netWorth} />
-                  <GoalsSection goals={goals} onAddGoal={addGoal} onDeleteGoal={deleteGoal} />
+                  <GoalsSection goals={goals} onAddGoal={addGoal} onDeleteGoal={deleteGoal} onUpdateGoal={updateGoal} />
                   <FinancialChallenges />
                   <FuturePlanning />
                   <NotificationsFeed />
@@ -677,7 +704,7 @@ export default function DashboardPage() {
                 <div className="lg:col-span-4 space-y-6 lg:space-y-8">
                   <VoiceOfMoney />
                   <MonthlyComparison />
-                  <GoalsSection goals={goals} onAddGoal={addGoal} onDeleteGoal={deleteGoal} />
+                  <GoalsSection goals={goals} onAddGoal={addGoal} onDeleteGoal={deleteGoal} onUpdateGoal={updateGoal} />
                   <NotificationsFeed />
                 </div>
               </div>
