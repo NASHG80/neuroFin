@@ -139,6 +139,42 @@ const SubscriptionTracker = ({ subscriptions = [], onAddSubscription }) => {
         })}
       </div>
 
+      {/* Spend Distribution Section */}
+<div className="mt-6">
+  <p className="text-[11px] font-medium tracking-wider text-zinc-500 uppercase mb-2">
+    Spend Distribution
+  </p>
+
+  {/* Distribution Bar */}
+  <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden flex">
+    {sortedCategories.map(([cat, amt], index) => {
+      const total = totalUpcoming || 1;
+      const width = (amt / total) * 100;
+      return (
+        <div
+          key={index}
+          style={{ width: `${width}%` }}
+          className={`${getCategoryColor(cat)} transition-all`}
+        />
+      );
+    })}
+  </div>
+
+  {/* Labels */}
+  <div className="flex justify-between mt-2 text-[11px] text-zinc-500">
+    {sortedCategories.map(([cat, amt], index) => {
+      const total = totalUpcoming || 1;
+      const pct = Math.round((amt / total) * 100);
+      return (
+        <span key={index} className="text-xs">
+          {cat} ({pct}%)
+        </span>
+      );
+    })}
+  </div>
+</div>
+
+
       {/* Footer */}
       <div className="mt-4 pt-4 border-t border-white/[0.06] flex-shrink-0 space-y-4">
         <button onClick={() => setIsModalOpen(true)} className="w-full py-3 rounded-xl border border-dashed border-white/10 text-zinc-400 hover:text-white hover:border-white/20 hover:bg-white/[0.02] transition-all flex items-center justify-center gap-2 text-xs font-medium">
