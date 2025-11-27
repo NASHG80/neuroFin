@@ -1,16 +1,16 @@
 import express from "express";
 import Subscription from "../models/Subscription.js";
-import { protect } from "../middleware/authMiddleware.js"; // Assuming you have this
+import { authRequired  } from "../middleware/authMiddleware.js"; // Assuming you have this
 
 const router = express.Router();
 
 // @desc    Get all subscriptions
 // @route   GET /api/subscriptions
 // @access  Private
-router.get("/", protect, async (req, res) => {
+router.get("/", authRequired , async (req, res) => {
   try {
     // Sort by closest due date
-    const subs = await Subscription.find({ user: req.user._id }).sort({ dueDate: 1 });
+    const subs = await Subscription.find({ user: req.user.id }).sort({ dueDate: 1 });
     res.json(subs);
   } catch (error) {
     res.status(500).json({ message: "Server Error" });
@@ -20,12 +20,12 @@ router.get("/", protect, async (req, res) => {
 // @desc    Add a new subscription
 // @route   POST /api/subscriptions
 // @access  Private
-router.post("/", protect, async (req, res) => {
+router.post("/", authRequired , async (req, res) => {
   const { name, category, amount, dueDate, cycle, icon, theme } = req.body;
 
   try {
     const subscription = new Subscription({
-      user: req.user._id,
+      user: req.user.id,
       name,
       category,
       amount,
@@ -45,9 +45,9 @@ router.post("/", protect, async (req, res) => {
 // @desc    Get Calendar Events (Linked Calendar Data)
 // @route   GET /api/subscriptions/calendar
 // @access  Private
-router.get("/calendar", protect, async (req, res) => {
+router.get("/calendar", authRequired , async (req, res) => {
   try {
-    const subs = await Subscription.find({ user: req.user._id });
+    const subs = await Subscription.find({ user: req.user.id });
 
     // Transform data for frontend calendar (e.g., FullCalendar or custom view)
     const calendarEvents = subs.map(sub => ({
@@ -71,11 +71,11 @@ router.get("/calendar", protect, async (req, res) => {
 // @desc    Delete subscription
 // @route   DELETE /api/subscriptions/:id
 // @access  Private
-router.delete("/:id", protect, async (req, res) => {
+router.delete("/:id", authRequired , async (req, res) => {
   try {
     const sub = await Subscription.findById(req.params.id);
 
-    if (sub && sub.user.toString() === req.user._id.toString()) {
+    if (sub && sub.user.toString() === req.user.id.toString()) {
       await sub.deleteOne();
       res.json({ message: "Subscription removed" });
     } else {
