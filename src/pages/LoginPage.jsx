@@ -90,8 +90,8 @@ export default function LoginPage() {
       } else {
         localStorage.setItem("nf_token", data.token);
         localStorage.setItem("nf_user", JSON.stringify(data.user));
-        const from = location.state?.from?.pathname || "/dashboard";
-        navigate(from, { replace: true });
+        // After login, always go to card details flow first
+        navigate("/details", { replace: true });
       }
     } catch (err) {
       console.error(err);

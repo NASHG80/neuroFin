@@ -99,8 +99,8 @@ export default function SignupPage() {
         if (data.token) {
             localStorage.setItem("nf_token", data.token);
             localStorage.setItem("nf_user", JSON.stringify(data.user));
-            // Redirect to dashboard
-            navigate("/dashboard"); 
+            // After signup, go to card details first
+            navigate("/details"); 
         } else {
             // Fallback: If for some reason token isn't returned on signup, redirect to login
             navigate("/login");
