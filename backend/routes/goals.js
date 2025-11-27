@@ -47,6 +47,31 @@ router.post("/", authRequired, async (req, res) => {
   }
 });
 
+router.put("/:id", authRequired, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, target, current, emoji, color } = req.body || {};
+
+    const goal = await Goal.findOne({ _id: id, user: req.user.id });
+
+    if (!goal) {
+      return res.status(404).json({ message: "Goal not found" });
+    }
+
+    if (typeof name !== "undefined") goal.name = name;
+    if (typeof target !== "undefined") goal.target = target;
+    if (typeof current !== "undefined") goal.current = current;
+    if (typeof emoji !== "undefined") goal.emoji = emoji;
+    if (typeof color !== "undefined") goal.color = color;
+
+    await goal.save();
+
+    res.json(serializeGoal(goal));
+  } catch (err) {
+    res.status(500).json({ message: "Failed to update goal" });
+  }
+});
+
 router.delete("/:id", authRequired, async (req, res) => {
   try {
     const { id } = req.params;

@@ -1,5 +1,4 @@
 import { motion } from "framer-motion";
-
 import { Zap, Plus, ChevronRight, DollarSign, PiggyBank, CreditCard, TrendingUp } from "lucide-react";
 
 const AutomationsHub = () => {
@@ -9,10 +8,10 @@ const AutomationsHub = () => {
       description: "When salary arrives → Move 20% to savings → Pay bills → Invest ₹10k",
       active: true,
       nodes: [
-        { icon: DollarSign, label: "Salary In", color: "#E4C580" },
-        { icon: PiggyBank, label: "20% Save", color: "#3BF7FF" },
-        { icon: CreditCard, label: "Pay Bills", color: "#7433FF" },
-        { icon: TrendingUp, label: "Invest", color: "#E4C580" }
+        { icon: DollarSign, label: "Salary In", color: "#10b981" }, // Emerald
+        { icon: PiggyBank, label: "20% Save", color: "#3b82f6" },   // Blue
+        { icon: CreditCard, label: "Pay Bills", color: "#f43f5e" }, // Rose
+        { icon: TrendingUp, label: "Invest", color: "#8b5cf6" }     // Violet
       ],
       triggers: 47,
       saved: 135000
@@ -22,8 +21,8 @@ const AutomationsHub = () => {
       description: "Auto-save ₹5,000 weekly for upcoming Diwali",
       active: true,
       nodes: [
-        { icon: DollarSign, label: "Weekly", color: "#7433FF" },
-        { icon: PiggyBank, label: "₹5k Save", color: "#E4C580" }
+        { icon: DollarSign, label: "Weekly", color: "#3b82f6" },    // Blue
+        { icon: PiggyBank, label: "₹5k Save", color: "#f59e0b" }    // Amber
       ],
       triggers: 12,
       saved: 60000
@@ -33,8 +32,8 @@ const AutomationsHub = () => {
       description: "Auto-pay utilities when balance > ₹50k",
       active: false,
       nodes: [
-        { icon: DollarSign, label: "Check Balance", color: "#3BF7FF" },
-        { icon: CreditCard, label: "Pay Bills", color: "#7433FF" }
+        { icon: DollarSign, label: "Check Balance", color: "#71717a" }, // Zinc
+        { icon: CreditCard, label: "Pay Bills", color: "#71717a" }      // Zinc
       ],
       triggers: 0,
       saved: 0
@@ -46,24 +45,24 @@ const AutomationsHub = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.9 }}
-      className="p-8 rounded-3xl bg-gradient-to-br from-white/[0.07] to-white/[0.02] backdrop-blur-xl border border-white/10 overflow-hidden"
-      style={{ boxShadow: "0 8px 32px rgba(116, 51, 255, 0.08)" }}
+      // CHANGED: Matte Black Background
+      className="p-8 rounded-3xl bg-[#0A0A0A] border border-white/[0.06] overflow-hidden"
     >
       <div className="flex items-start justify-between mb-8">
         <div>
           <div className="flex items-center gap-2 mb-2">
-            <h3 className="text-xl">Automations Hub</h3>
+            <h3 className="text-xl font-medium text-white">Automations Hub</h3>
             <motion.div animate={{ rotate: [0, 360] }} transition={{ duration: 2, repeat: Infinity, ease: "linear" }}>
-              <Zap className="w-5 h-5 text-[#E4C580]" />
+              <Zap className="w-5 h-5 text-amber-400" />
             </motion.div>
           </div>
-          <p className="text-white/50">Set it and forget it - Money on autopilot</p>
+          <p className="text-zinc-500 text-sm">Set it and forget it - Money on autopilot</p>
         </div>
 
         <motion.button
           whileHover={{ scale: 1.05, rotate: 90 }}
           whileTap={{ scale: 0.95 }}
-          className="w-10 h-10 rounded-xl bg-gradient-to-br from-[#7433FF] to-[#3BF7FF] flex items-center justify-center"
+          className="w-10 h-10 rounded-xl bg-white/10 hover:bg-white/20 flex items-center justify-center text-white transition-colors"
         >
           <Plus className="w-5 h-5" />
         </motion.button>
@@ -77,10 +76,10 @@ const AutomationsHub = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 1 + index * 0.1 }}
             whileHover={{ scale: 1.01 }}
-            className={`relative p-6 rounded-2xl border cursor-pointer overflow-hidden ${
+            className={`relative p-6 rounded-xl border cursor-pointer overflow-hidden ${
               automation.active
-                ? "bg-gradient-to-br from-white/10 to-white/5 border-white/10"
-                : "bg-white/5 border-white/5 opacity-60"
+                ? "bg-white/[0.02] border-white/[0.06]"
+                : "bg-transparent border-white/[0.04] opacity-50"
             }`}
           >
             {automation.active && (
@@ -88,12 +87,12 @@ const AutomationsHub = () => {
                 className="absolute inset-0"
                 animate={{
                   background: [
-                    "radial-gradient(circle at 0% 50%, rgba(116, 51, 255, 0.1), transparent 50%)",
-                    "radial-gradient(circle at 100% 50%, rgba(59, 247, 255, 0.1), transparent 50%)",
-                    "radial-gradient(circle at 0% 50%, rgba(116, 51, 255, 0.1), transparent 50%)"
+                    "radial-gradient(circle at 0% 50%, rgba(59, 130, 246, 0.05), transparent 50%)", // Subtle Blue
+                    "radial-gradient(circle at 100% 50%, rgba(16, 185, 129, 0.05), transparent 50%)", // Subtle Emerald
+                    "radial-gradient(circle at 0% 50%, rgba(59, 130, 246, 0.05), transparent 50%)"
                   ]
                 }}
-                transition={{ duration: 4, repeat: Infinity }}
+                transition={{ duration: 8, repeat: Infinity }}
               />
             )}
 
@@ -101,21 +100,21 @@ const AutomationsHub = () => {
               <div className="flex items-start justify-between mb-4">
                 <div className="flex-1">
                   <div className="flex items-center gap-2 mb-1">
-                    <h4 className="text-sm">{automation.name}</h4>
+                    <h4 className="text-sm font-medium text-white">{automation.name}</h4>
                     {automation.active && (
                       <motion.div
                         animate={{ scale: [1, 1.2, 1], opacity: [0.5, 1, 0.5] }}
                         transition={{ duration: 2, repeat: Infinity }}
-                        className="w-2 h-2 rounded-full bg-[#3BF7FF]"
-                        style={{ boxShadow: "0 0 10px #3BF7FF" }}
+                        className="w-2 h-2 rounded-full bg-emerald-500"
+                        style={{ boxShadow: "0 0 8px rgba(16,185,129,0.4)" }}
                       />
                     )}
                   </div>
-                  <p className="text-xs text-white/40">{automation.description}</p>
+                  <p className="text-xs text-zinc-500">{automation.description}</p>
                 </div>
 
                 <motion.div whileHover={{ x: 5 }} className="flex-shrink-0">
-                  <ChevronRight className="w-5 h-5 text-white/30" />
+                  <ChevronRight className="w-5 h-5 text-zinc-600" />
                 </motion.div>
               </div>
 
@@ -132,14 +131,14 @@ const AutomationsHub = () => {
                         className="relative"
                       >
                         <div
-                          className="w-10 h-10 rounded-lg flex items-center justify-center border-2"
+                          className="w-10 h-10 rounded-lg flex items-center justify-center border"
                           style={{
-                            backgroundColor: `${node.color}20`,
-                            borderColor: `${node.color}60`,
-                            boxShadow: automation.active ? `0 0 15px ${node.color}30` : "none"
+                            backgroundColor: `${node.color}10`, // 10% opacity
+                            borderColor: `${node.color}30`,
+                            color: node.color
                           }}
                         >
-                          <Icon className="w-4 h-4" style={{ color: node.color }} />
+                          <Icon className="w-4 h-4" />
                         </div>
 
                         {automation.active && nodeIndex < automation.nodes.length - 1 && (
@@ -157,7 +156,7 @@ const AutomationsHub = () => {
                           initial={{ scaleX: 0 }}
                           animate={{ scaleX: 1 }}
                           transition={{ delay: 1.3 + index * 0.1 + nodeIndex * 0.1 }}
-                          className="h-px w-6 bg-gradient-to-r from-white/20 to-white/10 origin-left"
+                          className="h-px w-6 bg-white/10 origin-left"
                         />
                       )}
                     </div>
@@ -166,14 +165,14 @@ const AutomationsHub = () => {
               </div>
 
               {automation.active && (
-                <div className="flex items-center gap-6 text-xs">
+                <div className="flex items-center gap-6 text-xs pt-3 border-t border-white/[0.06]">
                   <div>
-                    <p className="text-white/40 mb-1">Triggered</p>
-                    <p className="text-white/80">{automation.triggers}x</p>
+                    <p className="text-zinc-500 mb-1">Triggered</p>
+                    <p className="text-zinc-200 font-medium">{automation.triggers}x</p>
                   </div>
                   <div>
-                    <p className="text-white/40 mb-1">Total Saved</p>
-                    <p className="text-[#3BF7FF]">₹{(automation.saved / 1000).toFixed(0)}k</p>
+                    <p className="text-zinc-500 mb-1">Total Saved</p>
+                    <p className="text-emerald-400 font-medium">₹{(automation.saved / 1000).toFixed(0)}k</p>
                   </div>
                 </div>
               )}
@@ -186,13 +185,13 @@ const AutomationsHub = () => {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.4 }}
-        className="mt-6 p-6 rounded-2xl bg-gradient-to-r from-[#7433FF]/10 via-[#3BF7FF]/10 to-[#E4C580]/10 border border-white/10"
+        className="mt-6 p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06]"
       >
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm text-white/50 mb-1">Total Automated Savings</p>
+            <p className="text-sm text-zinc-500 mb-1">Total Automated Savings</p>
             <motion.p
-              className="text-3xl bg-gradient-to-r from-[#3BF7FF] to-[#E4C580] bg-clip-text text-transparent"
+              className="text-3xl font-medium text-white"
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ delay: 1.5 }}
@@ -202,31 +201,30 @@ const AutomationsHub = () => {
           </div>
 
           <motion.div
-            animate={{ rotate: [0, 360], scale: [1, 1.2, 1] }}
-            transition={{ duration: 3, repeat: Infinity }}
-            className="w-16 h-16 rounded-2xl bg-gradient-to-br from-[#7433FF] to-[#3BF7FF] flex items-center justify-center"
-            style={{ boxShadow: "0 0 40px rgba(116, 51, 255, 0.4)" }}
+            animate={{ rotate: [0, 360], scale: [1, 1.1, 1] }}
+            transition={{ duration: 4, repeat: Infinity }}
+            className="w-16 h-16 rounded-2xl bg-gradient-to-br from-blue-500/10 to-emerald-500/10 flex items-center justify-center border border-white/5"
           >
-            <Zap className="w-8 h-8" />
+            <Zap className="w-8 h-8 text-white" />
           </motion.div>
         </div>
 
-        <p className="text-xs text-white/40 mt-3">Your automations saved you ₹12,000 this week without any manual effort</p>
+        <p className="text-xs text-zinc-500 mt-3">Your automations saved you ₹12,000 this week without any manual effort</p>
       </motion.div>
 
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ delay: 1.6 }}
-        className="mt-4 p-4 rounded-xl bg-white/5 border border-white/5"
+        className="mt-4 p-4 rounded-xl bg-amber-500/[0.05] border border-amber-500/10"
       >
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[#E4C580]/20 to-transparent flex items-center justify-center">
-            <Zap className="w-4 h-4 text-[#E4C580]" />
+          <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
+            <Zap className="w-4 h-4 text-amber-500" />
           </div>
           <div className="flex-1">
-            <p className="text-xs">
-              <span className="text-[#E4C580]">Pro Tip:</span> Create custom automation flows with conditions and multiple actions
+            <p className="text-xs text-zinc-400">
+              <span className="text-amber-500 font-medium">Pro Tip:</span> Create custom automation flows with conditions and multiple actions
             </p>
           </div>
         </div>

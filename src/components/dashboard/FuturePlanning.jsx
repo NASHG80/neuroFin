@@ -16,7 +16,7 @@ const FuturePlanning = () => {
       estimatedCost: 2500000,
       probability: 85,
       icon: Heart,
-      color: "#E4C580",
+      color: "#f59e0b", // Amber
       status: "high-priority"
     },
     {
@@ -25,7 +25,7 @@ const FuturePlanning = () => {
       estimatedCost: 8500000,
       probability: 70,
       icon: Home,
-      color: "#7433FF",
+      color: "#8b5cf6", // Violet
       status: "planned"
     },
     {
@@ -34,7 +34,7 @@ const FuturePlanning = () => {
       estimatedCost: 1200000,
       probability: 75,
       icon: Car,
-      color: "#3BF7FF",
+      color: "#3b82f6", // Blue
       status: "planned"
     },
     {
@@ -43,7 +43,7 @@ const FuturePlanning = () => {
       estimatedCost: 5000000,
       probability: 60,
       icon: GraduationCap,
-      color: "#E4C580",
+      color: "#f59e0b", // Amber
       status: "future"
     },
     {
@@ -52,7 +52,7 @@ const FuturePlanning = () => {
       estimatedCost: 50000000,
       probability: 90,
       icon: Palmtree,
-      color: "#3BF7FF",
+      color: "#3b82f6", // Blue
       status: "future"
     }
   ]
@@ -64,31 +64,28 @@ const FuturePlanning = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.8 }}
-      className="p-6 rounded-3xl bg-gradient-to-br from-white/[0.07] to-white/[0.02] backdrop-blur-xl border border-white/10 overflow-hidden"
-      style={{
-        boxShadow: "0 8px 32px rgba(59, 247, 255, 0.08)"
-      }}
+      className="p-6 rounded-3xl bg-[#0A0A0A] border border-white/[0.06] overflow-hidden"
     >
       <div className="flex items-center justify-between mb-6">
         <div>
-          <h3 className="text-xl mb-1">Future Planning</h3>
-          <p className="text-xs text-white/50">AI-powered life timeline</p>
+          <h3 className="text-xl font-medium text-white mb-1">Future Planning</h3>
+          <p className="text-xs text-zinc-500">AI-powered life timeline</p>
         </div>
         <motion.div
           animate={{
             rotate: [0, 360],
-            scale: [1, 1.2, 1]
+            scale: [1, 1.1, 1]
           }}
           transition={{ duration: 3, repeat: Infinity }}
         >
-          <Sparkles className="w-5 h-5 text-[#3BF7FF]" />
+          <Sparkles className="w-5 h-5 text-blue-400" />
         </motion.div>
       </div>
 
       {/* Timeline */}
       <div className="relative">
-        {/* Vertical Line */}
-        <div className="absolute left-6 top-0 bottom-0 w-px bg-gradient-to-b from-[#7433FF] via-[#3BF7FF] to-[#E4C580] opacity-30" />
+        {/* Vertical Line - Clean */}
+        <div className="absolute left-6 top-0 bottom-0 w-px bg-white/10 opacity-50" />
 
         {/* Events */}
         <div className="space-y-6">
@@ -107,25 +104,16 @@ const FuturePlanning = () => {
                 {/* Timeline Node */}
                 <motion.div
                   className="relative z-10 flex-shrink-0"
-                  whileHover={{ scale: 1.2 }}
+                  whileHover={{ scale: 1.1 }}
                 >
                   <motion.div
-                    className="w-12 h-12 rounded-full flex items-center justify-center border-2"
+                    className="w-12 h-12 rounded-full flex items-center justify-center border-4 border-[#0A0A0A]"
                     style={{
-                      backgroundColor: `${event.color}20`,
-                      borderColor: event.color,
-                      boxShadow: `0 0 20px ${event.color}40`
+                      backgroundColor: `${event.color}15`, // 15% opacity
+                      color: event.color
                     }}
-                    animate={{
-                      boxShadow: [
-                        `0 0 20px ${event.color}40`,
-                        `0 0 30px ${event.color}60`,
-                        `0 0 20px ${event.color}40`
-                      ]
-                    }}
-                    transition={{ duration: 2, repeat: Infinity }}
                   >
-                    <Icon className="w-5 h-5" style={{ color: event.color }} />
+                    <Icon className="w-5 h-5" />
                   </motion.div>
 
                   {/* Particle Animation */}
@@ -156,23 +144,20 @@ const FuturePlanning = () => {
 
                 {/* Event Card */}
                 <motion.div
-                  whileHover={{ scale: 1.02, x: 4 }}
-                  className="flex-1 p-4 rounded-2xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 cursor-pointer"
-                  style={{
-                    background: `linear-gradient(135deg, ${event.color}10, transparent)`
-                  }}
+                  whileHover={{ scale: 1.01 }}
+                  className="flex-1 p-4 rounded-xl bg-white/[0.02] border border-white/[0.05] cursor-pointer hover:bg-white/[0.04] transition-colors"
                 >
                   <div className="flex items-start justify-between mb-2">
                     <div>
-                      <p className="text-sm mb-1">{event.name}</p>
-                      <p className="text-xs text-white/40">
+                      <p className="text-sm font-medium text-white mb-1">{event.name}</p>
+                      <p className="text-xs text-zinc-500">
                         {event.year} • {yearsAway} years away
                       </p>
                     </div>
                     <div
-                      className="px-2 py-1 rounded-lg text-xs"
+                      className="px-2 py-1 rounded-md text-[10px] font-medium"
                       style={{
-                        backgroundColor: `${event.color}20`,
+                        backgroundColor: `${event.color}15`,
                         color: event.color
                       }}
                     >
@@ -182,10 +167,10 @@ const FuturePlanning = () => {
 
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-xs text-white/40 mb-1">
+                      <p className="text-xs text-zinc-500 mb-1">
                         Estimated Cost
                       </p>
-                      <p className="text-sm" style={{ color: event.color }}>
+                      <p className="text-sm font-medium" style={{ color: event.color }}>
                         ₹{(event.estimatedCost / 100000).toFixed(1)}L
                       </p>
                     </div>
@@ -200,12 +185,12 @@ const FuturePlanning = () => {
                             scaleY: i < event.probability / 20 ? 1 : 0.3
                           }}
                           transition={{ delay: 1 + index * 0.15 + i * 0.1 }}
-                          className="w-1 h-6 rounded-full origin-bottom"
+                          className="w-1 h-5 rounded-full origin-bottom"
                           style={{
                             backgroundColor:
                               i < event.probability / 20
                                 ? event.color
-                                : "#ffffff20"
+                                : "#ffffff10"
                           }}
                         />
                       ))}
@@ -223,19 +208,19 @@ const FuturePlanning = () => {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 1.5 }}
-        className="mt-6 p-4 rounded-2xl bg-gradient-to-r from-[#7433FF]/10 to-[#3BF7FF]/10 border border-[#7433FF]/20"
+        className="mt-6 p-4 rounded-xl bg-white/[0.02] border border-white/[0.06]"
       >
         <div className="flex items-start gap-3">
           <motion.div
             animate={{ rotate: [0, 360] }}
             transition={{ duration: 4, repeat: Infinity, ease: "linear" }}
-            className="w-8 h-8 rounded-full bg-gradient-to-br from-[#7433FF] to-[#3BF7FF] flex items-center justify-center flex-shrink-0"
+            className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center flex-shrink-0"
           >
-            <Sparkles className="w-4 h-4" />
+            <Sparkles className="w-4 h-4 text-blue-400" />
           </motion.div>
           <div className="flex-1">
-            <p className="text-xs text-[#3BF7FF] mb-1">AI Recommendation</p>
-            <p className="text-xs text-white/70">
+            <p className="text-xs text-blue-400 mb-1 font-medium">AI Recommendation</p>
+            <p className="text-xs text-zinc-400 leading-relaxed">
               Start saving ₹45,000/month now to comfortably achieve your
               marriage goal by 2026. Auto-invest enabled.
             </p>
@@ -250,7 +235,7 @@ const FuturePlanning = () => {
         transition={{ delay: 1.6 }}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}
-        className="w-full mt-4 p-3 rounded-xl bg-gradient-to-r from-[#7433FF]/20 to-[#3BF7FF]/20 border border-[#7433FF]/30 hover:border-[#7433FF]/50 transition-all text-sm"
+        className="w-full mt-4 p-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/10 text-sm font-medium text-white transition-all"
       >
         Adjust Timeline
       </motion.button>
