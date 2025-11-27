@@ -81,36 +81,37 @@ const CashFlowAnalysis = () => {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="p-4 rounded-2xl bg-black/95 backdrop-blur-xl border border-white/20"
+          // CHANGED: Matte Black Tooltip
+          className="p-4 rounded-xl bg-[#0A0A0A] border border-white/10 shadow-2xl"
         >
-          <p className="text-sm text-white/70 mb-3">
+          <p className="text-xs text-zinc-500 mb-3 uppercase tracking-wide font-medium">
             {payload[0].payload.month}
           </p>
           <div className="space-y-2">
             <div className="flex items-center justify-between gap-6">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-[#3BF7FF]" />
-                <span className="text-xs text-white/60">Income</span>
+                <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                <span className="text-xs text-zinc-400">Income</span>
               </div>
-              <span className="text-sm text-white">
+              <span className="text-sm font-medium text-white">
                 ₹{payload[0].value.toLocaleString("en-IN")}
               </span>
             </div>
             <div className="flex items-center justify-between gap-6">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-[#FF6B6B]" />
-                <span className="text-xs text-white/60">Expenses</span>
+                <div className="w-2 h-2 rounded-full bg-rose-500" />
+                <span className="text-xs text-zinc-400">Expenses</span>
               </div>
-              <span className="text-sm text-white">
+              <span className="text-sm font-medium text-white">
                 ₹{payload[1].value.toLocaleString("en-IN")}
               </span>
             </div>
             <div className="flex items-center justify-between gap-6">
               <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full bg-[#E4C580]" />
-                <span className="text-xs text-white/60">Savings</span>
+                <div className="w-2 h-2 rounded-full bg-blue-500" />
+                <span className="text-xs text-zinc-400">Savings</span>
               </div>
-              <span className="text-sm text-white">
+              <span className="text-sm font-medium text-white">
                 ₹{payload[2].value.toLocaleString("en-IN")}
               </span>
             </div>
@@ -126,27 +127,25 @@ const CashFlowAnalysis = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
-      className="p-8 rounded-3xl bg-gradient-to-br from-white/[0.07] to-white/[0.02] backdrop-blur-xl border border-white/10"
-      style={{
-        boxShadow: "0 8px 32px rgba(59, 247, 255, 0.1)"
-      }}
+      // CHANGED: Matte Black Background
+      className="p-8 rounded-3xl bg-[#0A0A0A] border border-white/[0.06]"
     >
       <div className="flex items-start justify-between mb-8">
         <div>
-          <h3 className="text-2xl mb-2">Cash Flow Analysis</h3>
-          <p className="text-white/50">Income, expenses & savings breakdown</p>
+          <h3 className="text-2xl font-medium text-white mb-2">Cash Flow Analysis</h3>
+          <p className="text-zinc-500 text-sm">Income, expenses & savings breakdown</p>
         </div>
         <div className="flex gap-2">
           {["6months", "1year", "2years"].map(period => (
             <motion.button
               key={period}
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => setTimeframe(period)}
-              className={`px-4 py-2 rounded-xl text-sm transition-all ${
+              className={`px-4 py-2 rounded-lg text-xs font-medium transition-all ${
                 timeframe === period
-                  ? "bg-[#7433FF]/20 text-[#7433FF] border border-[#7433FF]/30"
-                  : "bg-white/5 text-white/50 hover:bg-white/10"
+                  ? "bg-white/[0.08] text-white border border-white/5"
+                  : "bg-transparent text-zinc-500 hover:text-white hover:bg-white/[0.02]"
               }`}
             >
               {period === "6months" ? "6M" : period === "1year" ? "1Y" : "2Y"}
@@ -157,82 +156,86 @@ const CashFlowAnalysis = () => {
 
       {/* Key Metrics */}
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+        {/* Income Card - Emerald */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="p-5 rounded-2xl bg-gradient-to-br from-[#3BF7FF]/10 to-transparent border border-[#3BF7FF]/20"
+          className="p-5 rounded-2xl bg-gradient-to-br from-emerald-500/[0.05] to-transparent border border-emerald-500/10"
         >
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-[#3BF7FF]/20 flex items-center justify-center">
-              <TrendingUp className="w-5 h-5 text-[#3BF7FF]" />
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 flex items-center justify-center border border-emerald-500/10">
+              <TrendingUp className="w-5 h-5 text-emerald-500" />
             </div>
-            <p className="text-sm text-white/60">Avg Income</p>
+            <p className="text-xs text-zinc-500 uppercase tracking-wide font-medium">Avg Income</p>
           </div>
-          <p className="text-2xl mb-1">₹{(avgIncome / 1000).toFixed(0)}k</p>
-          <div className="flex items-center gap-1 text-xs text-[#3BF7FF]">
+          <p className="text-2xl font-medium text-white mb-1">₹{(avgIncome / 1000).toFixed(0)}k</p>
+          <div className="flex items-center gap-1 text-xs text-emerald-500 font-medium">
             <ArrowUpRight className="w-3 h-3" />
-            <span>+8.5% vs last period</span>
+            <span>+8.5%</span>
           </div>
         </motion.div>
 
+        {/* Expenses Card - Rose */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="p-5 rounded-2xl bg-gradient-to-br from-[#FF6B6B]/10 to-transparent border border-[#FF6B6B]/20"
+          className="p-5 rounded-2xl bg-gradient-to-br from-rose-500/[0.05] to-transparent border border-rose-500/10"
         >
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-[#FF6B6B]/20 flex items-center justify-center">
-              <TrendingDown className="w-5 h-5 text-[#FF6B6B]" />
+            <div className="w-10 h-10 rounded-xl bg-rose-500/10 flex items-center justify-center border border-rose-500/10">
+              <TrendingDown className="w-5 h-5 text-rose-500" />
             </div>
-            <p className="text-sm text-white/60">Avg Expenses</p>
+            <p className="text-xs text-zinc-500 uppercase tracking-wide font-medium">Avg Expenses</p>
           </div>
-          <p className="text-2xl mb-1">₹{(avgExpenses / 1000).toFixed(0)}k</p>
-          <div className="flex items-center gap-1 text-xs text-[#3BF7FF]">
+          <p className="text-2xl font-medium text-white mb-1">₹{(avgExpenses / 1000).toFixed(0)}k</p>
+          <div className="flex items-center gap-1 text-xs text-emerald-500 font-medium">
             <ArrowDownRight className="w-3 h-3" />
-            <span>-3.2% vs last period</span>
+            <span>-3.2%</span>
           </div>
         </motion.div>
 
+        {/* Savings Card - Blue */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.5 }}
-          className="p-5 rounded-2xl bg-gradient-to-br from-[#E4C580]/10 to-transparent border border-[#E4C580]/20"
+          className="p-5 rounded-2xl bg-gradient-to-br from-blue-500/[0.05] to-transparent border border-blue-500/10"
         >
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-[#E4C580]/20 flex items-center justify-center">
-              <DollarSign className="w-5 h-5 text-[#E4C580]" />
+            <div className="w-10 h-10 rounded-xl bg-blue-500/10 flex items-center justify-center border border-blue-500/10">
+              <DollarSign className="w-5 h-5 text-blue-500" />
             </div>
-            <p className="text-sm text-white/60">Avg Savings</p>
+            <p className="text-xs text-zinc-500 uppercase tracking-wide font-medium">Avg Savings</p>
           </div>
-          <p className="text-2xl mb-1">₹{(avgSavings / 1000).toFixed(0)}k</p>
-          <div className="flex items-center gap-1 text-xs text-[#3BF7FF]">
+          <p className="text-2xl font-medium text-white mb-1">₹{(avgSavings / 1000).toFixed(0)}k</p>
+          <div className="flex items-center gap-1 text-xs text-emerald-500 font-medium">
             <ArrowUpRight className="w-3 h-3" />
-            <span>+{savingsChange}% vs last period</span>
+            <span>+{savingsChange}%</span>
           </div>
         </motion.div>
 
+        {/* Savings Rate Card - Amber */}
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.6 }}
-          className="p-5 rounded-2xl bg-gradient-to-br from-[#7433FF]/10 to-transparent border border-[#7433FF]/20"
+          className="p-5 rounded-2xl bg-gradient-to-br from-amber-500/[0.05] to-transparent border border-amber-500/10"
         >
           <div className="flex items-center gap-2 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-[#7433FF]/20 flex items-center justify-center">
-              <div className="text-lg">{savingsRate}%</div>
+            <div className="w-10 h-10 rounded-xl bg-amber-500/10 flex items-center justify-center border border-amber-500/10">
+              <div className="text-sm font-bold text-amber-500">%</div>
             </div>
-            <p className="text-sm text-white/60">Savings Rate</p>
+            <p className="text-xs text-zinc-500 uppercase tracking-wide font-medium">Savings Rate</p>
           </div>
-          <p className="text-2xl mb-1">{savingsRate}%</p>
-          <div className="w-full h-2 bg-white/5 rounded-full overflow-hidden">
+          <p className="text-2xl font-medium text-white mb-1">{savingsRate}%</p>
+          <div className="w-full h-1.5 bg-zinc-800 rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${savingsRate}%` }}
               transition={{ duration: 1, delay: 0.7 }}
-              className="h-full rounded-full bg-gradient-to-r from-[#7433FF] to-[#3BF7FF]"
+              className="h-full rounded-full bg-amber-500"
             />
           </div>
         </motion.div>
@@ -249,16 +252,16 @@ const CashFlowAnalysis = () => {
           <BarChart data={currentData} barGap={8}>
             <defs>
               <linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#3BF7FF" stopOpacity={0.8} />
-                <stop offset="100%" stopColor="#3BF7FF" stopOpacity={0.3} />
+                <stop offset="0%" stopColor="#10b981" stopOpacity={0.8} />
+                <stop offset="100%" stopColor="#10b981" stopOpacity={0.3} />
               </linearGradient>
               <linearGradient id="expensesGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#FF6B6B" stopOpacity={0.8} />
-                <stop offset="100%" stopColor="#FF6B6B" stopOpacity={0.3} />
+                <stop offset="0%" stopColor="#f43f5e" stopOpacity={0.8} />
+                <stop offset="100%" stopColor="#f43f5e" stopOpacity={0.3} />
               </linearGradient>
               <linearGradient id="savingsGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#E4C580" stopOpacity={0.8} />
-                <stop offset="100%" stopColor="#E4C580" stopOpacity={0.3} />
+                <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.8} />
+                <stop offset="100%" stopColor="#3b82f6" stopOpacity={0.3} />
               </linearGradient>
             </defs>
             <CartesianGrid
@@ -268,26 +271,28 @@ const CashFlowAnalysis = () => {
             />
             <XAxis
               dataKey="month"
-              stroke="rgba(255,255,255,0.4)"
+              stroke="rgba(255,255,255,0.2)"
               style={{ fontSize: "12px" }}
               tickLine={false}
+              axisLine={false}
             />
             <YAxis
-              stroke="rgba(255,255,255,0.4)"
+              stroke="rgba(255,255,255,0.2)"
               style={{ fontSize: "12px" }}
               tickFormatter={value => `₹${(value / 1000).toFixed(0)}k`}
               tickLine={false}
+              axisLine={false}
             />
             <Tooltip
               content={<CustomTooltip />}
-              cursor={{ fill: "rgba(255,255,255,0.05)" }}
+              cursor={{ fill: "rgba(255,255,255,0.02)" }}
             />
             <Legend
               wrapperStyle={{ paddingTop: "20px" }}
               iconType="circle"
               formatter={value => (
                 <span
-                  style={{ color: "rgba(255,255,255,0.7)", fontSize: "12px" }}
+                  style={{ color: "#a1a1aa", fontSize: "12px", fontWeight: 500 }}
                 >
                   {value}
                 </span>
@@ -296,19 +301,19 @@ const CashFlowAnalysis = () => {
             <Bar
               dataKey="income"
               fill="url(#incomeGradient)"
-              radius={[8, 8, 0, 0]}
+              radius={[4, 4, 0, 0]}
               name="Income"
             />
             <Bar
               dataKey="expenses"
               fill="url(#expensesGradient)"
-              radius={[8, 8, 0, 0]}
+              radius={[4, 4, 0, 0]}
               name="Expenses"
             />
             <Bar
               dataKey="savings"
               fill="url(#savingsGradient)"
-              radius={[8, 8, 0, 0]}
+              radius={[4, 4, 0, 0]}
               name="Savings"
             />
           </BarChart>
@@ -322,27 +327,27 @@ const CashFlowAnalysis = () => {
         transition={{ delay: 0.9 }}
         className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-4"
       >
-        <div className="p-4 rounded-2xl bg-[#3BF7FF]/5 border border-[#3BF7FF]/20">
+        <div className="p-4 rounded-xl bg-blue-500/[0.03] border border-blue-500/10">
           <div className="flex items-start gap-3">
-            <div className="w-8 h-8 rounded-lg bg-[#3BF7FF]/20 flex items-center justify-center flex-shrink-0">
-              <TrendingUp className="w-4 h-4 text-[#3BF7FF]" />
+            <div className="w-8 h-8 rounded-lg bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+              <TrendingUp className="w-4 h-4 text-blue-500" />
             </div>
             <div>
-              <p className="text-sm mb-1">Peak Saving Month</p>
-              <p className="text-xs text-white/60">
+              <p className="text-sm font-medium text-white mb-1">Peak Saving Month</p>
+              <p className="text-xs text-zinc-400 leading-relaxed">
                 October with ₹47,000 saved - Your best month this year!
               </p>
             </div>
           </div>
         </div>
-        <div className="p-4 rounded-2xl bg-[#E4C580]/5 border border-[#E4C580]/20">
+        <div className="p-4 rounded-xl bg-amber-500/[0.03] border border-amber-500/10">
           <div className="flex items-start gap-3">
-            <div className="w-8 h-8 rounded-lg bg-[#E4C580]/20 flex items-center justify-center flex-shrink-0">
-              <DollarSign className="w-4 h-4 text-[#E4C580]" />
+            <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center flex-shrink-0">
+              <DollarSign className="w-4 h-4 text-amber-500" />
             </div>
             <div>
-              <p className="text-sm mb-1">Smart Insight</p>
-              <p className="text-xs text-white/60">
+              <p className="text-sm font-medium text-white mb-1">Smart Insight</p>
+              <p className="text-xs text-zinc-400 leading-relaxed">
                 Your savings rate is 12% above the national average. Excellent
                 work!
               </p>

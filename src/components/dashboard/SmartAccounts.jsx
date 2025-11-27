@@ -12,17 +12,16 @@ import { useState } from "react"
 const SmartAccounts = ({ netWorth }) => {
   const [balancesVisible, setBalancesVisible] = useState(true)
 
-  // We use the prop netWorth for total, but keep mock accounts for individual rows for now
-  // Ideally these would also be passed via props
   const accounts = [
     {
       name: "HDFC Savings",
       type: "Bank Account",
-      balance: netWorth ? netWorth * 0.6 : 2847650, // Mock distribution
+      balance: netWorth ? netWorth * 0.6 : 2847650,
       change: 12500,
       icon: Building2,
-      color: "#3BF7FF",
-      gradient: "from-[#3BF7FF]/20 to-[#3BF7FF]/5"
+      color: "#10b981", // Emerald
+      bg: "bg-emerald-500/10",
+      border: "border-emerald-500/20"
     },
     {
       name: "ICICI Credit Card",
@@ -30,8 +29,9 @@ const SmartAccounts = ({ netWorth }) => {
       balance: -45200,
       change: -8300,
       icon: CreditCard,
-      color: "#7433FF",
-      gradient: "from-[#7433FF]/20 to-[#7433FF]/5"
+      color: "#f43f5e", // Rose
+      bg: "bg-rose-500/10",
+      border: "border-rose-500/20"
     },
     {
       name: "Paytm Wallet",
@@ -39,17 +39,19 @@ const SmartAccounts = ({ netWorth }) => {
       balance: 12450,
       change: 2100,
       icon: Wallet,
-      color: "#E4C580",
-      gradient: "from-[#E4C580]/20 to-[#E4C580]/5"
+      color: "#f59e0b", // Amber
+      bg: "bg-amber-500/10",
+      border: "border-amber-500/20"
     },
     {
       name: "Zerodha",
       type: "Investment",
-      balance: netWorth ? netWorth * 0.4 : 1850000, // Mock distribution
+      balance: netWorth ? netWorth * 0.4 : 1850000,
       change: 45000,
       icon: TrendingUp,
-      color: "#3BF7FF",
-      gradient: "from-[#3BF7FF]/20 to-[#3BF7FF]/5"
+      color: "#3b82f6", // Blue
+      bg: "bg-blue-500/10",
+      border: "border-blue-500/20"
     }
   ]
 
@@ -67,23 +69,20 @@ const SmartAccounts = ({ netWorth }) => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.3 }}
-      className="p-6 rounded-3xl bg-gradient-to-br from-white/[0.07] to-white/[0.02] backdrop-blur-xl border border-white/10"
-      style={{
-        boxShadow: "0 8px 32px rgba(59, 247, 255, 0.08)"
-      }}
+      className="p-6 rounded-3xl bg-[#0A0A0A] border border-white/[0.06]"
     >
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-xl">Smart Accounts</h3>
+        <h3 className="text-xl font-medium text-white">Smart Accounts</h3>
         <motion.button
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setBalancesVisible(!balancesVisible)}
-          className="p-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors"
+          className="p-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors text-zinc-400 hover:text-white"
         >
           {balancesVisible ? (
-            <Eye className="w-4 h-4 text-white/70" />
+            <Eye className="w-4 h-4" />
           ) : (
-            <EyeOff className="w-4 h-4 text-white/70" />
+            <EyeOff className="w-4 h-4" />
           )}
         </motion.button>
       </div>
@@ -99,40 +98,19 @@ const SmartAccounts = ({ netWorth }) => {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: 0.4 + index * 0.1 }}
-              whileHover={{ scale: 1.02, x: 4 }}
-              className={`relative p-4 rounded-2xl bg-gradient-to-br ${account.gradient} border border-white/5 cursor-pointer group overflow-hidden`}
+              whileHover={{ scale: 1.01 }}
+              className={`relative p-4 rounded-2xl bg-white/[0.02] border border-white/[0.05] cursor-pointer group overflow-hidden hover:border-white/10`}
             >
-              {/* Shimmer Effect on Balance Increase */}
-              {isPositiveChange && (
-                <motion.div
-                  initial={{ x: "-100%", opacity: 0 }}
-                  animate={{ x: "200%", opacity: [0, 1, 0] }}
-                  transition={{
-                    duration: 2,
-                    delay: index * 0.2,
-                    repeat: Infinity,
-                    repeatDelay: 5
-                  }}
-                  className="absolute inset-0 bg-gradient-to-r from-transparent via-[#E4C580]/30 to-transparent"
-                  style={{ transform: "skewX(-20deg)" }}
-                />
-              )}
-
               <div className="relative z-10 flex items-center gap-4">
-                <motion.div
-                  whileHover={{ rotate: 360 }}
-                  transition={{ duration: 0.6 }}
-                  className="w-12 h-12 rounded-xl bg-white/5 flex items-center justify-center"
-                  style={{
-                    boxShadow: `0 0 20px ${account.color}30`
-                  }}
+                <div
+                  className={`w-12 h-12 rounded-xl flex items-center justify-center ${account.bg} border ${account.border}`}
                 >
-                  <Icon className="w-6 h-6" style={{ color: account.color }} />
-                </motion.div>
+                  <Icon className="w-5 h-5" style={{ color: account.color }} />
+                </div>
 
                 <div className="flex-1">
-                  <p className="text-sm text-white/50">{account.type}</p>
-                  <p className="mt-0.5">{account.name}</p>
+                  <p className="text-xs text-zinc-500 font-medium uppercase tracking-wide">{account.type}</p>
+                  <p className="mt-0.5 text-white font-medium">{account.name}</p>
                 </div>
 
                 <div className="text-right">
@@ -140,14 +118,14 @@ const SmartAccounts = ({ netWorth }) => {
                     key={balancesVisible ? "visible" : "hidden"}
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="tracking-tight"
+                    className="tracking-tight text-white font-medium"
                   >
                     {account.balance < 0 && "-"}
                     {formatCurrency(account.balance)}
                   </motion.p>
                   <p
-                    className={`text-sm mt-0.5 ${
-                      isPositiveChange ? "text-[#3BF7FF]" : "text-[#FF6B6B]"
+                    className={`text-xs mt-0.5 ${
+                      isPositiveChange ? "text-emerald-500" : "text-rose-500"
                     }`}
                   >
                     {isPositiveChange ? "+" : ""}
@@ -160,25 +138,24 @@ const SmartAccounts = ({ netWorth }) => {
         })}
       </div>
 
-      {/* Total Net Worth */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.8 }}
-        className="mt-6 pt-6 border-t border-white/10"
+        className="mt-6 pt-6 border-t border-white/[0.06]"
       >
         <div className="flex items-center justify-between">
-          <p className="text-white/50">Total Net Worth</p>
+          <p className="text-zinc-500">Total Net Worth</p>
           <div className="text-right">
             <motion.p
-              className="text-2xl tracking-tight bg-gradient-to-r from-[#3BF7FF] to-[#E4C580] bg-clip-text text-transparent"
+              className="text-2xl tracking-tight text-white font-semibold"
               key={balancesVisible ? "visible" : "hidden"}
               initial={{ opacity: 0, scale: 0.9 }}
               animate={{ opacity: 1, scale: 1 }}
             >
               {formatCurrency(netWorth || 4664900)}
             </motion.p>
-            <p className="text-sm text-[#3BF7FF] mt-1">+₹51,300 this month</p>
+            <p className="text-sm text-emerald-500 mt-1">+₹51,300 this month</p>
           </div>
         </div>
       </motion.div>

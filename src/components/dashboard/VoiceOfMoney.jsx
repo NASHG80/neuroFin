@@ -68,28 +68,27 @@ const askAI = async () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
-      className="p-8 rounded-3xl bg-gradient-to-br from-white/[0.07] to-white/[0.02] 
-      backdrop-blur-xl border border-white/10 overflow-hidden relative"
-      style={{ boxShadow: "0 8px 32px rgba(116, 51, 255, 0.1)" }}
+      // CHANGED: Matte Black Background
+      className="p-8 rounded-3xl bg-[#0A0A0A] border border-white/[0.06] overflow-hidden relative"
     >
-      {/* Background Animation */}
+      {/* Background Animation - Subtle Gold Glow */}
       <motion.div
         animate={{
           background: [
-            "radial-gradient(circle at 20% 50%, rgba(116, 51, 255, 0.1), transparent 50%)",
-            "radial-gradient(circle at 80% 50%, rgba(59, 247, 255, 0.1), transparent 50%)",
-            "radial-gradient(circle at 20% 50%, rgba(116, 51, 255, 0.1), transparent 50%)",
+            "radial-gradient(circle at 20% 50%, rgba(245, 158, 11, 0.03), transparent 60%)", // Amber-500
+            "radial-gradient(circle at 80% 50%, rgba(217, 119, 6, 0.03), transparent 60%)",  // Amber-600
+            "radial-gradient(circle at 20% 50%, rgba(245, 158, 11, 0.03), transparent 60%)",
           ],
         }}
-        transition={{ duration: 5, repeat: Infinity }}
+        transition={{ duration: 8, repeat: Infinity }}
         className="absolute inset-0"
       />
 
       <div className="relative">
         <div className="flex items-start justify-between mb-8">
           <div>
-            <h3 className="text-xl mb-2">Voice of Money</h3>
-            <p className="text-white/50 text-sm">
+            <h3 className="text-xl font-medium text-white mb-2">Voice of Money</h3>
+            <p className="text-zinc-500 text-sm">
               Ask your financial questions — AI will speak the answer.
             </p>
           </div>
@@ -102,8 +101,9 @@ const askAI = async () => {
             value={question}
             onChange={(e) => setQuestion(e.target.value)}
             placeholder="Ask anything about your money…"
-            className="flex-1 px-4 py-3 rounded-xl bg-white/10 border border-white/10 
-            text-sm outline-none focus:border-[#3BF7FF]"
+            // CHANGED: Dark Zinc Input
+            className="flex-1 px-4 py-3 rounded-xl bg-white/[0.03] border border-white/[0.08] 
+            text-sm text-white placeholder:text-zinc-600 outline-none focus:border-amber-500/50 focus:bg-white/[0.05] transition-all"
           />
 
           <motion.button
@@ -111,19 +111,20 @@ const askAI = async () => {
             whileTap={{ scale: 0.95 }}
             disabled={loading}
             onClick={askAI}
-            className="p-3 rounded-xl bg-gradient-to-br from-[#7433FF] to-[#3BF7FF] 
-            hover:shadow-lg hover:shadow-[#7433FF]/30 transition-all disabled:opacity-50"
+            // CHANGED: Rich Amber Gradient Button
+            className="p-3 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 text-black
+            shadow-[0_0_20px_rgba(245,158,11,0.2)] hover:shadow-[0_0_30px_rgba(245,158,11,0.4)] transition-all disabled:opacity-50"
           >
             <Send className="w-5 h-5" />
           </motion.button>
         </div>
 
-        {/* Audio Waves */}
-        <div className="h-40 flex items-center justify-center gap-1 mb-8">
+        {/* Audio Waves - Premium Blue to Gold Gradient */}
+        <div className="h-40 flex items-center justify-center gap-1 mb-8 border-b border-white/[0.06]">
           {soundWaves.map((wave, index) => (
             <motion.div
               key={wave.id}
-              className="w-1 rounded-full bg-gradient-to-t from-[#7433FF] via-[#3BF7FF] to-[#E4C580]"
+              className="w-1 rounded-full bg-gradient-to-t from-blue-600 via-indigo-500 to-amber-400"
               animate={{
                 height: isPlaying
                   ? [
@@ -133,7 +134,7 @@ const askAI = async () => {
                       wave.height,
                     ]
                   : 20,
-                opacity: isPlaying ? [0.3, 1, 0.5, 0.8] : 0.2,
+                opacity: isPlaying ? [0.6, 1, 0.8, 0.9] : 0.2,
               }}
               transition={{
                 duration: 0.8,
@@ -150,22 +151,22 @@ const askAI = async () => {
           <motion.div
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="p-5 rounded-2xl bg-gradient-to-r from-[#7433FF]/10 to-[#3BF7FF]/10 
-            border border-[#7433FF]/20 mb-6"
+            // CHANGED: Clean Matte Box
+            className="p-5 rounded-2xl bg-white/[0.02] border border-white/[0.06] mb-6"
           >
             <div className="flex items-start gap-4">
               <motion.div
-                animate={{ scale: [1, 1.2, 1] }}
+                animate={{ scale: [1, 1.1, 1] }}
                 transition={{ duration: 2, repeat: Infinity }}
-                className="w-10 h-10 rounded-full bg-gradient-to-br from-[#7433FF] 
-                to-[#3BF7FF] flex items-center justify-center flex-shrink-0"
+                // CHANGED: Amber Icon Container
+                className="w-10 h-10 rounded-full bg-amber-500/10 border border-amber-500/20 flex items-center justify-center flex-shrink-0 text-amber-500"
               >
                 <Zap className="w-5 h-5" />
               </motion.div>
 
               <div className="flex-1">
-                <p className="text-sm mb-2 text-[#3BF7FF]">AI says:</p>
-                <p className="text-sm text-white/80 leading-relaxed">{answer}</p>
+                <p className="text-xs font-medium mb-2 text-amber-500 uppercase tracking-wide">AI Analysis</p>
+                <p className="text-sm text-zinc-300 leading-relaxed">{answer}</p>
               </div>
             </div>
           </motion.div>

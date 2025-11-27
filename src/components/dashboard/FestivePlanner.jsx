@@ -25,7 +25,7 @@ const FestivePlanner = () => {
         { name: "Decorations", amount: 15000, icon: HomeIcon },
         { name: "Shopping", amount: 10000, icon: Sparkles }
       ],
-      color: "#E4C580",
+      color: "#f59e0b", // Amber
       emoji: "🪔"
     },
     {
@@ -39,7 +39,7 @@ const FestivePlanner = () => {
         { name: "Food & Drinks", amount: 10000, icon: Gift },
         { name: "Gatherings", amount: 7000, icon: Users }
       ],
-      color: "#7433FF",
+      color: "#8b5cf6", // Violet
       emoji: "🎨"
     },
     {
@@ -53,37 +53,29 @@ const FestivePlanner = () => {
         { name: "Parties", amount: 15000, icon: Users },
         { name: "Gifts", amount: 5000, icon: Gift }
       ],
-      color: "#3BF7FF",
+      color: "#3b82f6", // Blue
       emoji: "🎉"
     }
   ]
 
   const festival = festivals[selectedFestival]
-  const savingsProgress = 45 // 45% of target saved
+  const savingsProgress = 45
 
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.5 }}
-      className="p-8 rounded-3xl bg-gradient-to-br from-white/[0.07] to-white/[0.02] backdrop-blur-xl border border-white/10 overflow-hidden"
-      style={{
-        boxShadow: "0 8px 32px rgba(228, 197, 128, 0.08)"
-      }}
+      className="p-8 rounded-3xl bg-[#0A0A0A] border border-white/[0.06] overflow-hidden"
     >
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h3 className="text-xl mb-2">Festive Planner</h3>
-          <p className="text-white/50">
-            Smart budgeting for celebrations ahead
+          <h3 className="text-xl font-medium text-white mb-1">Festive Planner</h3>
+          <p className="text-zinc-500 text-sm">
+            Smart budgeting for celebrations
           </p>
         </div>
-        <motion.div
-          animate={{ rotate: [0, 10, -10, 0] }}
-          transition={{ duration: 2, repeat: Infinity, repeatDelay: 3 }}
-        >
-          <Calendar className="w-6 h-6 text-[#E4C580]" />
-        </motion.div>
+        <Calendar className="w-6 h-6 text-zinc-400" />
       </div>
 
       {/* Festival Selector */}
@@ -91,21 +83,19 @@ const FestivePlanner = () => {
         {festivals.map((fest, index) => (
           <motion.button
             key={fest.name}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
             onClick={() => setSelectedFestival(index)}
-            className={`flex-1 p-4 rounded-2xl transition-all ${
+            className={`flex-1 p-4 rounded-xl transition-all border ${
               selectedFestival === index
-                ? "bg-white/10 border-white/20"
-                : "bg-white/5 border-white/5 hover:bg-white/8"
-            } border`}
-            style={{
-              boxShadow:
-                selectedFestival === index ? `0 0 30px ${fest.color}30` : "none"
-            }}
+                ? "bg-white/[0.08] border-white/10"
+                : "bg-transparent border-white/[0.05] hover:bg-white/[0.02]"
+            }`}
           >
-            <div className="text-2xl mb-1">{fest.emoji}</div>
-            <p className="text-sm">{fest.name.split(" ")[0]}</p>
+            <div className="text-2xl mb-2">{fest.emoji}</div>
+            <p className={`text-xs font-medium ${selectedFestival === index ? "text-white" : "text-zinc-500"}`}>
+                {fest.name.split(" ")[0]}
+            </p>
           </motion.button>
         ))}
       </div>
@@ -115,89 +105,64 @@ const FestivePlanner = () => {
         key={selectedFestival}
         initial={{ opacity: 0, x: 20 }}
         animate={{ opacity: 1, x: 0 }}
-        className="mb-6 p-6 rounded-2xl bg-gradient-to-br from-white/5 to-transparent border border-white/10"
-        style={{
-          background: `linear-gradient(135deg, ${festival.color}15, transparent)`
-        }}
+        className="mb-6 p-6 rounded-2xl bg-white/[0.02] border border-white/[0.06]"
       >
-        <div className="flex items-start justify-between mb-4">
+        <div className="flex items-start justify-between mb-6">
           <div>
-            <p className="text-2xl mb-1">{festival.name}</p>
-            <p className="text-white/50">{festival.date}</p>
+            <p className="text-2xl font-medium text-white mb-1">{festival.name}</p>
+            <p className="text-zinc-500 text-sm">{festival.date}</p>
           </div>
           <div className="text-right">
-            <p className="text-sm text-white/50 mb-1">Days Left</p>
-            <motion.p
-              key={festival.daysLeft}
-              initial={{ scale: 1.5, opacity: 0 }}
-              animate={{ scale: 1, opacity: 1 }}
-              className="text-3xl"
-              style={{ color: festival.color }}
-            >
+            <p className="text-xs text-zinc-500 mb-1">Days Left</p>
+            <p className="text-2xl font-medium" style={{ color: festival.color }}>
               {festival.daysLeft}
-            </motion.p>
+            </p>
           </div>
         </div>
 
         {/* Estimated Spend */}
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div className="p-4 rounded-xl bg-black/20">
-            <p className="text-sm text-white/50 mb-1">Estimated Spend</p>
-            <p className="text-2xl">
+        <div className="grid grid-cols-2 gap-4 mb-6">
+          <div className="p-4 rounded-xl bg-black/40 border border-white/5">
+            <p className="text-xs text-zinc-500 mb-1">Estimated</p>
+            <p className="text-xl font-medium text-white">
               ₹{festival.estimatedSpend.toLocaleString("en-IN")}
             </p>
           </div>
-          <div className="p-4 rounded-xl bg-black/20">
-            <p className="text-sm text-white/50 mb-1">Last Year</p>
+          <div className="p-4 rounded-xl bg-black/40 border border-white/5">
+            <p className="text-xs text-zinc-500 mb-1">Last Year</p>
             <div className="flex items-center gap-2">
-              <p className="text-2xl">
+              <p className="text-xl font-medium text-zinc-300">
                 ₹{festival.lastYearSpend.toLocaleString("en-IN")}
               </p>
-              <TrendingUp className="w-4 h-4 text-[#3BF7FF]" />
             </div>
           </div>
         </div>
 
         {/* Savings Progress */}
-        <div className="mb-4">
+        <div className="mb-6">
           <div className="flex items-center justify-between mb-2">
-            <p className="text-sm text-white/70">Savings Progress</p>
-            <p className="text-sm" style={{ color: festival.color }}>
+            <p className="text-sm text-zinc-400">Savings Progress</p>
+            <p className="text-sm font-medium" style={{ color: festival.color }}>
               {savingsProgress}%
             </p>
           </div>
-          <div className="relative h-3 bg-white/5 rounded-full overflow-hidden">
+          <div className="relative h-2 bg-white/10 rounded-full overflow-hidden">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${savingsProgress}%` }}
               transition={{ duration: 1.5, ease: "easeOut" }}
-              className="h-full rounded-full relative"
-              style={{
-                background: `linear-gradient(90deg, ${festival.color}, ${festival.color}CC)`,
-                boxShadow: `0 0 20px ${festival.color}`
-              }}
-            >
-              {/* Shimmer effect */}
-              <motion.div
-                animate={{ x: ["-100%", "200%"] }}
-                transition={{ duration: 2, repeat: Infinity, repeatDelay: 1 }}
-                className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent"
-                style={{ transform: "skewX(-20deg)" }}
-              />
-            </motion.div>
+              className="h-full rounded-full"
+              style={{ backgroundColor: festival.color }}
+            />
           </div>
-          <p className="text-xs text-white/40 mt-2">
-            ₹
-            {Math.round(
-              (festival.estimatedSpend * savingsProgress) / 100
-            ).toLocaleString("en-IN")}{" "}
-            saved of ₹{festival.estimatedSpend.toLocaleString("en-IN")}
+          <p className="text-xs text-zinc-600 mt-2">
+            ₹{Math.round((festival.estimatedSpend * savingsProgress) / 100).toLocaleString("en-IN")} saved
           </p>
         </div>
 
         {/* Category Breakdown */}
         <div className="space-y-3">
-          <p className="text-sm text-white/50">Planned Categories</p>
+          <p className="text-xs text-zinc-500 uppercase tracking-wide">Allocations</p>
           {festival.categories.map((category, index) => {
             const Icon = category.icon
             return (
@@ -206,21 +171,20 @@ const FestivePlanner = () => {
                 initial={{ opacity: 0, x: -10 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="flex items-center justify-between p-3 rounded-xl bg-black/20 hover:bg-black/30 transition-colors"
+                className="flex items-center justify-between p-3 rounded-xl bg-white/[0.02] border border-white/[0.04]"
               >
                 <div className="flex items-center gap-3">
                   <div
-                    className="w-8 h-8 rounded-lg flex items-center justify-center"
-                    style={{ backgroundColor: `${festival.color}20` }}
+                    className="w-8 h-8 rounded-lg flex items-center justify-center bg-white/5"
                   >
                     <Icon
                       className="w-4 h-4"
                       style={{ color: festival.color }}
                     />
                   </div>
-                  <p className="text-sm">{category.name}</p>
+                  <p className="text-sm text-zinc-300">{category.name}</p>
                 </div>
-                <p className="text-sm">
+                <p className="text-sm font-medium text-white">
                   ₹{category.amount.toLocaleString("en-IN")}
                 </p>
               </motion.div>
@@ -229,51 +193,14 @@ const FestivePlanner = () => {
         </div>
       </motion.div>
 
-      {/* Action Buttons */}
       <div className="grid grid-cols-2 gap-3">
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className="p-4 rounded-xl bg-gradient-to-r from-[#7433FF]/20 to-[#3BF7FF]/20 border border-[#7433FF]/30 hover:border-[#7433FF]/50 transition-all"
-        >
-          <p className="text-sm">Adjust Budget</p>
-        </motion.button>
-        <motion.button
-          whileHover={{ scale: 1.02 }}
-          whileTap={{ scale: 0.98 }}
-          className="p-4 rounded-xl bg-gradient-to-r from-[#E4C580]/20 to-[#E4C580]/10 border border-[#E4C580]/30 hover:border-[#E4C580]/50 transition-all"
-        >
-          <p className="text-sm">Save More</p>
-        </motion.button>
+        <button className="p-3 rounded-xl bg-white/[0.05] border border-white/10 text-sm font-medium text-white hover:bg-white/10 transition-colors">
+          Adjust Budget
+        </button>
+        <button className="p-3 rounded-xl bg-white text-black text-sm font-medium hover:bg-zinc-200 transition-colors">
+          Save More
+        </button>
       </div>
-
-      {/* Fireworks Animation */}
-      <motion.div
-        className="absolute top-8 right-8 pointer-events-none"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: [0, 1, 0] }}
-        transition={{ duration: 2, repeat: Infinity, repeatDelay: 5 }}
-      >
-        {[...Array(6)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="absolute w-1 h-1 rounded-full"
-            style={{ backgroundColor: festival.color }}
-            initial={{ x: 0, y: 0, opacity: 1 }}
-            animate={{
-              x: [0, Math.cos((i * 60 * Math.PI) / 180) * 30],
-              y: [0, Math.sin((i * 60 * Math.PI) / 180) * 30],
-              opacity: [1, 0]
-            }}
-            transition={{
-              duration: 1,
-              delay: i * 0.1,
-              repeat: Infinity,
-              repeatDelay: 5
-            }}
-          />
-        ))}
-      </motion.div>
     </motion.div>
   )
 }

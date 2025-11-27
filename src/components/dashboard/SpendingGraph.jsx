@@ -48,28 +48,28 @@ const SpendingGraph = () => {
       name: "Dining",
       amount: 12500,
       percentage: 24,
-      color: "#3BF7FF",
+      color: "#3b82f6", // Blue-500
       icon: Coffee
     },
     {
       name: "Shopping",
       amount: 18200,
       percentage: 34,
-      color: "#7433FF",
+      color: "#8b5cf6", // Violet-500
       icon: ShoppingBag
     },
     {
       name: "Housing",
       amount: 15000,
       percentage: 28,
-      color: "#E4C580",
+      color: "#f59e0b", // Amber-500
       icon: Home
     },
     {
       name: "Transport",
       amount: 7300,
       percentage: 14,
-      color: "#FF6B6B",
+      color: "#f43f5e", // Rose-500
       icon: Car
     }
   ]
@@ -80,18 +80,15 @@ const SpendingGraph = () => {
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="p-4 rounded-2xl bg-black/90 backdrop-blur-xl border border-white/20"
-          style={{
-            boxShadow: "0 8px 32px rgba(0, 0, 0, 0.4)"
-          }}
+          className="p-4 rounded-xl bg-[#0A0A0A] border border-white/10 shadow-xl"
         >
-          <p className="text-sm text-white/50 mb-2">
+          <p className="text-xs text-zinc-500 mb-2">
             {payload[0].payload.month}
           </p>
-          <p className="text-[#3BF7FF] mb-1">
+          <p className="text-[#3b82f6] text-sm font-medium mb-1">
             Spending: ₹{payload[0].value.toLocaleString("en-IN")}
           </p>
-          <p className="text-[#E4C580]">
+          <p className="text-[#10b981] text-sm font-medium">
             Income: ₹{payload[1].value.toLocaleString("en-IN")}
           </p>
         </motion.div>
@@ -105,30 +102,27 @@ const SpendingGraph = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.4 }}
-      className="p-8 rounded-3xl bg-gradient-to-br from-white/[0.07] to-white/[0.02] backdrop-blur-xl border border-white/10 overflow-hidden group"
-      style={{
-        boxShadow: "0 8px 32px rgba(116, 51, 255, 0.08)"
-      }}
+      className="p-8 rounded-3xl bg-[#0A0A0A] border border-white/[0.06]"
     >
       <div className="flex items-start justify-between mb-8">
         <div>
-          <h3 className="text-xl mb-2">Intelligent Spending</h3>
-          <p className="text-white/50">
+          <h3 className="text-xl font-medium text-white mb-1">Intelligent Spending</h3>
+          <p className="text-zinc-500 text-sm">
             AI-powered insights on your money flow
           </p>
         </div>
         <div className="flex gap-2">
           <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-4 py-2 rounded-xl bg-[#7433FF]/20 text-[#7433FF] border border-[#7433FF]/30 text-sm"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="px-4 py-2 rounded-lg bg-white/[0.08] text-white border border-white/5 text-xs font-medium"
           >
             This Month
           </motion.button>
           <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            className="px-4 py-2 rounded-xl bg-white/5 text-white/50 text-sm hover:bg-white/10"
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.98 }}
+            className="px-4 py-2 rounded-lg bg-transparent text-zinc-500 border border-transparent hover:bg-white/[0.02] text-xs"
           >
             Last 6 Months
           </motion.button>
@@ -140,11 +134,11 @@ const SpendingGraph = () => {
         initial={{ opacity: 0, x: -20 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ delay: 0.6 }}
-        className="mb-6 p-4 rounded-2xl bg-gradient-to-r from-[#3BF7FF]/10 to-transparent border border-[#3BF7FF]/20 flex items-center gap-3"
+        className="mb-6 p-4 rounded-xl bg-blue-500/[0.05] border border-blue-500/10 flex items-center gap-3"
       >
-        <AlertCircle className="w-5 h-5 text-[#3BF7FF] flex-shrink-0" />
-        <p className="text-sm text-white/80">
-          <span className="text-[#3BF7FF]">AI detected:</span> You spent 22%
+        <AlertCircle className="w-5 h-5 text-blue-400 flex-shrink-0" />
+        <p className="text-sm text-zinc-300">
+          <span className="text-blue-400 font-medium">AI detected:</span> You spent 22%
           more on shopping this month. Consider setting a budget limit.
         </p>
       </motion.div>
@@ -163,12 +157,12 @@ const SpendingGraph = () => {
           >
             <defs>
               <linearGradient id="spendingGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#3BF7FF" stopOpacity={0.4} />
-                <stop offset="100%" stopColor="#3BF7FF" stopOpacity={0} />
+                <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.3} />
+                <stop offset="100%" stopColor="#3b82f6" stopOpacity={0} />
               </linearGradient>
               <linearGradient id="incomeGradient" x1="0" y1="0" x2="0" y2="1">
-                <stop offset="0%" stopColor="#E4C580" stopOpacity={0.4} />
-                <stop offset="100%" stopColor="#E4C580" stopOpacity={0} />
+                <stop offset="0%" stopColor="#10b981" stopOpacity={0.3} />
+                <stop offset="100%" stopColor="#10b981" stopOpacity={0} />
               </linearGradient>
             </defs>
             <CartesianGrid
@@ -177,11 +171,11 @@ const SpendingGraph = () => {
             />
             <XAxis
               dataKey="month"
-              stroke="rgba(255,255,255,0.3)"
+              stroke="rgba(255,255,255,0.2)"
               style={{ fontSize: "12px" }}
             />
             <YAxis
-              stroke="rgba(255,255,255,0.3)"
+              stroke="rgba(255,255,255,0.2)"
               style={{ fontSize: "12px" }}
               tickFormatter={value => `₹${(value / 1000).toFixed(0)}k`}
             />
@@ -192,29 +186,27 @@ const SpendingGraph = () => {
             <Area
               type="monotone"
               dataKey="income"
-              stroke="#E4C580"
-              strokeWidth={3}
+              stroke="#10b981"
+              strokeWidth={2}
               fill="url(#incomeGradient)"
-              dot={{ fill: "#E4C580", strokeWidth: 2, r: 4 }}
+              dot={{ fill: "#10b981", strokeWidth: 2, r: 4 }}
               activeDot={{
                 r: 6,
-                fill: "#E4C580",
+                fill: "#10b981",
                 strokeWidth: 0,
-                filter: "drop-shadow(0 0 8px #E4C580)"
               }}
             />
             <Area
               type="monotone"
               dataKey="spending"
-              stroke="#3BF7FF"
-              strokeWidth={3}
+              stroke="#3b82f6"
+              strokeWidth={2}
               fill="url(#spendingGradient)"
-              dot={{ fill: "#3BF7FF", strokeWidth: 2, r: 4 }}
+              dot={{ fill: "#3b82f6", strokeWidth: 2, r: 4 }}
               activeDot={{
                 r: 6,
-                fill: "#3BF7FF",
+                fill: "#3b82f6",
                 strokeWidth: 0,
-                filter: "drop-shadow(0 0 8px #3BF7FF)"
               }}
             />
           </AreaChart>
@@ -223,7 +215,7 @@ const SpendingGraph = () => {
 
       {/* Category Breakdown */}
       <div>
-        <h4 className="text-sm text-white/50 mb-4">Top Spending Categories</h4>
+        <h4 className="text-xs text-zinc-500 uppercase tracking-wide mb-4">Top Spending Categories</h4>
         <div className="grid grid-cols-2 gap-4">
           {categories.map((category, index) => {
             const Icon = category.icon
@@ -233,16 +225,12 @@ const SpendingGraph = () => {
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.8 + index * 0.1 }}
-                whileHover={{ scale: 1.05, y: -2 }}
-                className="p-4 rounded-2xl bg-white/5 border border-white/5 hover:border-white/10 transition-all cursor-pointer"
-                style={{
-                  boxShadow: `0 4px 20px ${category.color}10`
-                }}
+                whileHover={{ scale: 1.02 }}
+                className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06] hover:border-white/10 transition-all cursor-pointer"
               >
                 <div className="flex items-center gap-3 mb-3">
                   <div
-                    className="w-10 h-10 rounded-xl flex items-center justify-center"
-                    style={{ backgroundColor: `${category.color}20` }}
+                    className="w-10 h-10 rounded-lg flex items-center justify-center bg-white/5"
                   >
                     <Icon
                       className="w-5 h-5"
@@ -250,13 +238,13 @@ const SpendingGraph = () => {
                     />
                   </div>
                   <div className="flex-1">
-                    <p className="text-sm text-white/70">{category.name}</p>
-                    <p className="text-lg">
+                    <p className="text-sm text-zinc-400">{category.name}</p>
+                    <p className="text-lg font-medium text-white">
                       ₹{category.amount.toLocaleString("en-IN")}
                     </p>
                   </div>
                 </div>
-                <div className="relative w-full h-2 bg-white/5 rounded-full overflow-hidden">
+                <div className="relative w-full h-1.5 bg-white/5 rounded-full overflow-hidden">
                   <motion.div
                     initial={{ width: 0 }}
                     animate={{ width: `${category.percentage}%` }}
@@ -264,11 +252,10 @@ const SpendingGraph = () => {
                     className="h-full rounded-full"
                     style={{
                       backgroundColor: category.color,
-                      boxShadow: `0 0 10px ${category.color}`
                     }}
                   />
                 </div>
-                <p className="text-xs text-white/40 mt-2">
+                <p className="text-xs text-zinc-500 mt-2">
                   {category.percentage}% of total
                 </p>
               </motion.div>
