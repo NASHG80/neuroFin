@@ -1,5 +1,5 @@
 from flask import Blueprint, jsonify
-from services.health_score_service import calculate_health_score
+from neurofin_backend.api.src.services.health_score_service import calculate_health_score
 
 bp_health = Blueprint("health_score", __name__)
 

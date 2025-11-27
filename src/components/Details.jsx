@@ -34,11 +34,6 @@ const brandLogos = {
   Rupay: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/RuPay.svg/383px-RuPay.svg.png?20200901070738"
 };
 
-
-
-
-
-
   function formatCardNumber(value) {
     return value
       .replace(/[^0-9]/g, "")
