@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";   // ✅ FIXED
+import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { Shield, Zap, CheckCircle } from "lucide-react";
+
+// Load BIN data + Bank logos
+import bins from "../data/bins.json";
 
 export default function GiveDetails() {
   const [cardNumber, setCardNumber] = useState("");
@@ -14,61 +17,83 @@ export default function GiveDetails() {
   const [logoUrl, setLogoUrl] = useState("");
   const [glow, setGlow] = useState("");
 
-  const navigate = useNavigate();   // ✅ FIXED
+  const navigate = useNavigate();
 
-  const bankBins = {
-    HDFC: ["438628", "498824", "512345"],
-    ICICI: ["431933", "547999", "606333"],
-    SBI: ["622018", "414345", "517652"],
-    AXIS: ["507732", "539999", "652150"],
-    KOTAK: ["511587", "459111", "620154"],
-    BOB: ["436518", "552521", "604845"]
-  };
+  // Detect bank using BIN list
+  function detectBank(num) {
+    const bin = num.slice(0, 6);
+    for (const bankName in bins) {
+      if (bins[bankName].includes(bin)) return bankName;
+    }
+    return "";
+  }
 
-  const brandLogos = {
-    Visa: "https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg",
-    Mastercard: "https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png",
-    Rupay: "https://seeklogo.com/images/R/rupay-logo-D6C899A723-seeklogo.com.png"
-  };
+const brandLogos = {
+  Visa: "https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg",
+  Mastercard: "https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png",
+  Rupay: "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/RuPay.svg/383px-RuPay.svg.png?20200901070738"
+};
+
+
+
+
+
 
   function formatCardNumber(value) {
-    return value.replace(/[^0-9]/g, "")
+    return value
+      .replace(/[^0-9]/g, "")
       .slice(0, 19)
       .replace(/(.{4})/g, "$1 ")
       .trim();
   }
 
-  function detectAll(numRaw) {
-    const num = numRaw.replace(/\s/g, "");
-    let detectedBrand = "Unknown";
-    let detectedBank = "";
-    let logo = "";
-    let glowClass = "";
+function detectAll(numRaw) {
+  const num = numRaw.replace(/\s/g, "");
 
-    if (/^4/.test(num)) {
-      detectedBrand = "Visa";
-      logo = brandLogos.Visa;
-      glowClass = "shadow-[0_0_40px_rgba(30,144,255,0.35)]";
-    } else if (/^5[1-5]/.test(num)) {
-      detectedBrand = "Mastercard";
-      logo = brandLogos.Mastercard;
-      glowClass = "shadow-[0_0_40px_rgba(255,120,20,0.35)]";
-    } else if (/^6/.test(num)) {
-      detectedBrand = "Rupay";
-      logo = brandLogos.Rupay;
-      glowClass = "shadow-[0_0_40px_rgba(0,200,120,0.35)]";
-    }
-
-    const bin = num.slice(0, 6);
-    for (const k in bankBins) {
-      if (bankBins[k].includes(bin)) detectedBank = k;
-    }
-
-    setBrand(detectedBrand);
-    setLogoUrl(logo);
-    setGlow(glowClass);
-    setBank(detectedBank);
+  if (num.length < 4) {
+    setBrand("Unknown");
+    setBank("");
+    setLogoUrl("");
+    setGlow("");
+    return;
   }
+
+  let detectedBrand = "Unknown";
+  let glowClass = "";
+  let brandLogo = "";
+
+  // BRAND DETECTION (India accurate RuPay)
+  if (/^4/.test(num)) {
+    detectedBrand = "Visa";
+    brandLogo = brandLogos.Visa;
+    glowClass = "shadow-[0_0_40px_rgba(30,144,255,0.35)]";
+
+  } else if (/^5[1-5]/.test(num)) {
+    detectedBrand = "Mastercard";
+    brandLogo = brandLogos.Mastercard;
+    glowClass = "shadow-[0_0_40px_rgba(255,120,20,0.35)]";
+
+  } else if (/^(508|606|607|608|652)/.test(num)) {
+    detectedBrand = "Rupay";
+    brandLogo = brandLogos.Rupay;
+    glowClass = "shadow-[0_0_40px_rgba(0,200,120,0.35)]";
+  }
+
+  // BANK DETECTION
+  let detectedBank = detectBank(num);
+
+  if (!detectedBank) {
+    if (detectedBrand === "Rupay") detectedBank = "RuPay Issued Bank";
+    else if (detectedBrand === "Visa") detectedBank = "Visa Issued Card";
+    else if (detectedBrand === "Mastercard") detectedBank = "Mastercard Issued Card";
+  }
+
+  setBrand(detectedBrand);
+  setGlow(glowClass);
+  setBank(detectedBank);
+  setLogoUrl(brandLogo);
+}
+
 
   useEffect(() => {
     detectAll(cardNumber);
@@ -119,10 +144,10 @@ export default function GiveDetails() {
           ))}
         </div>
 
-        {/* Card Preview */}
+        {/* CARD PREVIEW */}
         <div className="flex justify-center">
           <motion.div
-            className={`relative w-[430px] h-[270px] rounded-2xl overflow-hidden border border-white/10 backdrop-blur-xl ${glow} pointer-events-none`}  // ✅ FIX: Prevent overlay blocking clicks
+            className={`relative w-[430px] h-[270px] rounded-2xl overflow-hidden border border-white/10 backdrop-blur-xl ${glow}`}
             whileHover={{ scale: 1.03, rotateX: 4, rotateY: -4 }}
             transition={{ duration: 0.4, type: "spring" }}
           >
@@ -132,12 +157,10 @@ export default function GiveDetails() {
               transition={{ duration: 4, repeat: Infinity }}
             />
 
-            <div className="absolute inset-0 opacity-[0.08] bg-[url('https://www.transparenttextures.com/patterns/black-linen.png')] bg-repeat mix-blend-soft-light" />
-
             <motion.div
               animate={{ rotateY: flipped ? 180 : 0 }}
               transition={{ duration: 0.55 }}
-              style={{ transformStyle: "preserve-3d", pointerEvents: "none" }}  // ✅ FIX
+              style={{ transformStyle: "preserve-3d" }}
               className="relative w-full h-full"
             >
               {/* FRONT */}
@@ -147,11 +170,17 @@ export default function GiveDetails() {
               >
                 <div className="flex justify-between items-start">
                   <div className="text-xs text-gray-300">{bank || "Your Bank"}</div>
-                  {logoUrl ? (
-                    <img src={logoUrl} className="w-[70px] h-6 object-contain opacity-90" />
-                  ) : (
-                    <div className="w-14 h-6 bg-white/10 rounded" />
-                  )}
+{logoUrl ? (
+  <img
+    src={logoUrl}
+    alt="brand-logo"
+    className="h-10 w-auto max-w-[150px] object-contain drop-shadow-lg"
+
+
+  />
+) : (
+  <div className="w-20 h-6 bg-white/10 rounded"></div>
+)}
                 </div>
 
                 <div className="tracking-widest text-2xl font-mono text-center">
@@ -190,7 +219,7 @@ export default function GiveDetails() {
           </motion.div>
         </div>
 
-        {/* Input Form */}
+        {/* INPUT FORM */}
         <div className="bg-white/5 border border-white/10 rounded-xl p-8 space-y-6 backdrop-blur-xl">
           <div className="grid grid-cols-2 gap-6">
             <div>
@@ -237,8 +266,8 @@ export default function GiveDetails() {
           <div className="text-sm text-gray-300">Bank: {bank || "Detecting..."} </div>
         </div>
 
-        {/* Submit Button */}
-        <div className="flex justify-center relative z-50"> {/* ✅ FIXED */}
+        {/* SUBMIT BUTTON */}
+        <div className="flex justify-center relative z-50">
           <button
             className="px-8 py-4 bg-blue-600 hover:bg-blue-500 rounded-xl text-white text-lg"
             onClick={async () => {
@@ -263,11 +292,8 @@ export default function GiveDetails() {
                   body: JSON.stringify(cardData)
                 });
 
-                if (res.ok) {
-                  navigate("/dashboard");
-                } else {
-                  console.error("Error saving card");
-                }
+                if (res.ok) navigate("/dashboard");
+                else console.error("Error saving card");
               } catch (err) {
                 console.error(err);
               }
@@ -276,7 +302,6 @@ export default function GiveDetails() {
             Submit
           </button>
         </div>
-
       </div>
     </div>
   );
