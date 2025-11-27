@@ -1,6 +1,6 @@
 import express from "express";
 import Subscription from "../models/Subscription.js";
-import { authRequired } from "../middleware/authMiddleware.js";
+import { authRequired } from "../middleware/authMiddleware.js"; // Assuming you have this
 
 const router = express.Router();
 
@@ -9,10 +9,8 @@ const router = express.Router();
 // @access  Private
 router.get("/", authRequired, async (req, res) => {
   try {
-    const subs = await Subscription.find({ user: req.user.id }).sort({
-      dueDate: 1,
-    });
-
+    // Sort by closest due date
+    const subs = await Subscription.find({ user: req.user.id }).sort({ dueDate: 1 });
     res.json(subs);
   } catch (error) {
     res.status(500).json({ message: "Server Error" });
@@ -52,7 +50,7 @@ router.get("/calendar", authRequired, async (req, res) => {
     const subs = await Subscription.find({ user: req.user.id });
 
     const calendarEvents = subs.map((sub) => ({
-      id: sub._id,
+      id: sub.id,
       title: `${sub.name} - ₹${sub.amount}`,
       start: sub.dueDate,
       allDay: true,
