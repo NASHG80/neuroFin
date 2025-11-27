@@ -16,6 +16,8 @@ import SmartInsights from "../components/dashboard/SmartInsights";
 import VoiceOfMoney from "../components/dashboard/VoiceOfMoney";
 import FamilyFinance from "../components/dashboard/FamilyFinance";
 import SubscriptionTracker from "../components/dashboard/SubscriptionTracker";
+import UserCard from "../components/dashboard/UserCard";
+
 
 import {
   Sparkles,
@@ -67,6 +69,9 @@ export default function DashboardPage() {
   const [familyTransactions, setFamilyTransactions] = useState([]);
 
   const [subscriptions, setSubscriptions] = useState([]);
+  const [userCard, setUserCard] = useState(null);
+  
+
 
   // -------------------------------------------------
   // SUBSCRIPTIONS HELPER
@@ -362,6 +367,38 @@ export default function DashboardPage() {
   // -------------------------------------------------
   // LOADERS
   // -------------------------------------------------
+ useEffect(() => {
+  const loadCard = async () => {
+    const token = localStorage.getItem("nf_token");
+    if (!token) return;
+
+    try {
+      // Include the auth token
+      const res = await fetch("/api/card", {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        }
+      });
+
+      if (!res.ok) {
+        console.log("No card found or unauthorized");
+        return;
+      }
+
+      // Backend returns 1 card object, not an array
+      const card = await res.json();
+
+      setUserCard(card);
+      
+    } catch (err) {
+      console.error("Failed to fetch card", err);
+    }
+  };
+
+  loadCard();
+}, []);
+
+  
   useEffect(() => {
     const stored = localStorage.getItem("nf_user");
     if (stored) {
@@ -790,6 +827,7 @@ export default function DashboardPage() {
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
                 {/* Left Column */}
                 <div className="lg:col-span-8 space-y-6 lg:space-y-8">
+           
                   <FinancialHealthScore netWorth={netWorth} />
                   <SpendingGraph />
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
@@ -801,6 +839,7 @@ export default function DashboardPage() {
                 </div>
                 {/* Right Column */}
                 <div className="lg:col-span-4 space-y-6 lg:space-y-8">
+                  {userCard && <UserCard card={userCard} />} 
                   <SmartAccounts netWorth={netWorth} />
                   <GoalsSection goals={goals} onAddGoal={addGoal} onDeleteGoal={deleteGoal} onUpdateGoal={updateGoal} />
                   <FinancialChallenges />

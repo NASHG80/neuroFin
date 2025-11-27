@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";   // ✅ FIXED
 import { motion } from "framer-motion";
 import { Shield, Zap, CheckCircle } from "lucide-react";
 
@@ -13,6 +14,8 @@ export default function GiveDetails() {
   const [logoUrl, setLogoUrl] = useState("");
   const [glow, setGlow] = useState("");
 
+  const navigate = useNavigate();   // ✅ FIXED
+
   const bankBins = {
     HDFC: ["438628", "498824", "512345"],
     ICICI: ["431933", "547999", "606333"],
@@ -26,12 +29,10 @@ export default function GiveDetails() {
     Visa: "https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg",
     Mastercard: "https://upload.wikimedia.org/wikipedia/commons/0/04/Mastercard-logo.png",
     Rupay: "https://seeklogo.com/images/R/rupay-logo-D6C899A723-seeklogo.com.png"
-
   };
 
   function formatCardNumber(value) {
-    return value
-      .replace(/[^0-9]/g, "")
+    return value.replace(/[^0-9]/g, "")
       .slice(0, 19)
       .replace(/(.{4})/g, "$1 ")
       .trim();
@@ -96,6 +97,7 @@ export default function GiveDetails() {
           </p>
         </header>
 
+        {/* Security Highlights */}
         <div className="grid grid-cols-3 gap-6">
           {[
             { icon: <Shield />, label: "Bank-Grade Security" },
@@ -117,9 +119,10 @@ export default function GiveDetails() {
           ))}
         </div>
 
+        {/* Card Preview */}
         <div className="flex justify-center">
           <motion.div
-            className={`relative w-[430px] h-[270px] rounded-2xl overflow-hidden border border-white/10 backdrop-blur-xl ${glow}`}
+            className={`relative w-[430px] h-[270px] rounded-2xl overflow-hidden border border-white/10 backdrop-blur-xl ${glow} pointer-events-none`}  // ✅ FIX: Prevent overlay blocking clicks
             whileHover={{ scale: 1.03, rotateX: 4, rotateY: -4 }}
             transition={{ duration: 0.4, type: "spring" }}
           >
@@ -129,16 +132,15 @@ export default function GiveDetails() {
               transition={{ duration: 4, repeat: Infinity }}
             />
 
-           <div className="absolute inset-0 opacity-[0.08] bg-[url('https://www.transparenttextures.com/patterns/black-linen.png')] bg-repeat mix-blend-soft-light" />
-
+            <div className="absolute inset-0 opacity-[0.08] bg-[url('https://www.transparenttextures.com/patterns/black-linen.png')] bg-repeat mix-blend-soft-light" />
 
             <motion.div
               animate={{ rotateY: flipped ? 180 : 0 }}
               transition={{ duration: 0.55 }}
-              style={{ transformStyle: "preserve-3d" }}
+              style={{ transformStyle: "preserve-3d", pointerEvents: "none" }}  // ✅ FIX
               className="relative w-full h-full"
             >
-
+              {/* FRONT */}
               <div
                 className="absolute inset-0 p-6 flex flex-col justify-between"
                 style={{ backfaceVisibility: "hidden" }}
@@ -146,10 +148,7 @@ export default function GiveDetails() {
                 <div className="flex justify-between items-start">
                   <div className="text-xs text-gray-300">{bank || "Your Bank"}</div>
                   {logoUrl ? (
-                    <img
-                      src={logoUrl}
-                      className="w-[70px] h-6 object-contain opacity-90"
-                    />
+                    <img src={logoUrl} className="w-[70px] h-6 object-contain opacity-90" />
                   ) : (
                     <div className="w-14 h-6 bg-white/10 rounded" />
                   )}
@@ -171,13 +170,13 @@ export default function GiveDetails() {
                 </div>
               </div>
 
+              {/* BACK */}
               <div
                 className="absolute inset-0 p-6"
                 style={{
                   backfaceVisibility: "hidden",
                   transform: "rotateY(180deg)",
-                  background:
-                    "linear-gradient(160deg, rgba(0,0,0,0.8), rgba(15,15,15,0.95))"
+                  background: "linear-gradient(160deg, rgba(0,0,0,0.8), rgba(15,15,15,0.95))"
                 }}
               >
                 <div className="h-12 bg-black w-full rounded-sm" />
@@ -191,9 +190,9 @@ export default function GiveDetails() {
           </motion.div>
         </div>
 
+        {/* Input Form */}
         <div className="bg-white/5 border border-white/10 rounded-xl p-8 space-y-6 backdrop-blur-xl">
           <div className="grid grid-cols-2 gap-6">
-
             <div>
               <label className="text-xs text-gray-400">Card Holder</label>
               <input
@@ -238,8 +237,42 @@ export default function GiveDetails() {
           <div className="text-sm text-gray-300">Bank: {bank || "Detecting..."} </div>
         </div>
 
-        <div className="flex justify-center">
-          <button className="px-8 py-4 bg-blue-600 hover:bg-blue-500 rounded-xl text-white text-lg">
+        {/* Submit Button */}
+        <div className="flex justify-center relative z-50"> {/* ✅ FIXED */}
+          <button
+            className="px-8 py-4 bg-blue-600 hover:bg-blue-500 rounded-xl text-white text-lg"
+            onClick={async () => {
+              const cardData = {
+                number: cardNumber,
+                holder,
+                expiry,
+                brand,
+                bank,
+                logoUrl
+              };
+
+              const token = localStorage.getItem("nf_token");
+
+              try {
+                const res = await fetch("/api/card", {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                  },
+                  body: JSON.stringify(cardData)
+                });
+
+                if (res.ok) {
+                  navigate("/dashboard");
+                } else {
+                  console.error("Error saving card");
+                }
+              } catch (err) {
+                console.error(err);
+              }
+            }}
+          >
             Submit
           </button>
         </div>
