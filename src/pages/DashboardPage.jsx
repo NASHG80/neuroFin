@@ -790,10 +790,8 @@ export default function DashboardPage() {
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 lg:gap-8">
                 {/* Left Column */}
                 <div className="lg:col-span-8 space-y-6 lg:space-y-8">
-                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                     <FinancialHealthScore netWorth={netWorth} />
-                     <SpendingGraph />
-                  </div>
+                  <FinancialHealthScore netWorth={netWorth} />
+                  <SpendingGraph />
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 lg:gap-8">
                     <FestivePlanner />
                     {/* CHANGED: Passed props to SubscriptionTracker */}
