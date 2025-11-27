@@ -8,6 +8,7 @@ import goalsRoutes from "./routes/goals.js";
 import familyRoutes from "./routes/family.js";
 import subscriptionRoutes from "./routes/subscriptions.js";
 import transactionsRoutes from "./routes/transactions.js";
+import cardRoutes from "./routes/card.js";
 
 dotenv.config();
 
@@ -27,6 +28,7 @@ app.use("/api/goals", goalsRoutes);
 app.use("/api/family", familyRoutes);
 app.use("/api/subscriptions", subscriptionRoutes);
 app.use("/api/transactions", transactionsRoutes);
+app.use("/api/card", cardRoutes);
 
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI;
