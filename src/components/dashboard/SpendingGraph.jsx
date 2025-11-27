@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react"
 import { motion } from "framer-motion"
 import {
   XAxis,
@@ -7,18 +6,10 @@ import {
   Tooltip,
   ResponsiveContainer,
   Area,
-  AreaChart,
+  AreaChart
 } from "recharts"
 import { AlertCircle, Coffee, ShoppingBag, Home, Car } from "lucide-react"
-
-const iconMap = {
-  "Food & Drink": Coffee,
-  Shopping: ShoppingBag,
-  Housing: Home,
-  Transport: Car,
-  Groceries: ShoppingBag,
-  Entertainment: AlertCircle
-}
+import { useState } from "react"
 
 const SpendingGraph = () => {
   const [hoveredPoint, setHoveredPoint] = useState(null)
@@ -106,11 +97,6 @@ const SpendingGraph = () => {
     return null
   }
 
-  if (loading)
-    return (
-      <div className="text-center text-white/40 p-10">Loading AI Insights...</div>
-    )
-
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -157,10 +143,18 @@ const SpendingGraph = () => {
         </p>
       </motion.div>
 
-      {/* Graph */}
-      <div className="h-[300px] mb-8">
+      {/* Chart */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.7 }}
+        className="h-[300px] mb-8"
+      >
         <ResponsiveContainer width="100%" height="100%">
-          <AreaChart data={graphData}>
+          <AreaChart
+            data={data}
+            onMouseMove={e => setHoveredPoint(e.activePayload)}
+          >
             <defs>
               <linearGradient id="spendingGradient" x1="0" y1="0" x2="0" y2="1">
                 <stop offset="0%" stopColor="#3b82f6" stopOpacity={0.3} />
@@ -217,7 +211,7 @@ const SpendingGraph = () => {
             />
           </AreaChart>
         </ResponsiveContainer>
-      </div>
+      </motion.div>
 
       {/* Category Breakdown */}
       <div>
@@ -272,5 +266,4 @@ const SpendingGraph = () => {
     </motion.div>
   )
 }
-
-export default SpendingGraph
+export default SpendingGraph;
