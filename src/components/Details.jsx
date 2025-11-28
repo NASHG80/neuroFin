@@ -5,6 +5,8 @@ import { Shield, Zap, CheckCircle } from "lucide-react";
 
 // Load BIN data + Bank logos
 import bins from "../data/bins.json";
+import { bankLogos } from "../data/bankLogos";
+
 
 export default function GiveDetails() {
   const [cardNumber, setCardNumber] = useState("");
@@ -16,6 +18,8 @@ export default function GiveDetails() {
   const [flipped, setFlipped] = useState(false);
   const [logoUrl, setLogoUrl] = useState("");
   const [glow, setGlow] = useState("");
+  const [bankLogoUrl, setBankLogoUrl] = useState("");
+
 
   const navigate = useNavigate();
 
@@ -75,18 +79,22 @@ function detectAll(numRaw) {
   }
 
   // BANK DETECTION
-  let detectedBank = detectBank(num);
+  // BANK DETECTION
+let detectedBank = detectBank(num);
+let detectedBankLogo = "";
 
-  if (!detectedBank) {
-    if (detectedBrand === "Rupay") detectedBank = "RuPay Issued Bank";
-    else if (detectedBrand === "Visa") detectedBank = "Visa Issued Card";
-    else if (detectedBrand === "Mastercard") detectedBank = "Mastercard Issued Card";
-  }
+if (detectedBank && bankLogos[detectedBank]) {
+  detectedBankLogo = bankLogos[detectedBank];
+} else {
+  detectedBankLogo = ""; // fallback
+}
 
-  setBrand(detectedBrand);
-  setGlow(glowClass);
-  setBank(detectedBank);
-  setLogoUrl(brandLogo);
+setBank(detectedBank);
+setBankLogoUrl(detectedBankLogo);
+setBrand(detectedBrand);
+setGlow(glowClass);
+setLogoUrl(brandLogo);
+
 }
 
 
@@ -164,7 +172,16 @@ function detectAll(numRaw) {
                 style={{ backfaceVisibility: "hidden" }}
               >
                 <div className="flex justify-between items-start">
-                  <div className="text-xs text-gray-300">{bank || "Your Bank"}</div>
+                  {bankLogoUrl ? (
+  <img
+    src={bankLogoUrl}
+    alt="bank-logo"
+    className="h-8 w-auto max-w-[120px] object-contain drop-shadow-lg"
+  />
+) : (
+  <div className="w-20 h-6 bg-white/10 rounded"></div>
+)}
+
 {logoUrl ? (
   <img
     src={logoUrl}

@@ -1,6 +1,11 @@
 import { motion } from "framer-motion";
+import { bankLogos } from "../../data/bankLogos";
+
+
 
 export default function UserCard({ card }) {
+  const bankLogo = card.bank && bankLogos[card.bank] ? bankLogos[card.bank] : null;
+
   if (!card) return null;
 
   const glow =
@@ -30,7 +35,16 @@ export default function UserCard({ card }) {
         {/* Contents */}
         <div className="absolute inset-0 p-6 flex flex-col justify-between z-10">
           <div className="flex justify-between items-start">
-            <div className="text-gray-300 text-xs">{card.bank}</div>
+            {bankLogo ? (
+  <img
+    src={bankLogo}
+    alt="bank-logo"
+    className="w-[80px] h-6 object-contain opacity-90 drop-shadow-md"
+  />
+) : (
+  <div className="text-gray-300 text-xs">{card.bank}</div>
+)}
+
             {card.logoUrl && (
               <img
                 src={card.logoUrl}
