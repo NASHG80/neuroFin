@@ -29,6 +29,7 @@ import verifyRoute from "./routes/paymentVerify.js";
 // ⭐ ADD THIS ⭐
 import startSandboxCron from "./cron/sandboxCron.js";
 import sandboxRoutes from "./routes/sandbox.js";
+import festivalRoutes from "./routes/festivals.js";
 // --------------------
 
 const app = express();
@@ -51,6 +52,7 @@ app.use("/api/card", cardRoutes);
 app.use("/api/razorpay", razorpayRoute);
 app.use("/api/payment-verify", verifyRoute);
 app.use("/api/sandbox", sandboxRoutes);
+app.use("/api/festivals", festivalRoutes);
 
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI;
