@@ -86,13 +86,13 @@ export function ChatPanel() {
         <div className="max-w-3xl mx-auto space-y-8">
 
           {/* Header Icon */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="text-center pt-8 pb-4"
           >
-            <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-[#6366f1] to-[#a855f7] rounded-2xl mb-4 shadow-[0_0_40px_rgba(99,102,241,0.3)]">
-              <Sparkles className="w-7 h-7 text-white" />
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4 shadow-[0_0_40px_rgba(99,102,241,0.3)]">
+              <img src="../src/assets/logo.png" />
             </div>
             <h2 className="text-xl font-medium text-white mb-1">NeuroFin Assistant</h2>
             <p className="text-xs text-gray-400">Ask me anything about your finances</p>
@@ -109,19 +109,17 @@ export function ChatPanel() {
             >
               <div className={`max-w-[80%] ${message.type === "user" ? "order-2" : "order-1"}`}>
                 <div
-                  className={`rounded-2xl px-5 py-3.5 text-sm leading-relaxed whitespace-pre-line flex items-start gap-2 ${
-                    message.type === "user"
-                      ? "bg-[#3BF7FF] text-black font-medium rounded-br-sm"
-                      : "bg-[#1A1A1E] border border-white/5 text-gray-200 rounded-bl-sm"
-                  }`}
+                  className={`rounded-2xl px-5 py-3.5 text-sm leading-relaxed whitespace-pre-line flex items-start gap-2 ${message.type === "user"
+                    ? "bg-[#3BF7FF] text-black font-medium rounded-br-sm"
+                    : "bg-[#1A1A1E] border border-white/5 text-gray-200 rounded-bl-sm"
+                    }`}
                 >
                   {message.isError && <XCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />}
                   <span>{message.content}</span>
                 </div>
                 <p
-                  className={`text-[10px] text-gray-600 mt-2 ${
-                    message.type === "user" ? "text-right" : "text-left"
-                  }`}
+                  className={`text-[10px] text-gray-600 mt-2 ${message.type === "user" ? "text-right" : "text-left"
+                    }`}
                 >
                   {message.time}
                 </p>
