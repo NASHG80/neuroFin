@@ -268,27 +268,7 @@ export default function LoginPage() {
             </div>
           </form>
 
-          <div ref={(el) => (formRefs.current[6] = el)} className="relative py-2">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-white/10"></div>
-            </div>
-            <div className="relative flex justify-center">
-              <span className="bg-[#0a0a0f] px-2 text-[10px] uppercase tracking-widest text-neutral-500/80">
-                Or continue with
-              </span>
-            </div>
-          </div>
 
-          <div ref={(el) => (formRefs.current[7] = el)} className="grid grid-cols-1 gap-3">
-            <button
-              type="button"
-              className="relative w-full rounded-xl border border-white/10 bg-white/5 py-3 text-sm font-medium text-white hover:bg-white/10 hover:border-white/20 transition-all duration-300 group"
-            >
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#6dcffc] to-[#7d5fff] group-hover:text-white transition-all duration-300">
-                Send Magic Link
-              </span>
-            </button>
-          </div>
 
           <p ref={(el) => (formRefs.current[8] = el)} className="text-center text-xs text-neutral-500">
             New to Nuerofin?{" "}
