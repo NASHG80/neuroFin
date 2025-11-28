@@ -15,3 +15,5 @@ export default function AssistantPage() {
     </motion.div>
   );
 }
+
+// const key="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"
