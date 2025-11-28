@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const TransactionSchema = new mongoose.Schema({
+const txnSchema = new mongoose.Schema({
   id: String,
   timestamp: Date,
   merchant: String,
@@ -9,20 +9,19 @@ const TransactionSchema = new mongoose.Schema({
   status: String,
   type: String,
   bank: String,
-  description: String,
+  description: String
 });
 
-const SandboxCardTransactionSchema = new mongoose.Schema(
-  {
-    userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-    cardId: { type: mongoose.Schema.Types.ObjectId, ref: "Card", required: true },
-
-    // store clean card number
-    cardNumber: { type: String, required: true },
-
-    transactions: { type: [TransactionSchema], default: [] },
+const sandboxMonthlySchema = new mongoose.Schema({
+  cardNumber: { type: String, required: true, index: true },
+  card: { type: mongoose.Schema.Types.ObjectId, ref: "Card" }, // link DB card
+  bank: { type: String }, // consistent bank
+  months: {
+    type: Map,
+    of: [txnSchema], // month → list of txns
+    default: {}
   },
-  { timestamps: true }
-);
+  updatedAt: { type: Date, default: Date.now }
+});
 
-export default mongoose.model("SandboxCardTransaction", SandboxCardTransactionSchema);
+export default mongoose.model("SandboxMonthlyTransaction", sandboxMonthlySchema);

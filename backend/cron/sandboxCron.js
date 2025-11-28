@@ -1,41 +1,53 @@
 import cron from "node-cron";
 import Card from "../models/Card.js";
-import SandboxCardTransaction from "../models/SandboxCardTransaction.js";
+import SandboxMonthlyTransaction from "../models/SandboxCardTransaction.js";
 import generateTransactions from "../utils/generateTransactions.js";
 
-export default function startSandboxCron() {
-  console.log("⏳ Sandbox Cron Started");
+async function runSandboxCronTick() {
+  console.log("⚡ Sandbox Tick Running");
 
-  cron.schedule("*/30 * * * *", async () => {
-    console.log("⚡ Running Sandbox Cron");
+  try {
+    const cards = await Card.find({});
+    console.log("Cards found:", cards.length);
 
-    try {
-      // get all cards
-      const cards = await Card.find({});
+    for (const c of cards) {
+      const cardNumber = c.number.replace(/\s+/g, "");
+      const bank = c.bank;
+      const cardId = c._id;
 
-      for (const card of cards) {
-        const cleanCard = card.number.replace(/\s/g, "");
+      let existing = await SandboxMonthlyTransaction.findOne({ cardNumber });
 
-        const newTxns = generateTransactions(cleanCard, 10, card.bank);
+      const txnCount = existing ? 10 : 100;
+      const generated = generateTransactions(cardNumber, txnCount, bank);
 
-
-        await SandboxCardTransaction.findOneAndUpdate(
-          { cardId: card._id },
+      for (const { monthKey, transaction } of generated) {
+        await SandboxMonthlyTransaction.findOneAndUpdate(
+          { cardNumber },
           {
-            userId: card.userId,
-            cardId: card._id,
-            cardNumber: cleanCard,
-            $push: { transactions: { $each: newTxns } }
+            $push: { [`months.${monthKey}`]: transaction },
+            updatedAt: new Date(),
+            card: cardId,
+            bank
           },
           { upsert: true }
         );
-
-        console.log(`💾 Added transactions for card: ${cleanCard}`);
       }
 
-      console.log("✅ Sandbox Cron Finished");
-    } catch (err) {
-      console.error("❌ Cron Error:", err);
+      console.log(`💾 Added ${txnCount} txns → ${cardNumber}`);
     }
-  });
+
+    console.log("✅ Tick Complete");
+  } catch (err) {
+    console.error("❌ Cron Tick Error:", err);
+  }
+}
+
+export default function startSandboxCron() {
+  console.log("⏳ Sandbox Cron Enabled");
+
+  // ⭐ Run Immediately
+  runSandboxCronTick();
+
+  // ⭐ Schedule Every 30 min
+  cron.schedule("*/30 * * * *", runSandboxCronTick);
 }
