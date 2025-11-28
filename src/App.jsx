@@ -4,7 +4,7 @@ import Home from "./app/page";
 import LoginPage from "./pages/LoginPage.jsx";
 import SignupPage from "./pages/SignupPage.jsx";
 import DashboardPage from "./pages/DashboardPage.jsx";
-import AssistantPage from "./pages/AssistantPage.jsx"; // Make sure to import this
+import AssistantPage from "./pages/AssistantPage.jsx";
 import Navbar from "./components/Navbar.jsx";
 import ProtectedRoute from "./components/ProtectedRoute.jsx";
 import LaunchNotesSection from "./components/LaunchNotesSection";
@@ -14,12 +14,17 @@ import UPIBillsSection from "./components/UPIBillsSection";
 import FamilySpaceSection from "./components/FamilySpaceSection";
 import FuturePlannerSection from "./components/FuturePlannerSection";
 import Details from "./components/Details.jsx";
+
+// ⭐ ADD THIS
+import SubscriptionPage from "./components/SubscriptionPage.jsx";
+
 // Layout component to conditionally render Navbar
 const Layout = ({ children }) => {
   const location = useLocation();
 
-  // Hide global Navbar on Dashboard AND Assistant pages
-  const showNavbar = !["/dashboard", "/assistant", "/details"].includes(location.pathname);
+  const showNavbar = !["/dashboard", "/assistant", "/details"].includes(
+    location.pathname
+  );
 
   return (
     <>
@@ -34,7 +39,13 @@ function App() {
     <BrowserRouter>
       <Layout>
         <Routes>
+
+          {/* Public Routes */}
           <Route path="/" element={<Home />} />
+
+          {/* ⭐ ADD THIS */}
+          <Route path="/subscribe" element={<SubscriptionPage />} />
+
           <Route path="/login" element={<LoginPage />} />
           <Route path="/signup" element={<SignupPage />} />
           <Route path="/launch" element={<LaunchNotesSection />} />
