@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import gsap from "gsap";
+import emailjs from "emailjs-com";
 
 export default function SignupPage() {
   const navigate = useNavigate();
@@ -14,6 +15,10 @@ export default function SignupPage() {
     password: "",
     confirmPassword: "",
   });
+  const [otp, setOtp] = useState("");
+  const [generatedOtp, setGeneratedOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [isVerifying, setIsVerifying] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -55,6 +60,37 @@ export default function SignupPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const sendOtp = async () => {
+    if (!formData.email) {
+      setError("Please enter your email first");
+      return;
+    }
+    
+    setLoading(true);
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    setGeneratedOtp(code);
+    
+    // Calculate expiration time (15 minutes from now)
+    const expirationTime = new Date(Date.now() + 15 * 60 * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+console.log("IDHAR HUN MEIN");
+    try {
+      await emailjs.send("service_zbteh04", "template_znh5c1q",{
+          passcode: code,
+          time: expirationTime,
+          email: formData.email,
+          name: formData.name,
+        }, "eW9Ky_pSMQyl9dfTn");
+      setOtpSent(true);
+      setError("");
+      alert("OTP sent to your email!");
+    } catch (err) {
+      console.error("Failed to send OTP:", err);
+      setError("Failed to send OTP. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // --- BACKEND INTEGRATION ---
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -63,6 +99,18 @@ export default function SignupPage() {
 
     if (formData.password !== formData.confirmPassword) {
         setError("Passwords do not match");
+        setLoading(false);
+        return;
+    }
+
+    if (!otpSent) {
+        setError("Please verify your email with OTP first");
+        setLoading(false);
+        return;
+    }
+
+    if (otp !== generatedOtp) {
+        setError("Invalid OTP");
         setLoading(false);
         return;
     }
@@ -207,17 +255,34 @@ export default function SignupPage() {
               </div>
             </div>
 
+            {/* OTP Section */}
+            {otpSent && (
+              <div className="group space-y-1">
+                <label className="text-[10px] font-semibold text-neutral-500 tracking-wider ml-3">ENTER OTP</label>
+                <input
+                  name="otp"
+                  type="text"
+                  required
+                  placeholder="123456"
+                  value={otp}
+                  onChange={(e) => setOtp(e.target.value)}
+                  className="w-full bg-white/5 border border-white/10 rounded-2xl px-5 py-4 text-sm text-white placeholder:text-neutral-700 outline-none focus:border-white/30 focus:bg-white/10 transition-all"
+                />
+              </div>
+            )}
+
             {/* Action Button */}
             <div ref={el => formRefs.current[6] = el} className="pt-4">
               <button
-                type="submit"
+                type="button"
+                onClick={otpSent ? handleSubmit : sendOtp}
                 disabled={loading}
                 className="relative w-full group overflow-hidden rounded-full bg-gradient-to-r from-indigo-600 to-violet-600 p-[1px] focus:outline-none focus:ring-2 focus:ring-indigo-500/40"
               >
                 <div className="relative rounded-full bg-black/50 backdrop-blur-md px-8 py-4 transition-all duration-300 group-hover:bg-transparent">
                   <div className="flex items-center justify-center gap-2">
                     <span className="text-sm font-semibold text-white tracking-wide">
-                      {loading ? "Initializing..." : "Activate Account"}
+                      {loading ? "Processing..." : otpSent ? "Verify & Signup" : "Send OTP"}
                     </span>
                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" className="transition-transform group-hover:translate-x-1">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
