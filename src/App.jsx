@@ -17,6 +17,7 @@ import Details from "./components/Details.jsx";
 
 // ⭐ ADD THIS
 import SubscriptionPage from "./components/SubscriptionPage.jsx";
+import NotFoundPage from "./pages/NotFoundPage.jsx";
 
 // Layout component to conditionally render Navbar
 const Layout = ({ children }) => {
@@ -60,19 +61,22 @@ function App() {
           <Route
             path="/dashboard"
             element={
-              <ProtectedRoute>
+              // <ProtectedRoute>
                 <DashboardPage />
-              </ProtectedRoute>
+              // </ProtectedRoute>
             }
           />
           <Route
             path="/assistant"
             element={
-              <ProtectedRoute>
+              // <ProtectedRoute>
                 <AssistantPage />
-              </ProtectedRoute>
+              //  </ProtectedRoute>
             }
           />
+
+          {/* 404 Catch-All Route - Must be last */}
+          <Route path="*" element={<NotFoundPage />} />
         </Routes>
       </Layout>
     </BrowserRouter>

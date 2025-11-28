@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation, Link } from "react-router-dom";
 import gsap from "gsap";
+import emailjs from "emailjs-com";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -13,6 +14,9 @@ export default function LoginPage() {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [otp, setOtp] = useState("");
+  const [generatedOtp, setGeneratedOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
 
@@ -59,6 +63,42 @@ export default function LoginPage() {
     const y = e.clientY - top;
 
     overlayRef.current.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(125, 95, 255, 0.15) 0%, transparent 100%)`;
+    overlayRef.current.style.background = `radial-gradient(circle at ${x}px ${y}px, rgba(125, 95, 255, 0.15) 0%, transparent 100%)`;
+  };
+
+  const sendOtp = async () => {
+    if (!email) {
+      setError("Please enter your email first");
+      return;
+    }
+
+    setLoading(true);
+    const code = Math.floor(100000 + Math.random() * 900000).toString();
+    setGeneratedOtp(code);
+
+    // Calculate expiration time (15 minutes from now)
+    const expirationTime = new Date(Date.now() + 15 * 60 * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+    try {
+      await emailjs.send(
+        "service_zbteh04", "template_znh5c1q",
+        {
+          passcode: code,
+          time: expirationTime,
+          email: email,
+          name: "User",
+        },
+        "eW9Ky_pSMQyl9dfTn"
+      );
+      setOtpSent(true);
+      setError("");
+      alert("OTP sent to your email!");
+    } catch (err) {
+      console.error("Failed to send OTP:", err);
+      setError("Failed to send OTP. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   // --- BACKEND INTEGRATION ---
@@ -66,6 +106,18 @@ export default function LoginPage() {
     e.preventDefault();
     setError("");
     setLoading(true);
+
+    if (!otpSent) {
+      setError("Please verify your email with OTP first");
+      setLoading(false);
+      return;
+    }
+
+    if (otp !== generatedOtp) {
+      setError("Invalid OTP");
+      setLoading(false);
+      return;
+    }
 
     try {
       // CHANGED: Used relative path
@@ -91,7 +143,7 @@ export default function LoginPage() {
         localStorage.setItem("nf_token", data.token);
         localStorage.setItem("nf_user", JSON.stringify(data.user));
         // After login, always go to card details flow first
-        navigate("/details", { replace: true });
+        navigate("/dashboard", { replace: true });
       }
     } catch (err) {
       console.error(err);
@@ -122,7 +174,7 @@ export default function LoginPage() {
         />
 
         <div className="relative z-10 p-8 sm:p-10 space-y-8">
-          
+
           <div className="text-center space-y-2">
             <div ref={(el) => (formRefs.current[0] = el)} className="inline-block mb-2">
               <div className="h-10 w-10 mx-auto bg-gradient-to-br from-white/20 to-white/5 rounded-xl border border-white/20 flex items-center justify-center shadow-[0_0_15px_rgba(255,255,255,0.1)]">
@@ -146,7 +198,7 @@ export default function LoginPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            
+
             <div ref={(el) => (formRefs.current[3] = el)} className="group/input space-y-1.5">
               <label className="text-xs font-medium text-neutral-500 ml-1 group-focus-within/input:text-[#6dcffc] transition-colors">
                 EMAIL
@@ -184,39 +236,39 @@ export default function LoginPage() {
               </div>
             </div>
 
+            {/* OTP Section */}
+            {otpSent && (
+              <div className="group/input space-y-1.5">
+                <label className="text-xs font-medium text-neutral-500 ml-1 group-focus-within/input:text-[#6dcffc] transition-colors">
+                  OTP
+                </label>
+                <div className="relative">
+                  <input
+                    type="text"
+                    required
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    placeholder="123456"
+                    className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3.5 text-sm text-white placeholder:text-neutral-600 outline-none focus:border-[#6dcffc]/50 focus:bg-white/10 transition-all duration-300 focus:shadow-[0_0_20px_rgba(109,207,252,0.15)]"
+                  />
+                </div>
+              </div>
+            )}
+
             <div ref={(el) => (formRefs.current[5] = el)} className="pt-2">
               <button
-                type="submit"
+                type="button"
+                onClick={otpSent ? handleSubmit : sendOtp}
                 disabled={loading}
                 className="relative w-full group overflow-hidden rounded-xl bg-white text-black font-semibold py-3.5 text-sm transition-all duration-300 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] disabled:opacity-70 disabled:cursor-not-allowed"
               >
-                <span className="relative z-10">{loading ? "Authenticating..." : "Log In"}</span>
+                <span className="relative z-10">{loading ? "Authenticating..." : otpSent ? "Log In" : "Send OTP"}</span>
                 <div className="absolute inset-0 -translate-x-full group-hover:animate-[shineSweep_1s_ease-in-out] bg-gradient-to-r from-transparent via-white/40 to-transparent" />
               </button>
             </div>
           </form>
 
-          <div ref={(el) => (formRefs.current[6] = el)} className="relative py-2">
-            <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-white/10"></div>
-            </div>
-            <div className="relative flex justify-center">
-              <span className="bg-[#0a0a0f] px-2 text-[10px] uppercase tracking-widest text-neutral-500/80">
-                Or continue with
-              </span>
-            </div>
-          </div>
 
-          <div ref={(el) => (formRefs.current[7] = el)} className="grid grid-cols-1 gap-3">
-            <button
-              type="button"
-              className="relative w-full rounded-xl border border-white/10 bg-white/5 py-3 text-sm font-medium text-white hover:bg-white/10 hover:border-white/20 transition-all duration-300 group"
-            >
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-[#6dcffc] to-[#7d5fff] group-hover:text-white transition-all duration-300">
-                Send Magic Link
-              </span>
-            </button>
-          </div>
 
           <p ref={(el) => (formRefs.current[8] = el)} className="text-center text-xs text-neutral-500">
             New to Nuerofin?{" "}

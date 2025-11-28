@@ -118,15 +118,15 @@ export function ChatPanel() {
         ref={scrollRef}
         className="flex-1 overflow-y-auto p-6 pb-32 custom-scrollbar"
       >
-        <div className="max-w-3xl mx-auto space-y-8">
-          {/* Header Icon */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="text-center pt-8 pb-4"
+        <div className="p-6 pb-2 shrink-0">
+          <div
+            className="flex items-center gap-3 cursor-pointer group"
+            onClick={() => navigate('/dashboard')}
           >
-            <div className="inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-[#6366f1] to-[#a855f7] rounded-2xl mb-4 shadow-[0_0_40px_rgba(99,102,241,0.3)]">
-              <Sparkles className="w-7 h-7 text-white" />
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#7433FF] via-[#3BF7FF] to-[#E4C580] p-[1px]">
+              <div className="w-full h-full bg-[#05050A] rounded-[10px] flex items-center justify-center">
+                <img src="../src/assets/logo.png" />
+              </div>
             </div>
             <h2 className="text-xl font-medium text-white mb-1">
               NeuroFin Assistant
@@ -134,41 +134,40 @@ export function ChatPanel() {
             <p className="text-xs text-gray-400">Ask anything about finances or taxes</p>
           </motion.div>
 
-          {/* Dynamic Messages */}
-          {messages.map((message, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.05 }}
-              className={`flex ${
-                message.type === "user" ? "justify-end" : "justify-start"
-              }`}
-            >
-              <div
-                className={`max-w-[80%] ${
-                  message.type === "user" ? "order-2" : "order-1"
-                }`}
-              >
-                <div
-                  className={`rounded-2xl px-5 py-3.5 text-sm leading-relaxed whitespace-pre-line ${
-                    message.type === "user"
-                      ? "bg-[#3BF7FF] text-black font-medium rounded-br-sm"
-                      : "bg-[#1A1A1E] border border-white/5 text-gray-200 rounded-bl-sm"
-                  }`}
-                >
-                  {message.content}
-                </div>
-                <p
-                  className={`text-[10px] text-gray-600 mt-2 ${
-                    message.type === "user" ? "text-right" : "text-left"
-                  }`}
-                >
-                  {message.time}
-                </p>
-              </div>
-            </motion.div>
-          ))}
+      {/* MAIN CHAT AREA */}
+      <div className="flex-1 flex flex-col relative min-w-0 bg-[#00010D]">
+
+        {/* Mobile Header */}
+        <div className="lg:hidden flex items-center justify-between p-4 border-b border-white/10 bg-black/50 backdrop-blur-md">
+          <div className="flex items-center gap-2">
+            <Sparkles className="w-5 h-5 text-[#3BF7FF]" />
+            <span className="font-medium">NeuroFin Assistant</span>
+          </div>
+          <button onClick={() => setShowMobileSidebar(true)} className="p-2">
+            <Menu className="w-6 h-6" />
+          </button>
+        </div>
+
+        {/* Chat Content */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="flex-1 overflow-y-auto custom-scrollbar scroll-smooth"
+        >
+          <ChatPanel />
+        </motion.div>
+      </div>
+
+      {/* RIGHT SIDEBAR (Desktop) */}
+      <motion.div
+        initial={{ x: 50, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.1, ease: "easeOut" }}
+        className="hidden lg:block w-80 border-l border-white/5 overflow-y-auto custom-scrollbar bg-[#05050A]"
+      >
+        <QuickActionsPanel />
+      </motion.div>
 
           {/* Typing Indicator */}
           {loading && (
