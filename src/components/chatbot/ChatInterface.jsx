@@ -27,7 +27,7 @@ function ChatInterface() {
           >
             <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#7433FF] via-[#3BF7FF] to-[#E4C580] p-[1px]">
               <div className="w-full h-full bg-[#05050A] rounded-[10px] flex items-center justify-center">
-                <span className="font-bold text-white text-sm">N</span>
+                <img src="../src/assets/logo.png" />
               </div>
             </div>
             <span className="text-lg font-medium tracking-wide text-white">
@@ -43,7 +43,7 @@ function ChatInterface() {
 
       {/* MAIN CHAT AREA */}
       <div className="flex-1 flex flex-col relative min-w-0 bg-[#00010D]">
-        
+
         {/* Mobile Header */}
         <div className="lg:hidden flex items-center justify-between p-4 border-b border-white/10 bg-black/50 backdrop-blur-md">
           <div className="flex items-center gap-2">

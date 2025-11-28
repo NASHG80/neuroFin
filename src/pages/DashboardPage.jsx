@@ -556,12 +556,12 @@ export default function DashboardPage() {
               <motion.div whileHover={{ scale: 1.05, rotate: 180 }} transition={{ duration: 0.6 }} className="relative w-12 h-12">
                 <div className="absolute inset-0 rounded-2xl bg-white p-[1px]">
                   <div className="w-full h-full bg-[#050505] rounded-[14px] flex items-center justify-center">
-                    <Sparkles className="w-6 h-6 text-white" />
+                    <img src="src/assets/logo.png" />
                   </div>
                 </div>
               </motion.div>
               <div>
-                <h1 className="text-2xl tracking-tight text-white font-medium">Nuerofin</h1>
+                <h1 className="text-2xl tracking-tight text-white font-medium">Neuroin</h1>
                 <p className="text-xs text-white/40 tracking-wide uppercase">Money OS</p>
               </div>
             </div>
@@ -686,37 +686,7 @@ export default function DashboardPage() {
           </div>
         </div>
 
-        <motion.div initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }} className="hidden lg:block border-t border-white/[0.05] px-10 py-4 bg-[#050505]/50 backdrop-blur-md">
-          <div className="max-w-[2000px] mx-auto flex items-center justify-between">
-            <div className="flex items-center gap-8">
-              {[
-                { label: "Net Worth", value: `₹${(netWorth / 100000).toFixed(2)}L`, change: "+8.5%", color: "#10b981", icon: Wallet }, // Emerald-500
-                { label: "Monthly Growth", value: `₹${(monthlyGrowth / 1000).toFixed(1)}k`, change: "+12%", color: "#3b82f6", icon: TrendingUp }, // Blue-500
-                { label: "Active Goals", value: `${activeGoalsCount}/4`, change: "94%", color: "#f59e0b", icon: Activity }, // Amber-500
-                { label: "Automations", value: "5", change: "Running", color: "#10b981", icon: Zap },
-              ].map((stat, i) => {
-                const Icon = stat.icon;
-                return (
-                  <motion.div key={stat.label} initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 + i * 0.1 }} className="flex items-center gap-3 group cursor-pointer">
-                    <div className="w-10 h-10 rounded-xl flex items-center justify-center bg-white/5 border border-white/5">
-                      <Icon className="w-5 h-5" style={{ color: stat.color }} />
-                    </div>
-                    <div>
-                      <p className="text-xs text-zinc-500">{stat.label}</p>
-                      <div className="flex items-center gap-2">
-                        <p className="text-sm font-medium text-zinc-200">{stat.value}</p>
-                        <span className="text-xs" style={{ color: stat.color }}>{stat.change}</span>
-                      </div>
-                    </div>
-                  </motion.div>
-                );
-              })}
-            </div>
-            <div className="text-sm text-zinc-500">
-              {currentTime.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit" })} • {currentTime.toLocaleDateString("en-IN", { month: "short", day: "numeric" })}
-            </div>
-          </div>
-        </motion.div>
+
       </motion.nav>
 
       {/* Mobile Header */}
