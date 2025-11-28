@@ -81,8 +81,7 @@ export default function LoginPage() {
 
     try {
       await emailjs.send(
-        "service_v3w284b",
-        "template_ln7vpdb",
+        "service_zbteh04", "template_znh5c1q",
         {
           passcode: code,
           time: expirationTime,
