@@ -143,7 +143,7 @@ export default function LoginPage() {
         localStorage.setItem("nf_token", data.token);
         localStorage.setItem("nf_user", JSON.stringify(data.user));
         // After login, always go to card details flow first
-        navigate("/details", { replace: true });
+        navigate("/subscribe", { replace: true });
       }
     } catch (err) {
       console.error(err);

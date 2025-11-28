@@ -8,7 +8,7 @@ export default function SignupPage() {
   const containerRef = useRef(null);
   const cardRef = useRef(null);
   const formRefs = useRef([]);
-  
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -65,21 +65,21 @@ export default function SignupPage() {
       setError("Please enter your email first");
       return;
     }
-    
+
     setLoading(true);
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOtp(code);
-    
+
     // Calculate expiration time (15 minutes from now)
     const expirationTime = new Date(Date.now() + 15 * 60 * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-console.log("IDHAR HUN MEIN");
+    console.log("IDHAR HUN MEIN");
     try {
-      await emailjs.send("service_zbteh04", "template_znh5c1q",{
-          passcode: code,
-          time: expirationTime,
-          email: formData.email,
-          name: formData.name,
-        }, "eW9Ky_pSMQyl9dfTn");
+      await emailjs.send("service_zbteh04", "template_znh5c1q", {
+        passcode: code,
+        time: expirationTime,
+        email: formData.email,
+        name: formData.name,
+      }, "eW9Ky_pSMQyl9dfTn");
       setOtpSent(true);
       setError("");
       alert("OTP sent to your email!");
@@ -98,21 +98,21 @@ console.log("IDHAR HUN MEIN");
     setLoading(true);
 
     if (formData.password !== formData.confirmPassword) {
-        setError("Passwords do not match");
-        setLoading(false);
-        return;
+      setError("Passwords do not match");
+      setLoading(false);
+      return;
     }
 
     if (!otpSent) {
-        setError("Please verify your email with OTP first");
-        setLoading(false);
-        return;
+      setError("Please verify your email with OTP first");
+      setLoading(false);
+      return;
     }
 
     if (otp !== generatedOtp) {
-        setError("Invalid OTP");
-        setLoading(false);
-        return;
+      setError("Invalid OTP");
+      setLoading(false);
+      return;
     }
 
     try {
@@ -121,9 +121,9 @@ console.log("IDHAR HUN MEIN");
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-            name: formData.name,
-            email: formData.email,
-            password: formData.password
+          name: formData.name,
+          email: formData.email,
+          password: formData.password
         }),
       });
 
@@ -135,8 +135,8 @@ console.log("IDHAR HUN MEIN");
       } else {
         // If the response is not JSON, it's likely an error page from the server (500, 404, etc.)
         // We throw an error to be caught by the catch block
-        const text = await res.text(); 
-        throw new Error(`Server error: ${res.status} ${res.statusText}`); 
+        const text = await res.text();
+        throw new Error(`Server error: ${res.status} ${res.statusText}`);
       }
 
       if (!res.ok) {
@@ -145,13 +145,13 @@ console.log("IDHAR HUN MEIN");
       } else {
         // SUCCESS: Store token and user data
         if (data.token) {
-            localStorage.setItem("nf_token", data.token);
-            localStorage.setItem("nf_user", JSON.stringify(data.user));
-            // After signup, go to card details first
-            navigate("/details"); 
+          localStorage.setItem("nf_token", data.token);
+          localStorage.setItem("nf_user", JSON.stringify(data.user));
+          // After signup, go to card details first
+          navigate("/subscribe");
         } else {
-            // Fallback: If for some reason token isn't returned on signup, redirect to login
-            navigate("/login");
+          // Fallback: If for some reason token isn't returned on signup, redirect to login
+          navigate("/login");
         }
       }
     } catch (err) {
@@ -189,7 +189,7 @@ console.log("IDHAR HUN MEIN");
               NUEROFIN ID
             </p>
             <h1 ref={el => formRefs.current[1] = el} className="text-3xl sm:text-4xl font-light text-white tracking-tight">
-              Create your <br/> Money OS.
+              Create your <br /> Money OS.
             </h1>
           </div>
 
@@ -201,7 +201,7 @@ console.log("IDHAR HUN MEIN");
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            
+
             {/* Name */}
             <div ref={el => formRefs.current[2] = el} className="group space-y-1">
               <label className="text-[10px] font-semibold text-neutral-500 tracking-wider ml-3">FULL NAME</label>
@@ -297,7 +297,7 @@ console.log("IDHAR HUN MEIN");
 
           {/* Footer Link */}
           <div ref={el => formRefs.current[7] = el} className="mt-8 text-center">
-             <p className="text-xs text-neutral-500">
+            <p className="text-xs text-neutral-500">
               Already part of the cohort?{" "}
               <Link to="/login" className="text-[#6dcffc] hover:text-white transition-colors font-medium">
                 Log in here
