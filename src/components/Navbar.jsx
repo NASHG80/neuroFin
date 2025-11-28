@@ -14,7 +14,7 @@ export default function Navbar() {
   const [lastScroll, setLastScroll] = useState(0);
   const [hidden, setHidden] = useState(false);
   const [hoveringService, setHoveringService] = useState(false);
- const [serviceOpen, setServiceOpen] = useState(false);  // 👈 NEW
+  const [serviceOpen, setServiceOpen] = useState(false);  // 👈 NEW
   const navigate = useNavigate();
 
   /* ────────────────────────────────────────────────
@@ -108,7 +108,7 @@ export default function Navbar() {
   /* ────────────────────────────────────────────────
       Dropdown Animation (Service)
   ──────────────────────────────────────────────── */
- useEffect(() => {
+  useEffect(() => {
     if (!dropdownRef.current) return;
 
     gsap.to(dropdownRef.current, {
@@ -150,16 +150,16 @@ export default function Navbar() {
 
         {/* LEFT — LOGO */}
         <div className="flex items-center gap-3 flex-none"
-        onClick={() => navigate("/")}>
+          onClick={() => navigate("/")}>
           <div className="w-9 h-9 bg-white/10 rounded-xl border border-white/20 
                           flex items-center justify-center backdrop-blur-xl 
                           shadow-[0_0_25px_rgba(255,255,255,0.1)]">
-            <span className="text-xs text-white font-bold tracking-widest">NF</span>
+            <img src="src/assets/logo.png" alt="logo" className="w-full h-full object-contain" />
           </div>
 
           <span className="text-sm tracking-[0.22em] font-medium text-white/90"
-          onClick={() => navigate("/")}>
-            NUEROFIN
+            onClick={() => navigate("/")}>
+            NEUROFIN
           </span>
         </div>
 
@@ -176,9 +176,8 @@ export default function Navbar() {
             <span>Service</span>
 
             <svg
-              className={`w-3 h-3 mt-[1px] transition-transform duration-200 ${
-                hoveringService ? "rotate-180" : "rotate-0"
-              }`}
+              className={`w-3 h-3 mt-[1px] transition-transform duration-200 ${hoveringService ? "rotate-180" : "rotate-0"
+                }`}
               viewBox="0 0 20 20"
               stroke="currentColor"
               strokeWidth="2"
@@ -206,7 +205,7 @@ export default function Navbar() {
 
         {/* RIGHT — PREMIUM LOGIN + ULTRA SIGN UP */}
         <div className="flex items-center gap-6 flex-none">
-                
+
           {/* PREMIUM LOGIN */}
           <button
             ref={(el) => (linksRef.current[3] = el)}
@@ -227,8 +226,8 @@ export default function Navbar() {
               <span className="shine"></span>
             </span>
           </button>
-                
-                
+
+
           {/* ULTRA SIGN UP */}
           <button
             id="signup-ultra"
@@ -262,7 +261,7 @@ export default function Navbar() {
               <span className="shine"></span>
             </span>
           </button>
-          
+
         </div>
       </div>
 
@@ -277,22 +276,22 @@ export default function Navbar() {
       >
         <div className="flex flex-col gap-4 text-white/80 text-sm">
           <a className="hover:text-white transition flex items-center gap-2"
-           onClick={() => navigate("/spends-budgets")}>
+            onClick={() => navigate("/spends-budgets")}>
             <BarChart3 className="w-4 h-4" />
             Spends & Budgets
           </a>
           <a className="hover:text-white transition flex items-center gap-2"
-          onClick={() => navigate("/Upi-Bills")}>
+            onClick={() => navigate("/Upi-Bills")}>
             <CreditCard className="w-4 h-4" />
             UPI & Bills
           </a>
           <a className="hover:text-white transition flex items-center gap-2"
-          onClick={() => navigate("/Future-Planner")}>
+            onClick={() => navigate("/Future-Planner")}>
             <Calendar className="w-4 h-4" />
             Future Planner
           </a>
           <a className="hover:text-white transition flex items-center gap-2"
-          onClick={() => navigate("/Family-Space")}>
+            onClick={() => navigate("/Family-Space")}>
             <Users className="w-4 h-4" />
             Family Spaces
           </a>

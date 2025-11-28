@@ -71,11 +71,11 @@ export default function LoginPage() {
       setError("Please enter your email first");
       return;
     }
-    
+
     setLoading(true);
     const code = Math.floor(100000 + Math.random() * 900000).toString();
     setGeneratedOtp(code);
-    
+
     // Calculate expiration time (15 minutes from now)
     const expirationTime = new Date(Date.now() + 15 * 60 * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
@@ -108,15 +108,15 @@ export default function LoginPage() {
     setLoading(true);
 
     if (!otpSent) {
-        setError("Please verify your email with OTP first");
-        setLoading(false);
-        return;
+      setError("Please verify your email with OTP first");
+      setLoading(false);
+      return;
     }
 
     if (otp !== generatedOtp) {
-        setError("Invalid OTP");
-        setLoading(false);
-        return;
+      setError("Invalid OTP");
+      setLoading(false);
+      return;
     }
 
     try {
@@ -143,7 +143,7 @@ export default function LoginPage() {
         localStorage.setItem("nf_token", data.token);
         localStorage.setItem("nf_user", JSON.stringify(data.user));
         // After login, always go to card details flow first
-        navigate("/subscribe", { replace: true });
+        navigate("/dashboard", { replace: true });
       }
     } catch (err) {
       console.error(err);
@@ -174,7 +174,7 @@ export default function LoginPage() {
         />
 
         <div className="relative z-10 p-8 sm:p-10 space-y-8">
-          
+
           <div className="text-center space-y-2">
             <div ref={(el) => (formRefs.current[0] = el)} className="inline-block mb-2">
               <div className="h-10 w-10 mx-auto bg-gradient-to-br from-white/20 to-white/5 rounded-xl border border-white/20 flex items-center justify-center shadow-[0_0_15px_rgba(255,255,255,0.1)]">
@@ -198,7 +198,7 @@ export default function LoginPage() {
           )}
 
           <form onSubmit={handleSubmit} className="space-y-5">
-            
+
             <div ref={(el) => (formRefs.current[3] = el)} className="group/input space-y-1.5">
               <label className="text-xs font-medium text-neutral-500 ml-1 group-focus-within/input:text-[#6dcffc] transition-colors">
                 EMAIL
