@@ -13,6 +13,7 @@ import {
   Loader2
 } from "lucide-react"
 import { useState, useEffect } from "react"
+import CustomDatePicker from "../CustomDatePicker"
 
 const FestivePlanner = () => {
   const [selectedFestival, setSelectedFestival] = useState(0)
@@ -28,7 +29,7 @@ const FestivePlanner = () => {
   // Form Data
   const [newFestival, setNewFestival] = useState({
     name: "",
-    date: "",
+    date: null,
     estimatedSpend: "",
     categories: [{ name: "", amount: "", icon: "Gift" }],
     color: "#f59e0b",
@@ -86,7 +87,10 @@ const FestivePlanner = () => {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`
         },
-        body: JSON.stringify(newFestival)
+        body: JSON.stringify({
+          ...newFestival,
+          date: newFestival.date ? newFestival.date.toISOString() : null
+        })
       })
       if (!res.ok) throw new Error("Failed to create festival")
       const data = await res.json()
@@ -94,7 +98,7 @@ const FestivePlanner = () => {
       setShowAddModal(false)
       setNewFestival({
         name: "",
-        date: "",
+        date: null,
         estimatedSpend: "",
         categories: [{ name: "", amount: "", icon: "Gift" }],
         color: "#f59e0b",
@@ -181,7 +185,7 @@ const FestivePlanner = () => {
           <button onClick={() => setShowAddModal(true)} className="p-2 rounded-full bg-white/10 hover:bg-white/20 text-white transition-colors">
             <Plus className="w-4 h-4" />
           </button>
-          <Calendar className="w-6 h-6 text-zinc-400" />
+          {/* <Calendar className="w-6 h-6 text-zinc-400" /> */}
         </div>
       </div>
 
@@ -356,10 +360,12 @@ const FestivePlanner = () => {
                   className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-white/20"
                   value={newFestival.name} onChange={e => setNewFestival({ ...newFestival, name: e.target.value })}
                 />
-                <input
-                  type="date" required
-                  className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-white/20"
-                  value={newFestival.date} onChange={e => setNewFestival({ ...newFestival, date: e.target.value })}
+                <CustomDatePicker
+                  selected={newFestival.date}
+                  onChange={(date) => setNewFestival({ ...newFestival, date })}
+                  placeholderText="Select festival date"
+                  minDate={new Date()}
+                  accentColor="emerald"
                 />
                 <input
                   type="number" placeholder="Estimated Spend" required

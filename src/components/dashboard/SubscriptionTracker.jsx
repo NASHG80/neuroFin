@@ -4,11 +4,12 @@ import {
 } from "lucide-react"
 import { useState } from "react"
 import { createPortal } from "react-dom"
+import CustomDatePicker from "../CustomDatePicker"
 
 const SubscriptionTracker = ({ subscriptions = [], onAddSubscription }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isCalendarOpen, setIsCalendarOpen] = useState(false);
-  const [newSub, setNewSub] = useState({ name: '', category: 'Entertainment', amount: '', date: '', icon: 'Tv' });
+  const [newSub, setNewSub] = useState({ name: '', category: 'Entertainment', amount: '', date: null, icon: 'Tv' });
   const [currentMonth, setCurrentMonth] = useState(new Date());
 
   const displaySubs = subscriptions || [];
@@ -53,11 +54,11 @@ const SubscriptionTracker = ({ subscriptions = [], onAddSubscription }) => {
         amount: Number(newSub.amount),
         theme,
         icon: iconName, // Send String for backend
-        dueDate: newSub.date // Raw date for backend
+        dueDate: newSub.date ? newSub.date.toISOString() : null // Convert Date to ISO string
       });
     }
     setIsModalOpen(false);
-    setNewSub({ name: '', category: 'Entertainment', amount: '', date: '', icon: 'Tv' });
+    setNewSub({ name: '', category: 'Entertainment', amount: '', date: null, icon: 'Tv' });
   }
 
   return (
@@ -195,7 +196,13 @@ const SubscriptionTracker = ({ subscriptions = [], onAddSubscription }) => {
             <form onSubmit={handleSubmit} className="space-y-4">
               <input type="text" placeholder="Name (e.g. Netflix)" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-blue-500" value={newSub.name} onChange={e => setNewSub({ ...newSub, name: e.target.value })} required />
               <input type="number" placeholder="Amount" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-blue-500" value={newSub.amount} onChange={e => setNewSub({ ...newSub, amount: e.target.value })} required />
-              <input type="date" className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none focus:border-blue-500" value={newSub.date} onChange={e => setNewSub({ ...newSub, date: e.target.value })} required />
+              <CustomDatePicker
+                selected={newSub.date}
+                onChange={(date) => setNewSub({ ...newSub, date })}
+                placeholderText="Select due date"
+                minDate={new Date()}
+                accentColor="blue"
+              />
               <select className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white outline-none" value={newSub.category} onChange={e => setNewSub({ ...newSub, category: e.target.value })}>
                 <option value="Entertainment" className="bg-black">Entertainment</option>
                 <option value="Insurance" className="bg-black">Insurance</option>
