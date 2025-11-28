@@ -12,7 +12,7 @@ console.log("ENV CHECK:", {
   key_secret: process.env.RAZORPAY_KEY_SECRET
 });
 
-// now import express and routes
+// imports
 import express from "express";
 import mongoose from "mongoose";
 import cors from "cors";
@@ -25,6 +25,10 @@ import transactionsRoutes from "./routes/transactions.js";
 import cardRoutes from "./routes/card.js";
 import razorpayRoute from "./routes/razorpay.js";
 import verifyRoute from "./routes/paymentVerify.js";
+
+// ⭐ ADD THIS ⭐
+import startSandboxCron from "./cron/sandboxCron.js";
+import sandboxRoutes from "./routes/sandbox.js";
 // --------------------
 
 const app = express();
@@ -46,6 +50,7 @@ app.use("/api/transactions", transactionsRoutes);
 app.use("/api/card", cardRoutes);
 app.use("/api/razorpay", razorpayRoute);
 app.use("/api/payment-verify", verifyRoute);
+app.use("/api/sandbox", sandboxRoutes);
 
 const PORT = process.env.PORT || 5000;
 const MONGODB_URI = process.env.MONGODB_URI;
@@ -62,6 +67,10 @@ mongoose
   })
   .then(() => {
     console.log("✅ Connected to MongoDB");
+
+    // ⭐ START CRON ONLY AFTER DB CONNECTS ⭐
+    startSandboxCron();
+
     app.listen(PORT, () => {
       console.log(`🚀 Server running on port ${PORT}`);
     });
