@@ -1,12 +1,28 @@
-import { Sparkles, Send, Paperclip, Mic, Smile } from "lucide-react"
+import { Sparkles, Send, Paperclip, Mic, Smile, XCircle } from "lucide-react"
 import { motion } from "framer-motion"
 import { useState, useRef, useEffect } from "react"
+import "regenerator-runtime/runtime";
+import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
 
 export function ChatPanel() {
   const [input, setInput] = useState('')
   const [messages, setMessages] = useState([])      // <-- dynamic messages now
   const [loading, setLoading] = useState(false)     // <-- typing indicator
   const scrollRef = useRef(null)
+
+  const {
+    transcript,
+    listening,
+    resetTranscript,
+    browserSupportsSpeechRecognition
+  } = useSpeechRecognition();
+
+  // Sync transcript to input when listening
+  useEffect(() => {
+    if (transcript) {
+      setInput(transcript);
+    }
+  }, [transcript]);
 
   // Auto-scroll when messages update
   useEffect(() => {
@@ -52,8 +68,9 @@ export function ChatPanel() {
         ...prev,
         {
           type: "assistant",
-          content: "❌ Could not reach NeuroFin AI backend.",
+          content: "Could not reach NeuroFin AI backend.",
           time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          isError: true,
         },
       ])
     }
@@ -92,13 +109,14 @@ export function ChatPanel() {
             >
               <div className={`max-w-[80%] ${message.type === "user" ? "order-2" : "order-1"}`}>
                 <div
-                  className={`rounded-2xl px-5 py-3.5 text-sm leading-relaxed whitespace-pre-line ${
+                  className={`rounded-2xl px-5 py-3.5 text-sm leading-relaxed whitespace-pre-line flex items-start gap-2 ${
                     message.type === "user"
                       ? "bg-[#3BF7FF] text-black font-medium rounded-br-sm"
                       : "bg-[#1A1A1E] border border-white/5 text-gray-200 rounded-bl-sm"
                   }`}
                 >
-                  {message.content}
+                  {message.isError && <XCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />}
+                  <span>{message.content}</span>
                 </div>
                 <p
                   className={`text-[10px] text-gray-600 mt-2 ${
@@ -145,9 +163,9 @@ export function ChatPanel() {
 
             <div className="relative bg-[#0A0A10] border border-white/10 rounded-2xl flex items-center p-2 pl-4">
 
-              <button type="button" className="text-gray-500 hover:text-white mr-3">
+              {/* <button type="button" className="text-gray-500 hover:text-white mr-3">
                 <Paperclip className="w-5 h-5" />
-              </button>
+              </button> */}
 
               <input
                 type="text"
@@ -158,12 +176,28 @@ export function ChatPanel() {
               />
 
               <div className="flex items-center gap-2 pr-1">
-                <button type="button" className="p-2 text-gray-500 hover:text-white">
+                {/* <button type="button" className="p-2 text-gray-500 hover:text-white">
                   <Smile className="w-5 h-5" />
-                </button>
-                <button type="button" className="p-2 text-gray-500 hover:text-white">
-                  <Mic className="w-5 h-5" />
-                </button>
+                </button> */}
+                {/* <button type="button" className="p-2 text-gray-500 hover:text-white">
+                  <Smile className="w-5 h-5" />
+                </button> */}
+                {browserSupportsSpeechRecognition && (
+                  <button
+                    type="button"
+                    className={`p-2 hover:text-white ${listening ? 'text-red-500 animate-pulse' : 'text-gray-500'}`}
+                    onClick={() => {
+                      if (listening) {
+                        SpeechRecognition.stopListening();
+                      } else {
+                        resetTranscript();
+                        SpeechRecognition.startListening({ continuous: true, language: 'en-IN' });
+                      }
+                    }}
+                  >
+                    <Mic className={`w-5 h-5 ${listening ? 'fill-current' : ''}`} />
+                  </button>
+                )}
                 <button
                   type="submit"
                   className="p-2 bg-[#3BF7FF] text-black rounded-xl hover:bg-[#3BF7FF]/90 transition-colors"

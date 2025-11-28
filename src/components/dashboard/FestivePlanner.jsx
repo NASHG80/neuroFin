@@ -1,11 +1,13 @@
 import { motion } from "framer-motion"
 import {
   Calendar,
-  Sparkles,
   TrendingUp,
+  Palette,
+  PartyPopper,
   Gift,
   Users,
-  Home as HomeIcon
+  Home as HomeIcon,
+  Sparkles
 } from "lucide-react"
 import { useState } from "react"
 
@@ -26,7 +28,7 @@ const FestivePlanner = () => {
         { name: "Shopping", amount: 10000, icon: Sparkles }
       ],
       color: "#f59e0b", // Amber
-      emoji: "🪔"
+      icon: PartyPopper // Replaced emoji with PartyPopper
     },
     {
       name: "Holi 2025",
@@ -40,7 +42,7 @@ const FestivePlanner = () => {
         { name: "Gatherings", amount: 7000, icon: Users }
       ],
       color: "#8b5cf6", // Violet
-      emoji: "🎨"
+      icon: Palette // Replaced emoji with Palette
     },
     {
       name: "New Year 2026",
@@ -54,7 +56,7 @@ const FestivePlanner = () => {
         { name: "Gifts", amount: 5000, icon: Gift }
       ],
       color: "#3b82f6", // Blue
-      emoji: "🎉"
+      icon: PartyPopper // Replaced emoji with PartyPopper
     }
   ]
 
@@ -80,24 +82,29 @@ const FestivePlanner = () => {
 
       {/* Festival Selector */}
       <div className="flex gap-3 mb-6">
-        {festivals.map((fest, index) => (
-          <motion.button
-            key={fest.name}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={() => setSelectedFestival(index)}
-            className={`flex-1 p-4 rounded-xl transition-all border ${
-              selectedFestival === index
-                ? "bg-white/[0.08] border-white/10"
-                : "bg-transparent border-white/[0.05] hover:bg-white/[0.02]"
-            }`}
-          >
-            <div className="text-2xl mb-2">{fest.emoji}</div>
-            <p className={`text-xs font-medium ${selectedFestival === index ? "text-white" : "text-zinc-500"}`}>
-                {fest.name.split(" ")[0]}
-            </p>
-          </motion.button>
-        ))}
+        {festivals.map((fest, index) => {
+          const FestivalIcon = fest.icon; // Use the icon component
+          return (
+            <motion.button
+              key={fest.name}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={() => setSelectedFestival(index)}
+              className={`flex-1 p-4 rounded-xl transition-all border ${
+                selectedFestival === index
+                  ? "bg-white/[0.08] border-white/10"
+                  : "bg-transparent border-white/[0.05] hover:bg-white/[0.02]"
+              }`}
+            >
+              <div className="text-2xl mb-2">
+                <FestivalIcon className="w-6 h-6 mx-auto" style={{ color: fest.color }} />
+              </div>
+              <p className={`text-xs font-medium ${selectedFestival === index ? "text-white" : "text-zinc-500"}`}>
+                  {fest.name.split(" ")[0]}
+              </p>
+            </motion.button>
+          )
+        })}
       </div>
 
       {/* Festival Details */}

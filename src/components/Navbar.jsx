@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { Link, useNavigate } from "react-router-dom";
+import { BarChart3, CreditCard, Calendar, Users } from "lucide-react";
 
 export default function Navbar() {
   const navRef = useRef(null);
@@ -275,14 +276,26 @@ export default function Navbar() {
                    opacity-0 pointer-events-none"
       >
         <div className="flex flex-col gap-4 text-white/80 text-sm">
-          <a className="hover:text-white transition"
-           onClick={() => navigate("/spends-budgets")}>📊 Spends & Budgets</a>
-          <a className="hover:text-white transition"
-          onClick={() => navigate("/Upi-Bills")}>💸 UPI & Bills</a>
-          <a className="hover:text-white transition"
-          onClick={() => navigate("/Future-Planner")}>🔮 Future Planner</a>
-          <a className="hover:text-white transition"
-          onClick={() => navigate("/Family-Space")}>👨‍👩‍👧 Family Spaces</a>
+          <a className="hover:text-white transition flex items-center gap-2"
+           onClick={() => navigate("/spends-budgets")}>
+            <BarChart3 className="w-4 h-4" />
+            Spends & Budgets
+          </a>
+          <a className="hover:text-white transition flex items-center gap-2"
+          onClick={() => navigate("/Upi-Bills")}>
+            <CreditCard className="w-4 h-4" />
+            UPI & Bills
+          </a>
+          <a className="hover:text-white transition flex items-center gap-2"
+          onClick={() => navigate("/Future-Planner")}>
+            <Calendar className="w-4 h-4" />
+            Future Planner
+          </a>
+          <a className="hover:text-white transition flex items-center gap-2"
+          onClick={() => navigate("/Family-Space")}>
+            <Users className="w-4 h-4" />
+            Family Spaces
+          </a>
         </div>
       </div>
     </header>
