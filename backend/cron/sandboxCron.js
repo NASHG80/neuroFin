@@ -15,11 +15,11 @@ async function runSandboxCronTick() {
       const bank = c.bank;
       const cardId = c._id;
 
-      // Check any existing transactions for this card
+      // Check if this card already has transactions
       const existing = await SandboxTransaction.findOne({ cardNumber });
 
-      // FIRST TIME → 200 (spread over year)
-      // AFTER THAT → 10 (near now)
+      // FIRST RUN → 200 (spread across 1 year)
+      // LATER → 10 (cluster near now)
       const txnCount = existing ? 10 : 200;
 
       const generated = generateTransactions(
@@ -31,13 +31,19 @@ async function runSandboxCronTick() {
           : { spreadOverYear: true }
       );
 
+      // Save each transaction as a separate document
       for (const { monthKey, transaction } of generated) {
         await SandboxTransaction.create({
           ...transaction,
+
+          // 🔥 KEY FIX — Python-safe timestamp format
+          timestamp: transaction.timestamp.toISOString(),
+
           card: cardId,
           bank,
           cardNumber,
-          month: monthKey
+          month: monthKey,
+          createdAt: new Date()
         });
       }
 
@@ -53,6 +59,9 @@ async function runSandboxCronTick() {
 export default function startSandboxCron() {
   console.log("⏳ Sandbox Cron Enabled");
 
-  runSandboxCronTick();                    // run immediately
-  cron.schedule("*/30 * * * *", runSandboxCronTick); // run every 30 min
+  // Run immediately
+  runSandboxCronTick();
+
+  // Run every 30 minutes
+  cron.schedule("*/30 * * * *", runSandboxCronTick);
 }
