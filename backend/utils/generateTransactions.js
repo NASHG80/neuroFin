@@ -9,18 +9,59 @@ const merchants = [
 const types = ["UPI", "Debit Card", "Credit Card"];
 const statuses = ["SUCCESS", "FAILED", "PENDING"];
 
-// Random date between Jan 2025 and now
+/* ---------------------------------------------
+   DATE HELPERS
+---------------------------------------------- */
+
+// Spread uniformly over last 12 months
+function randomDateOverYear() {
+  const now = new Date();
+  const oneYearAgo = new Date();
+  oneYearAgo.setFullYear(now.getFullYear() - 1);
+
+  const ts = faker.date.between({ from: oneYearAgo, to: now });
+  return ts;
+}
+
+// Cluster around now ±15 min
+function randomDateNearNow() {
+  const now = new Date();
+  const offsetMs = (Math.random() - 0.5) * 30 * 60 * 1000; // +/- 15 min
+  return new Date(now.getTime() + offsetMs);
+}
+
+// Default (fallback): between Jan 2025 → now
 function randomDate2025() {
   const start = new Date("2025-01-01");
   const end = new Date();
   return faker.date.between({ from: start, to: end });
 }
 
-export default function generateTransactions(cardNumber, count, bank) {
+/* ---------------------------------------------
+   MAIN GENERATOR
+---------------------------------------------- */
+
+export default function generateTransactions(
+  cardNumber,
+  count,
+  bank,
+  opts = { spreadOverYear: false, anchorNow: false }
+) {
+  const { spreadOverYear, anchorNow } = opts;
+
   const results = [];
 
   for (let i = 0; i < count; i++) {
-    const timestamp = randomDate2025();
+    let timestamp;
+
+    if (spreadOverYear) {
+      timestamp = randomDateOverYear();
+    } else if (anchorNow) {
+      timestamp = randomDateNearNow();
+    } else {
+      timestamp = randomDate2025();
+    }
+
     const monthKey = timestamp.toISOString().slice(0, 7);
 
     const merchant = faker.helpers.arrayElement(merchants);

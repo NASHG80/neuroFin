@@ -1,6 +1,6 @@
 import cron from "node-cron";
 import Card from "../models/Card.js";
-import SandboxMonthlyTransaction from "../models/SandboxCardTransaction.js";
+import SandboxTransaction from "../models/SandboxTransaction.js";
 import generateTransactions from "../utils/generateTransactions.js";
 
 async function runSandboxCronTick() {
@@ -15,25 +15,33 @@ async function runSandboxCronTick() {
       const bank = c.bank;
       const cardId = c._id;
 
-      let existing = await SandboxMonthlyTransaction.findOne({ cardNumber });
+      // Check any existing transactions for this card
+      const existing = await SandboxTransaction.findOne({ cardNumber });
 
-      const txnCount = existing ? 10 : 100;
-      const generated = generateTransactions(cardNumber, txnCount, bank);
+      // FIRST TIME → 200 (spread over year)
+      // AFTER THAT → 10 (near now)
+      const txnCount = existing ? 10 : 200;
+
+      const generated = generateTransactions(
+        cardNumber,
+        txnCount,
+        bank,
+        existing
+          ? { anchorNow: true }
+          : { spreadOverYear: true }
+      );
 
       for (const { monthKey, transaction } of generated) {
-        await SandboxMonthlyTransaction.findOneAndUpdate(
-          { cardNumber },
-          {
-            $push: { [`months.${monthKey}`]: transaction },
-            updatedAt: new Date(),
-            card: cardId,
-            bank
-          },
-          { upsert: true }
-        );
+        await SandboxTransaction.create({
+          ...transaction,
+          card: cardId,
+          bank,
+          cardNumber,
+          month: monthKey
+        });
       }
 
-      console.log(`💾 Added ${txnCount} txns → ${cardNumber}`);
+      console.log(`💾 Inserted ${txnCount} separate txns → ${cardNumber}`);
     }
 
     console.log("✅ Tick Complete");
@@ -45,9 +53,6 @@ async function runSandboxCronTick() {
 export default function startSandboxCron() {
   console.log("⏳ Sandbox Cron Enabled");
 
-  // ⭐ Run Immediately
-  runSandboxCronTick();
-
-  // ⭐ Schedule Every 30 min
-  cron.schedule("*/30 * * * *", runSandboxCronTick);
+  runSandboxCronTick();                    // run immediately
+  cron.schedule("*/30 * * * *", runSandboxCronTick); // run every 30 min
 }

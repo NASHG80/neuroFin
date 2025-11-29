@@ -119,7 +119,7 @@ export function ChatPanel() {
         className="flex-1 overflow-y-auto p-6 pb-32 custom-scrollbar"
       >
         <div className="p-6 pb-2 shrink-0">
-          <div
+          <motion.div
             className="flex items-center gap-3 cursor-pointer group"
             onClick={() => navigate('/dashboard')}
           >
