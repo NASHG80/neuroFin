@@ -13,7 +13,7 @@ from api.src.memory import (
 
 from agents.analyst_agent import analyst_agent
 from agents.forecast_agent import forecast_agent
-from agents.advisor_agent import advisor_agent
+from agent.agents.advisor_agent import advisor_agent
 from agents.risk_agent import risk_agent
 from agents.classifier_agent import classifier_agent
 from agents.llm import call_llm

@@ -1,7 +1,14 @@
 import re
 
 def planner_agent(user_query: str):
-    q = user_query.lower()
+    """
+    NeuroFin Planner Agent:
+    Maps user query → which agents should run.
+    Output format:
+        { "steps": [ {"agent": "some_agent"} ] }
+    """
+
+    q = user_query.lower().strip()
     plan = {"steps": []}
 
     # ----------------------------------------------------
@@ -9,8 +16,8 @@ def planner_agent(user_query: str):
     # ----------------------------------------------------
     if any(w in q for w in [
         "savings", "saving rate", "save more",
-        "improve savings", "increase savings",
-        "optimize savings"
+        "increase savings", "optimize savings",
+        "improve savings"
     ]):
         plan["steps"].append({"agent": "savings_analyzer"})
         plan["steps"].append({"agent": "advisor"})
@@ -21,7 +28,8 @@ def planner_agent(user_query: str):
     # ----------------------------------------------------
     if any(w in q for w in [
         "invest", "investment", "portfolio",
-        "returns", "investment plan", "sip", "mutual fund"
+        "returns", "sip", "mutual fund",
+        "stock market", "where to invest"
     ]):
         plan["steps"].append({"agent": "investment_agent"})
         plan["steps"].append({"agent": "advisor"})
@@ -32,31 +40,33 @@ def planner_agent(user_query: str):
     # ----------------------------------------------------
     if any(w in q for w in [
         "automation", "automate", "auto-pay",
-        "rules", "setup automation", "auto debit"
+        "auto pay", "auto debit", "rules",
+        "setup automation", "payment reminder"
     ]):
         plan["steps"].append({"agent": "automation_agent"})
         plan["steps"].append({"agent": "advisor"})
         return plan
 
     # ----------------------------------------------------
-    # 4) FORECASTING (FORECAST MUST NOT USE ADVISOR)
+    # 4) FORECASTING (IMPORTANT → NO ADVISOR HERE)
     # ----------------------------------------------------
     if any(w in q for w in [
         "forecast", "predict", "projection", "estimate",
-        "future", "next month", "next week", "spending next month",
-        "expected spending", "cashflow", "expense forecast",
-        "spending forecast", "forecast my spendings",
-        "forecast next year", "future expenses", "prediction"
+        "future", "next month", "next week",
+        "expected spending", "cashflow", "trend",
+        "spending next month", "expense forecast",
+        "forecast my spendings", "prediction"
     ]):
         plan["steps"].append({"agent": "forecaster"})
-        return plan   # IMPORTANT → Do NOT call advisor after forecast
+        return plan     # DO NOT append advisor here
 
     # ----------------------------------------------------
     # 5) RISK CHECK
     # ----------------------------------------------------
     if any(w in q for w in [
-        "risk", "danger", "critical", "alert",
-        "overspending", "risk analysis", "risk check"
+        "risk", "overspending", "danger", "alert",
+        "risk analysis", "risk check", "critical",
+        "running out of money", "burn rate"
     ]):
         plan["steps"].append({"agent": "risk_checker"})
         plan["steps"].append({"agent": "advisor"})
@@ -66,15 +76,16 @@ def planner_agent(user_query: str):
     # 6) SPENDING ANALYSIS
     # ----------------------------------------------------
     if any(w in q for w in [
-        "spend ", "spent", "analysis",
-        "where did my money go", "expense breakdown"
+        "spent", "spending", "analysis", "breakdown",
+        "expense breakdown", "where did my money go",
+        "spend analysis", "spending review"
     ]):
         plan["steps"].append({"agent": "analyst"})
         plan["steps"].append({"agent": "advisor"})
         return plan
 
     # ----------------------------------------------------
-    # 7) FALLBACK (DEFAULT WEEKLY SUMMARY)
+    # 7) DEFAULT → WEEKLY SUMMARY
     # ----------------------------------------------------
     plan["steps"].append({"agent": "analyst"})
     plan["steps"].append({"agent": "advisor"})
