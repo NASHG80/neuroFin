@@ -21,7 +21,7 @@ function ChatInterface() {
         className="hidden xl:flex flex-col w-80 border-r border-white/5 bg-[#05050A]"
       >
         <div className="p-6 pb-2 shrink-0">
-          <div
+          <motion.div
             className="flex items-center gap-3 cursor-pointer group"
             onClick={() => navigate('/dashboard')}
           >

@@ -133,7 +133,7 @@ const SpendingHeatmap = () => {
         <div className="p-5 rounded-2xl bg-blue-500/[0.03] border border-blue-500/10">
           <p className="text-xs text-zinc-500 uppercase mb-2">Current Net Worth</p>
           <p className="text-3xl font-medium text-white">
-            ₹{(currentNetWorth / 100000).toFixed(2)}L
+            {formatCurrency(currentNetWorth)}
           </p>
         </div>
 

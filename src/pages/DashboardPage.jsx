@@ -561,7 +561,7 @@ export default function DashboardPage() {
                 </div>
               </motion.div>
               <div>
-                <h1 className="text-2xl tracking-tight text-white font-medium">Neuroin</h1>
+                <h1 className="text-2xl tracking-tight text-white font-medium">NeuroFin</h1>
                 <p className="text-xs text-white/40 tracking-wide uppercase">Money OS</p>
               </div>
             </div>
