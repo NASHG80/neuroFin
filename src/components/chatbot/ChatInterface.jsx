@@ -6,6 +6,9 @@ import { Sparkles, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 
+import logo from "../../assets/logo.png";
+ // ✅ FIXED
+
 function ChatInterface() {
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const navigate = useNavigate();
@@ -27,13 +30,13 @@ function ChatInterface() {
           >
             <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#7433FF] via-[#3BF7FF] to-[#E4C580] p-[1px]">
               <div className="w-full h-full bg-[#05050A] rounded-[10px] flex items-center justify-center">
-                <img src="../src/assets/logo.png" />
+                <img src={logo} alt="NeuroFin logo" /> {/* ✅ FIXED */}
               </div>
             </div>
             <span className="text-lg font-medium tracking-wide text-white">
               NeuroFin
             </span>
-          </div>
+          </motion.div>
         </div>
 
         <div className="flex-1 overflow-y-auto custom-scrollbar">
