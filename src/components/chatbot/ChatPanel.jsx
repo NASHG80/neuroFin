@@ -77,10 +77,10 @@ export function ChatPanel() {
     let botReply = "⚠️ Something went wrong."
 
     try {
-      const res = await fetch("http://localhost:7001/agent/ask", {
+      const res = await fetch("http://localhost:8000/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: "111", message: userMessage.content }),
+        body: JSON.stringify({ question: userMessage.content }),
       })
 
       const data = await res.json()
