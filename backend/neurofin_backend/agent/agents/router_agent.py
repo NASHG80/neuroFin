@@ -1,311 +1,317 @@
-import re
-import requests
+from agent.agents.analyst_agent import analyst_agent
+from agent.agents.forecast_agent import forecast_agent
+from agent.agents.classifier_agent import classifier_agent
+from agent.agents.risk_agent import risk_agent
+from agent.agents.llm import call_llm
+from agent.agents.savings_analyzer_agent import savings_analyzer_agent
+from agent.agents.automation_agent import automation_agent
+from agent.agents.investment_agent import investment_agent
 
-from agents.planner_agent import planner_agent
-from api.src.memory import (
-    get_user_profile,
-    update_user_profile,
-    get_goals,
-    add_goal,
-    get_spending_pattern,
-    fix_json
-)
-
-from agents.analyst_agent import analyst_agent
-from agents.forecast_agent import forecast_agent
-from agent.agents.advisor_agent import advisor_agent
-from agents.risk_agent import risk_agent
-from agents.classifier_agent import classifier_agent
-from agents.llm import call_llm
-
-from agents.investment_agent import investment_agent
-from agents.savings_analyzer_agent import savings_analyzer_agent
-from agents.automation_agent import automation_agent
+from pymongo import MongoClient
+import os
 
 
-# ---------------------------------------------------
-# ⭐ NANDA TAX AGENT
-# ---------------------------------------------------
-def nanda_tax_agent(message: str):
-    try:
-        res = requests.post(
-            "http://localhost:7000/a2a",
-            json={"input": message}
-        )
-        data = res.json()
-        return data.get("output_text", "⚠️ Nanda didn't return any response.")
-    except Exception as e:
-        return f"❌ Nanda error: {str(e)}"
+# ----------------------------------------------------
+# CLEANING FUNCTION (VERY IMPORTANT)
+# ----------------------------------------------------
+def clean(text: str):
+    """
+    Ensures the LLM response is always clean:
+    - No markdown (#, *, -, etc.)
+    - Replace $ → ₹
+    - Remove extra spacing
+    - Ensure plain text only
+    """
+    if text is None:
+        return "No response"
+
+    t = str(text)
+
+    replace_map = {
+        "*": "",
+        "#": "",
+        "- ": "",
+        " -": "",
+        "$": "₹",
+    }
+    for a, b in replace_map.items():
+        t = t.replace(a, b)
+
+    while "\n\n" in t:
+        t = t.replace("\n\n", "\n")
+
+    return t.strip()
 
 
-# ---------------------------------------------------
-# ⭐ INTENT DETECTION
-# ---------------------------------------------------
-def detect_intent(message: str):
+# ----------------------------------------------------
+# MONGO CONNECTION
+# ----------------------------------------------------
+MONGO_URI = os.getenv("MONGO_URI", "mongodb://localhost:27017")
+DB = MongoClient(MONGO_URI)["neurofin"]
+SANDBOX = DB["sandboxmonthlytransactions"]
+
+
+# ----------------------------------------------------
+# INTENT DETECTION
+# ----------------------------------------------------
+def detect_intent(message):
     q = message.lower()
 
-    # TAX BOT
-    if any(w in q for w in ["tax", "80c", "80d", "80ccd", "regime", "nanda"]):
-        return "NANDA_TAX"
-
-    # FORECASTING INTENT
-    if any(w in q for w in [
-        "forecast", "predict", "projection", "future",
-        "next month", "next year", "10 years",
-        "spending forecast", "cashflow", "expense forecast"
-    ]):
+    if any(w in q for w in ["forecast", "next month", "projection", "future"]):
         return "FORECAST"
 
-    # SPENDING ANALYSIS
-    if any(w in q for w in ["analysis", "breakdown", "review spending"]):
-        return "ANALYZE_SPENDING"
-
-    # SAVINGS
-    if any(w in q for w in ["save", "saving", "improve savings"]):
+    if any(w in q for w in ["saving", "savings", "save more", "savings rate"]):
         return "ANALYZE_SAVINGS"
 
-    # INVESTMENT
-    if any(w in q for w in ["invest", "investment", "portfolio", "sip"]):
+    if any(w in q for w in ["invest", "portfolio", "mutual fund", "stock"]):
         return "INVESTMENT_ADVICE"
 
-    # AUTOMATION
-    if "automation" in q:
-        return "AUTOMATION_HELP"
-
-    # RISK
     if "risk" in q:
         return "RISK_CHECK"
+
+    if any(w in q for w in ["spending", "analysis", "expenses"]):
+        return "ANALYZE_SPENDING"
+
+    if "automation" in q:
+        return "AUTOMATION"
 
     return "WEEKLY_SUMMARY"
 
 
-# ---------------------------------------------------
-# ⭐ MAIN ROUTER
-# ---------------------------------------------------
-def router_agent(user_id: str, message: str):
+
+# ----------------------------------------------------
+# ROUTER AGENT (FINAL)
+# ----------------------------------------------------
+def router_agent(user_id, message):
+
     intent = detect_intent(message)
 
-    analyst = analyst_agent(user_id)
-    forecast_data = forecast_agent(user_id)
-    risk = risk_agent(user_id)
-
-    # -----------------------------------------------
-    # 1️⃣ NANDA TAX
-    # -----------------------------------------------
-    if intent == "NANDA_TAX":
-        return fix_json({
-            "intent": "NANDA_TAX",
-            "answer": nanda_tax_agent(message)
-        })
-
-
-    # -----------------------------------------------
-    # 2️⃣ ⭐ ADVANCED FORECAST BLOCK (FINAL)
-    # -----------------------------------------------
+    # ======================================================
+    # FORECAST
+    # ======================================================
     if intent == "FORECAST":
-        fore = forecast_data
+        data = forecast_agent()
 
         prompt = f"""
-You are a senior financial forecasting expert for Indian users.
+Respond in clean plain text.
+No markdown. No hashtags. No stars. No hyphens.
+Use ₹ for currency.
 
-Below is the raw forecast data:
-{fore}
+Format:
 
-Write a fully structured forecast narrative with the following sections:
+30 Day Forecast
+• Trend: <trend>
+• Projected Spending: ₹<next_month>
 
-1) Short-Term Forecast (Next 7 Days)
-   - Expected daily spending pattern
-   - Highest-risk day
-   - Short-term cashflow movement
+Risks
+1. <risk1>
+2. <risk2>
 
-2) Next Month Forecast
-   - Expected spending total for the month (₹)
-   - Trend direction (upward / downward / stable)
-   - Category-wise spending prediction (₹)
-   - Expected spikes (food, transport, shopping, bills)
+Recommendation
+• <advice>
 
-3) 3-Month Projection
-   - Total expected spending next 3 months
-   - Savings probability
-   - Expected category inflation
-   - Subscription burn estimate
-
-4) One-Year Projection
-   - Expected annual spend (₹)
-   - Lifestyle creep impact
-   - Festival & travel seasonality
-   - Overspending risk
-   - Savings rate movement
-
-5) Five-Year & Ten-Year Outlook
-   - Long-term expense trajectory
-   - Financial stability vs debt-risk
-   - Inflation-adjusted impact
-   - Net-worth projection (basic)
-
-6) Category-Wise Future Forecast
-   - Fastest growing categories
-   - Stable categories
-   - High-risk categories
-   - Provide numbers (₹)
-
-7) Subscription & EMI Forecast
-   - Annual subscription estimate (₹)
-   - EMI stress months
-   - Recurring charge risks
-
-8) Habit-Based Predictions
-   - Weekend vs weekday patterns
-   - End-of-month spikes
-   - Late-night spending risks
-   - Unusual patterns
-
-9) Runway & Burn Rate
-   - Daily burn rate (₹)
-   - Days until balance may run out
-   - Burn pattern: healthy/unhealthy
-
-10) Risk Index (0–100)
-    - Meaning of score
-    - Overspending probability
-    - High-risk categories
-    - Cashflow pressure
-
-11) Alerts & Warnings
-    - Critical upcoming risks
-    - Subscription renewals
-    - Merchant patterns
-
-12) Actionable Recommendations
-    - Budget adjustments
-    - Category caps
-    - Behaviour improvements
-    - 2 automation rules
-    - Ideal savings target
-
-Rules:
-- Do NOT use hashtags.
-- Use clean headings and bullet points.
-- Must use ₹ currency.
+Here is the forecast data:
+{data}
 """
 
-        reply = call_llm(prompt)
+        return {"answer": clean(call_llm(prompt))}
 
-        return fix_json({
-            "intent": "FORECAST",
-            "forecast_raw": fore,
-            "answer": reply
-        })
-
-
-    # -----------------------------------------------
-    # 3️⃣ SPENDING ANALYSIS
-    # -----------------------------------------------
+    # ======================================================
+    # SPENDING ANALYSIS
+    # ======================================================
     if intent == "ANALYZE_SPENDING":
+        data = analyst_agent()
+
         prompt = f"""
-Spending Breakdown Report
+Produce a clean text summary.
 
-Weekly breakdown:
-{analyst['weekly']}
+Format:
 
-Highest categories:
-{analyst['top_spends']}
+Spending Insights
+• <insight1>
+• <insight2>
+• <insight3>
+• <insight4>
 
-Merchant summary:
-{analyst['merchant_summary']}
+Improvements
+1. <tip1>
+2. <tip2>
+3. <tip3>
 
-Write:
-- 5 insights
-- 3 problem areas
-- 3 improvement suggestions
+Spending Risk Score
+• <score>
+
+Data:
+{data}
 """
-        return fix_json({
-            "intent": "ANALYZE_SPENDING",
-            "answer": call_llm(prompt)
-        })
 
+        return {"answer": clean(call_llm(prompt))}
 
-    # -----------------------------------------------
-    # 4️⃣ SAVINGS ANALYSIS
-    # -----------------------------------------------
+    # ======================================================
+    # SAVINGS ANALYSIS
+    # ======================================================
     if intent == "ANALYZE_SAVINGS":
-        savings = savings_analyzer_agent(user_id)
+        data = savings_analyzer_agent()
+
         prompt = f"""
-Savings report:
-{savings}
+Return a human-friendly financial summary.
+No markdown. No hashtags. No stars. No hyphens.
 
-Write:
-- Savings health score
-- Whether savings rate is healthy
-- What drains savings
-- 4 practical improvement steps
+Format:
+
+Savings Health
+• Score: <score>/100
+• Net Savings: ₹<net_savings>
+• Savings Rate: <rate>%
+
+Ideal Savings
+• Suggested Target: ₹<ideal>
+• Gap From Target: ₹<gap>
+
+Top Issues
+1. <category1>: ₹<amount1>
+2. <category2>: ₹<amount2>
+3. <category3>: ₹<amount3>
+
+Improvement Plan
+• <tip1>
+• <tip2>
+• <tip3>
+
+Here is the savings data:
+{data}
 """
-        return fix_json({
-            "intent": "ANALYZE_SAVINGS",
-            "answer": call_llm(prompt)
-        })
 
+        return {"answer": clean(call_llm(prompt))}
 
-    # -----------------------------------------------
-    # 5️⃣ INVESTMENT ADVICE
-    # -----------------------------------------------
+    # ======================================================
+    # INVESTMENT ADVICE
+    # ======================================================
     if intent == "INVESTMENT_ADVICE":
-        inv = investment_agent(user_id)
+        data = investment_agent(SANDBOX)
+
         prompt = f"""
-Investment report:
-{inv}
+Generate simple investment advice.
+Clean text only.
 
-Write:
-- Suggested investment plan
-- Portfolio reasoning
-- SIP guidance
-- Short-term vs long-term strategy
+Format:
+
+Investment Overview
+• Total Value: ₹<value>
+• Risk Level: <risk>
+
+Ideal Allocation
+1. <alloc1>
+2. <alloc2>
+3. <alloc3>
+
+Safe Options
+• <safe1>
+• <safe2>
+• <safe3>
+
+Growth Options
+• <growth1>
+• <growth2>
+• <growth3>
+
+Recommendation
+• <advice>
+
+Here is the portfolio data:
+{data}
 """
-        return fix_json({
-            "intent": "INVESTMENT_ADVICE",
-            "answer": call_llm(prompt)
-        })
 
+        return {"answer": clean(call_llm(prompt))}
 
-    # -----------------------------------------------
-    # 6️⃣ RISK REPORT
-    # -----------------------------------------------
+    # ======================================================
+    # RISK CHECK
+    # ======================================================
     if intent == "RISK_CHECK":
+        data = risk_agent()
+
         prompt = f"""
-Risk data:
-{risk}
+Give a clean financial risk summary.
 
-Write:
-- Overspending risks
-- Burn-rate risk
-- Category vulnerabilities
-- 5 prevention steps
+Format:
+
+Risk Level
+• <level>
+
+Major Risks
+1. <risk1>
+2. <risk2>
+3. <risk3>
+
+Stability Probability
+• <percent>
+
+Fixes
+• <fix1>
+• <fix2>
+• <fix3>
+
+Here is the user's data:
+{data}
 """
-        return fix_json({
-            "intent": "RISK_CHECK",
-            "answer": call_llm(prompt)
-        })
 
+        return {"answer": clean(call_llm(prompt))}
 
-    # -----------------------------------------------
-    # 7️⃣ WEEKLY SUMMARY (DEFAULT)
-    # -----------------------------------------------
-    summary_prompt = f"""
-Weekly Summary
+    # ======================================================
+    # AUTOMATION RECOMMENDATIONS
+    # ======================================================
+    if intent == "AUTOMATION":
+        data = automation_agent()
 
-Total spent: ₹{analyst['total_spent']}
-Daily average: ₹{analyst['daily_avg']}
-Top categories: {analyst['top_spends']}
-Forecast summary: {forecast_data['summary']}
-Risk alerts: {risk['issues']}
+        prompt = f"""
+Return a simple text summary of automation suggestions.
 
-Write:
-- Full weekly summary
-- High & low spending days
-- Category insights
-- 3 recommendations
+Format:
+
+Smart Automations
+• <rule1>
+• <rule2>
+• <rule3>
+
+Best Automation
+• <best_rule>
+
+Data:
+{data}
 """
-    return fix_json({
-        "intent": "WEEKLY_SUMMARY",
-        "answer": call_llm(summary_prompt)
-    })
+
+        return {"answer": clean(call_llm(prompt))}
+
+    # ======================================================
+    # WEEKLY SUMMARY (DEFAULT)
+    # ======================================================
+    analyst_data = analyst_agent()
+    risk_data = risk_agent()
+    forecast_data = forecast_agent()
+
+    prompt = f"""
+Create a short weekly summary.
+Plain text only.
+
+Format:
+
+Weekly Insights
+• <insight1>
+• <insight2>
+• <insight3>
+
+Financial Score
+• <score>/100
+
+Fixes For Next Week
+1. <fix1>
+2. <fix2>
+3. <fix3>
+
+Here is the data:
+Spending: {analyst_data}
+Risk: {risk_data}
+Forecast: {forecast_data}
+"""
+
+    return {"answer": clean(call_llm(prompt))}

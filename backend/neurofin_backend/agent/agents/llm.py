@@ -1,108 +1,172 @@
 import os
-import time
-import random
-import requests
+import json
+import boto3
+from dotenv import load_dotenv
 
-# --- config ---
-LLM_PROVIDER = os.getenv("LLM_PROVIDER", "groq").lower()
-OPENAI_API_KEY = os.getenv("OPENAI_API_KEY", "")
-GROQ_API_KEY = os.getenv("GROQ_API_KEY", "")
-MODEL = os.getenv("LLM_MODEL", "llama-3.1-8b-instant")
+# -------------------------------------------------------
+# LOAD ENV VARIABLES
+# -------------------------------------------------------
 
+load_dotenv()
 
-def call_llm(prompt: str) -> str:
-    """
-    Universal LLM entry function.
-    Priority:
-    1. Groq (fast, free)
-    2. OpenAI (only if configured)
-    """
+AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
+NOVA_MODEL = os.getenv("NOVA_MODEL", "amazon.nova-micro-v1:0")
 
-    if LLM_PROVIDER == "groq":
-        return groq_llm(prompt)
-    else:
-        return openai_llm(prompt)
+# -------------------------------------------------------
+# BEDROCK CLIENT
+# -------------------------------------------------------
+
+bedrock = boto3.client(
+    "bedrock-runtime",
+    region_name=AWS_REGION
+)
+
+# -------------------------------------------------------
+# SYSTEM INSTRUCTIONS (embedded in prompt)
+# -------------------------------------------------------
+
+SYSTEM_INSTRUCTIONS = """
+You are an expert financial AI assistant.
+
+Your responses must be:
+- clear
+- structured
+- thoughtful
+- professional
+- analytical
+
+Guidelines:
+1. Carefully reason about the question before answering.
+2. Avoid vague or generic statements.
+3. Provide practical insights when relevant.
+
+Response Format:
+
+Summary
+A short overview.
+
+Key Insights
+Bullet points with important points.
+
+Detailed Explanation
+Explain reasoning step-by-step.
+
+Practical Takeaway
+Provide actionable advice if applicable.
+"""
+
+# -------------------------------------------------------
+# PROMPT BUILDER
+# -------------------------------------------------------
+
+def build_prompt(question: str, context: str = None):
+
+    context_section = context if context else "No additional financial data available."
+
+    prompt = f"""
+{SYSTEM_INSTRUCTIONS}
+
+User Question:
+{question}
+
+Available Context Data:
+{context_section}
+
+Instructions:
+Think carefully about the problem before answering.
+Provide a structured response following the required format.
+"""
+
+    return prompt
 
 
 # -------------------------------------------------------
-#   GROQ LLaMA-3
+# AMAZON NOVA CALL
 # -------------------------------------------------------
-def groq_llm(prompt: str) -> str:
-    if not GROQ_API_KEY:
-        return "[Groq Error] GROQ_API_KEY missing."
 
-    url = "https://api.groq.com/openai/v1/chat/completions"
-    headers = {
-        "Authorization": f"Bearer {GROQ_API_KEY}",
-        "Content-Type": "application/json"
-    }
+def nova_llm(prompt: str):
 
     body = {
-        "model": MODEL,
         "messages": [
-            {"role": "system", "content": "You are NeuroFin AI assistant."},
-            {"role": "user", "content": prompt}
+            {
+                "role": "user",
+                "content": [
+                    {"text": prompt}
+                ]
+            }
         ],
-        "max_tokens": 300,
-        "temperature": 0.2
+        "inferenceConfig": {
+            "maxTokens": 600,
+            "temperature": 0.35,
+            "topP": 0.9
+        }
     }
 
     try:
-        r = requests.post(url, json=body, headers=headers, timeout=15)
-        r.raise_for_status()
-        data = r.json()
 
-        # Groq uses OpenAI ChatCompletion format
-        return data["choices"][0]["message"]["content"]
+        response = bedrock.invoke_model(
+            modelId=NOVA_MODEL,
+            body=json.dumps(body),
+            contentType="application/json",
+            accept="application/json"
+        )
+
+        result = json.loads(response["body"].read())
+
+        return result["output"]["message"]["content"][0]["text"]
 
     except Exception as e:
-        return f"[Groq Error] {str(e)}"
+        return f"[Nova Error] {str(e)}"
 
 
 # -------------------------------------------------------
-#   OPENAI (used only during hackathon)
+# OPTIONAL REFINEMENT PASS
 # -------------------------------------------------------
-def openai_llm(prompt: str) -> str:
-    if not OPENAI_API_KEY:
-        return "[OpenAI Error] OPENAI_API_KEY missing."
 
-    url = "https://api.openai.com/v1/responses"
-    headers = {
-        "Authorization": f"Bearer {OPENAI_API_KEY}",
-        "Content-Type": "application/json"
-    }
+def refine_response(initial_response: str):
 
-    body = {
-        "model": MODEL,
-        "input": prompt,
-        "max_output_tokens": 350,
-        "temperature": 0.2
-    }
+    refine_prompt = f"""
+Improve the clarity and professionalism of the following response.
 
-    last_err = "Unknown"
-    for attempt in range(5):
-        try:
-            r = requests.post(url, json=body, headers=headers, timeout=20)
+Ensure it remains structured using:
 
-            # Rate limit
-            if r.status_code == 429:
-                wait = (2 ** attempt) + random.random()
-                time.sleep(wait)
-                continue
+Summary
+Key Insights
+Detailed Explanation
+Practical Takeaway
 
-            r.raise_for_status()
-            data = r.json()
+Text:
+{initial_response}
+"""
 
-            # Extract the actual text
-            output_text = ""
-            for o in data.get("output", []):
-                for c in o.get("content", []):
-                    if isinstance(c, dict) and "text" in c:
-                        output_text += c["text"]
+    return nova_llm(refine_prompt)
 
-            return output_text.strip() or "[OpenAI Warning] No output returned."
 
-        except Exception as e:
-            last_err = str(e)
+# -------------------------------------------------------
+# UNIVERSAL ENTRY FUNCTION
+# -------------------------------------------------------
 
-    return f"[OpenAI Error After Retries] {last_err}"
+def call_llm(question: str, context: str = None, refine: bool = False):
+
+    prompt = build_prompt(question, context)
+
+    response = nova_llm(prompt)
+
+    if refine:
+        response = refine_response(response)
+
+    return response
+
+
+# -------------------------------------------------------
+# TEST RUN
+# -------------------------------------------------------
+
+if __name__ == "__main__":
+
+    question = "How does inflation affect long-term savings?"
+
+    result = call_llm(question, refine=True)
+
+    print("\nAI RESPONSE:\n")
+    print(result)

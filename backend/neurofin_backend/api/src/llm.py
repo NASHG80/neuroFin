@@ -1,42 +1,53 @@
 # api/src/llm.py
+
 import os
-import requests
+import json
+import boto3
+
+AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
+NOVA_MODEL = os.getenv("NOVA_MODEL", "amazon.nova-micro-v1:0")
+
+# Create Bedrock runtime client
+bedrock = boto3.client(
+    "bedrock-runtime",
+    region_name=AWS_REGION
+)
+
 
 def call_llm(prompt: str) -> str:
     """
-    Calls Groq LLM using Chat Completions API.
-    Returns the assistant text response.
+    Calls Amazon Nova via AWS Bedrock.
+    Returns the assistant response text.
     """
 
-    GROQ_API_KEY = os.getenv("GROQ_API_KEY")
-
-    if not GROQ_API_KEY:
-        return "❌ ERROR: GROQ_API_KEY missing in environment variables."
-
-    url = "https://api.groq.com/openai/v1/chat/completions"
-
-    headers = {
-        "Authorization": f"Bearer {GROQ_API_KEY}",
-        "Content-Type": "application/json"
-    }
-
-    data = {
-        "model": "llama-3.1-8b-instant",     # or llama3.1-70b if enabled
+    body = {
         "messages": [
-            {"role": "system", "content": "You are NeuroFin AI. Respond clearly and helpfully."},
-            {"role": "user", "content": prompt}
+            {
+                "role": "user",
+                "content": [
+                    {"text": prompt}
+                ]
+            }
         ],
-        "max_tokens": 300
+        "inferenceConfig": {
+            "maxTokens": 300,
+            "temperature": 0.3
+        }
     }
 
     try:
-        r = requests.post(url, json=data, headers=headers, timeout=30)
 
-        if r.status_code != 200:
-            return f"❌ Groq API error {r.status_code}: {r.text}"
+        response = bedrock.invoke_model(
+            modelId=NOVA_MODEL,
+            body=json.dumps(body),
+            contentType="application/json",
+            accept="application/json"
+        )
 
-        response_json = r.json()
-        return response_json["choices"][0]["message"]["content"]
+        data = json.loads(response["body"].read())
+
+        return data["output"]["message"]["content"][0]["text"]
 
     except Exception as e:
-        return f"❌ LLM request failed: {e}"
+
+        return f"❌ Nova request failed: {str(e)}"

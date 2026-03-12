@@ -16,38 +16,47 @@ const SpendingHeatmap = () => {
   const [currentNetWorth, setCurrentNetWorth] = useState(0);
   const [loading, setLoading] = useState(true);
 
-  function safeNum(n) {
-    return Number(n) && !isNaN(Number(n)) ? Number(n) : 0;
-  }
+  // INR formatter → Lakhs/Crores
+  const formatINR = (num) => {
+    if (!num || isNaN(num)) return "₹0";
 
-  // Fetch forecast from backend
+    const n = Number(num);
+
+    if (n >= 1e7) return `₹${(n / 1e7).toFixed(2)} Cr`;     // Crore
+    if (n >= 1e5) return `₹${(n / 1e5).toFixed(2)} Lakh`;   // Lakh
+
+    return `₹${n.toLocaleString("en-IN", { maximumFractionDigits: 2 })}`;
+  };
+
+  const safeNum = (n) => (Number(n) && !isNaN(Number(n)) ? Number(n) : 0);
+
+  // 🔥 Load forecast via POST
   useEffect(() => {
     async function loadForecast() {
       try {
         const res = await fetch("http://localhost:7001/api/forecast/run", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ user_id: "sandbox" })
+          body: JSON.stringify({ user_id: "sandbox" }),
         });
 
-        const contentType = res.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          console.error("Backend returned non-JSON:", await res.text());
+        const type = res.headers.get("content-type");
+        if (!type || !type.includes("application/json")) {
+          console.error("❌ Backend returned non-JSON:", await res.text());
           setLoading(false);
           return;
         }
 
         const data = await res.json();
-        console.log("Forecast result:", data);
+        console.log("Forecast Response:", data);
 
-        // Map forecast to graph-friendly dataset
-        const oneMonth  = safeNum(data.next_month_total);
-        const threeM    = safeNum(data.three_month_projection);
-        const sixM      = safeNum(oneMonth * 6);
-        const oneYear   = safeNum(data.year_projection);
-        const twoYear   = safeNum(data.year_projection * 2);
-        const fiveYear  = safeNum(data.five_year_projection);
-        const tenYear   = safeNum(data.ten_year_projection);
+        const oneMonth = safeNum(data.next_month_total);
+        const threeM = safeNum(data.three_month_projection);
+        const sixM = safeNum(oneMonth * 6);
+        const oneYear = safeNum(data.year_projection);
+        const twoYear = safeNum(data.year_projection * 2);
+        const fiveYear = safeNum(data.five_year_projection);
+        const tenYear = safeNum(data.ten_year_projection);
 
         const chart = [
           { period: "1 Month", value: oneMonth },
@@ -60,10 +69,10 @@ const SpendingHeatmap = () => {
         ];
 
         setForecastData(chart);
-        setCurrentNetWorth(oneMonth - threeM / 5);
 
+        setCurrentNetWorth(oneMonth - threeM / 5);
       } catch (err) {
-        console.error("Forecast fetch FAILED:", err);
+        console.error("🔥 Forecast failed:", err);
       }
 
       setLoading(false);
@@ -82,9 +91,9 @@ const SpendingHeatmap = () => {
           animate={{ opacity: 1, scale: 1 }}
           className="p-4 rounded-xl bg-[#0A0A0A] border border-white/10 shadow-xl"
         >
-          <p className="text-xs text-zinc-500 mb-2">{d.period}</p>
-          <p className="text-emerald-400 text-lg font-medium mb-1">
-            ₹{(d.value / 100000).toFixed(2)}L
+          <p className="text-xs text-zinc-500">{d.period}</p>
+          <p className="text-emerald-400 text-lg font-medium">
+            {formatINR(d.value)}
           </p>
         </motion.div>
       );
@@ -93,11 +102,7 @@ const SpendingHeatmap = () => {
   };
 
   if (loading)
-    return (
-      <div className="text-center text-zinc-400 p-6">
-        Loading Forecast…
-      </div>
-    );
+    return <div className="text-center text-zinc-400 p-6">Loading Forecast…</div>;
 
   if (!forecastData.length)
     return (
@@ -110,7 +115,7 @@ const SpendingHeatmap = () => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: 0.4 }}
+      transition={{ delay: 0.3 }}
       className="p-8 rounded-3xl bg-[#0A0A0A] border border-white/[0.06]"
       style={{ boxShadow: "0 20px 40px -10px rgba(0,0,0,0.5)", minHeight: 500 }}
     >
@@ -118,7 +123,9 @@ const SpendingHeatmap = () => {
       <div className="flex items-start justify-between mb-8">
         <div>
           <h3 className="text-2xl font-medium text-white mb-2">Wealth Forecast</h3>
-          <p className="text-zinc-500 text-sm">AI-powered projection of your financial future</p>
+          <p className="text-zinc-500 text-sm">
+            AI-powered projection of your financial future
+          </p>
         </div>
         <motion.div
           animate={{ rotate: [0, 360] }}
@@ -133,7 +140,7 @@ const SpendingHeatmap = () => {
         <div className="p-5 rounded-2xl bg-blue-500/[0.03] border border-blue-500/10">
           <p className="text-xs text-zinc-500 uppercase mb-2">Current Net Worth</p>
           <p className="text-3xl font-medium text-white">
-            ₹{(currentNetWorth / 100000).toFixed(2)}L
+            {formatINR(currentNetWorth)}
           </p>
         </div>
 
@@ -142,7 +149,7 @@ const SpendingHeatmap = () => {
           <div className="flex items-center gap-2">
             <TrendingUp className="w-5 h-5 text-emerald-500" />
             <p className="text-3xl font-medium text-white">
-              ₹{((forecastData[6]?.value ?? 0) / 100000).toFixed(2)}L
+              {formatINR(forecastData[6]?.value ?? 0)}
             </p>
           </div>
         </div>
@@ -152,7 +159,7 @@ const SpendingHeatmap = () => {
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 0.7 }}
+        transition={{ delay: 0.6 }}
         className="h-[320px] w-full mb-8 min-h-[300px]"
       >
         <ResponsiveContainer width="100%" height="100%">
@@ -165,6 +172,7 @@ const SpendingHeatmap = () => {
             </defs>
 
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(255,255,255,0.05)" />
+
             <XAxis
               dataKey="period"
               stroke="rgba(255,255,255,0.2)"
@@ -173,10 +181,11 @@ const SpendingHeatmap = () => {
               textAnchor="end"
               height={60}
             />
+
             <YAxis
+              tickFormatter={formatINR}
               stroke="rgba(255,255,255,0.2)"
               style={{ fontSize: "12px" }}
-              tickFormatter={(v) => `₹${(v / 100000).toFixed(1)}L`}
             />
 
             <Tooltip content={<CustomTooltip />} />
@@ -200,7 +209,9 @@ const SpendingHeatmap = () => {
 
       {/* Milestones */}
       <div>
-        <h4 className="text-xs text-zinc-500 uppercase font-medium mb-4">Key Milestones</h4>
+        <h4 className="text-xs text-zinc-500 uppercase font-medium mb-4">
+          Key Milestones
+        </h4>
         <div className="grid grid-cols-2 gap-3">
           {forecastData.slice(2).map((m, i) => (
             <motion.div
@@ -211,9 +222,7 @@ const SpendingHeatmap = () => {
               className="p-4 rounded-xl bg-white/[0.02] border border-white/[0.06]"
             >
               <p className="text-xs text-zinc-500">{m.period}</p>
-              <p className="text-xl text-white">
-                ₹{(m.value / 100000).toFixed(2)}L
-              </p>
+              <p className="text-xl text-white">{formatINR(m.value)}</p>
             </motion.div>
           ))}
         </div>

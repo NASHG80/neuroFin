@@ -1,19 +1,24 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { ChatPanel } from './ChatPanel';
 import { InsightsPanel } from './InsightsPanel';
 import { QuickActionsPanel } from './QuickActionsPanel';
 import { Sparkles, Menu, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
+import logo from '../../assets/logo.png';   // ✅ FIXED PATH
 
 function ChatInterface() {
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => {
+    document.body.style.overflow = showMobileSidebar ? "hidden" : "auto";
+  }, [showMobileSidebar]);
+
   return (
     <div className="flex h-[calc(100vh-80px)] lg:h-screen bg-[#00010D] text-white overflow-hidden relative">
 
-      {/* LEFT SIDEBAR - Insights (Desktop) */}
+      {/* LEFT SIDEBAR (DESKTOP) */}
       <motion.div
         initial={{ x: -50, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
@@ -21,19 +26,18 @@ function ChatInterface() {
         className="hidden xl:flex flex-col w-80 border-r border-white/5 bg-[#05050A]"
       >
         <div className="p-6 pb-2 shrink-0">
-          <div
+          <motion.div
             className="flex items-center gap-3 cursor-pointer group"
             onClick={() => navigate('/dashboard')}
           >
             <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-[#7433FF] via-[#3BF7FF] to-[#E4C580] p-[1px]">
               <div className="w-full h-full bg-[#05050A] rounded-[10px] flex items-center justify-center">
-                <img src="../src/assets/logo.png" />
+                <img src={logo} alt="NeuroFin" className="w-6 h-6" />
               </div>
             </div>
-            <span className="text-lg font-medium tracking-wide text-white">
-              NeuroFin
-            </span>
-          </div>
+
+            <span className="text-lg font-medium tracking-wide">NeuroFin</span>
+          </motion.div>
         </div>
 
         <div className="flex-1 overflow-y-auto custom-scrollbar">
@@ -41,10 +45,10 @@ function ChatInterface() {
         </div>
       </motion.div>
 
-      {/* MAIN CHAT AREA */}
+      {/* MAIN CHAT */}
       <div className="flex-1 flex flex-col relative min-w-0 bg-[#00010D]">
 
-        {/* Mobile Header */}
+        {/* MOBILE HEADER */}
         <div className="lg:hidden flex items-center justify-between p-4 border-b border-white/10 bg-black/50 backdrop-blur-md">
           <div className="flex items-center gap-2">
             <Sparkles className="w-5 h-5 text-[#3BF7FF]" />
@@ -55,7 +59,7 @@ function ChatInterface() {
           </button>
         </div>
 
-        {/* Chat Content */}
+        {/* CHAT CONTENT */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -66,7 +70,7 @@ function ChatInterface() {
         </motion.div>
       </div>
 
-      {/* RIGHT SIDEBAR (Desktop) */}
+      {/* RIGHT SIDEBAR (DESKTOP) */}
       <motion.div
         initial={{ x: 50, opacity: 0 }}
         animate={{ x: 0, opacity: 1 }}
@@ -76,7 +80,7 @@ function ChatInterface() {
         <QuickActionsPanel />
       </motion.div>
 
-      {/* MOBILE SIDEBAR OVERLAY */}
+      {/* MOBILE SIDEBAR */}
       <AnimatePresence>
         {showMobileSidebar && (
           <motion.div

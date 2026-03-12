@@ -1,5 +1,5 @@
 from flask import Blueprint, request, jsonify
-from services.voice_answer_service import generate_voice_answer
+from ..services.voice_answer_service import generate_voice_answer
 import requests
 import base64
 import os

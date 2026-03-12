@@ -1,14 +1,16 @@
-import { Sparkles, Send, Paperclip, Mic, Smile, XCircle } from "lucide-react"
-import { motion } from "framer-motion"
-import { useState, useRef, useEffect } from "react"
+import { Send, Mic, XCircle } from "lucide-react";
+import { motion } from "framer-motion";
+import { useState, useRef, useEffect } from "react";
 import "regenerator-runtime/runtime";
-import SpeechRecognition, { useSpeechRecognition } from 'react-speech-recognition';
+import SpeechRecognition, { useSpeechRecognition } from "react-speech-recognition";
+
+import logo from "../../assets/logo.png";
 
 export function ChatPanel() {
-  const [input, setInput] = useState('')
-  const [messages, setMessages] = useState([])
-  const [loading, setLoading] = useState(false)
-  const scrollRef = useRef(null)
+  const [input, setInput] = useState("");
+  const [messages, setMessages] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const scrollRef = useRef(null);
 
   const {
     transcript,
@@ -17,147 +19,128 @@ export function ChatPanel() {
     browserSupportsSpeechRecognition
   } = useSpeechRecognition();
 
-  // Sync transcript to input when listening
+  // Sync mic with input
   useEffect(() => {
-    if (transcript) {
-      setInput(transcript);
-    }
+    if (transcript) setInput(transcript);
   }, [transcript]);
 
-  // Auto-scroll when messages update
+  // Auto-scroll
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight
+      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages, loading])
+  }, [messages, loading]);
 
-
-  // 🔥 ROUTER FUNCTION → Decides which bot to send message to
-  function routeMessage(msg) {
-    const q = msg.toLowerCase()
-
-    if (
-      q.includes("tax") ||
-      q.includes("income tax") ||
-      q.includes("80c") ||
-      q.includes("80d") ||
-      q.includes("80ccd") ||
-      q.includes("deduction") ||
-      q.includes("regime") ||
-      q.includes("old regime") ||
-      q.includes("new regime") ||
-      q.includes("hra") ||
-      q.includes("tds")
-    ) {
-      return "nanda"        // Tax bot
-    }
-
-    return "neurofin"       // All other queries
-  }
-
-
-  // 🔥 Send message
+  // SEND
   const handleSend = async (e) => {
-    e.preventDefault()
-    if (!input.trim()) return
+    e.preventDefault();
+    if (!input.trim()) return;
 
-    const userMessage = {
+    const text = input.trim();
+
+    const userMsg = {
       type: "user",
-      content: input,
-      time: new Date().toLocaleTimeString([], {
-        hour: "2-digit",
-        minute: "2-digit",
-      }),
-    }
+      content: text,
+      time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+    };
 
-    setMessages((prev) => [...prev, userMessage])
-    setInput('')
-    setLoading(true)
-
-    let botReply = "⚠️ Something went wrong."
+    setMessages((prev) => [...prev, userMsg]);
+    setInput("");
+    setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:7001/agent/ask", {
+      const res = await fetch("http://localhost:7001/api/ask", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ user_id: "111", message: userMessage.content }),
-      })
+        body: JSON.stringify({
+          user_Id: "sandbox",               // ✔ CORRECT KEY
+          message: text
+        })
+      });
 
-      const data = await res.json()
-      const botReply = data?.answer || "⚠️ Something went wrong."
+      const data = await res.json();
+      let reply = data?.reply || "⚠️ No response received.";
 
-      const botMessage = {
-        type: "assistant",
-        content: botReply,
-        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+      // Convert object → string to prevent React crash
+      if (typeof reply !== "string") {
+        reply = JSON.stringify(reply, null, 2);
       }
 
-      setMessages((prev) => [...prev, botMessage])
+      const botMsg = {
+        type: "assistant",
+        content: reply,
+        time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+      };
+
+      setMessages((prev) => [...prev, botMsg]);
+
     } catch (err) {
       setMessages((prev) => [
         ...prev,
         {
           type: "assistant",
-          content: "Could not reach NeuroFin AI backend.",
-          time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          content: "❌ Unable to reach NeuroFin server.",
           isError: true,
-        },
-      ])
+          time: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+        }
+      ]);
     }
 
-    setLoading(false)
-  }
-
+    setLoading(false);
+  };
 
   return (
     <div className="flex flex-col h-full relative">
-
-      {/* MESSAGES AREA */}
+      
+      {/* CONTENT */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 pb-32 custom-scrollbar">
         <div className="max-w-3xl mx-auto space-y-8">
 
-          {/* Header Icon */}
+          {/* HEADER */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="text-center pt-8 pb-4"
           >
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4 shadow-[0_0_40px_rgba(99,102,241,0.3)]">
-              <img src="../src/assets/logo.png" />
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4">
+              <img src={logo} className="w-10 h-10" alt="NeuroFin" />
             </div>
             <h2 className="text-xl font-medium text-white mb-1">NeuroFin Assistant</h2>
-            <p className="text-xs text-gray-400">Ask me anything about your finances</p>
+            <p className="text-xs text-gray-400">Ask anything about your finances</p>
           </motion.div>
 
-          {/* CHAT BUBBLES */}
-          {messages.map((message, i) => (
+          {/* MESSAGES */}
+          {messages.map((msg, i) => (
             <motion.div
               key={i}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className={`flex ${message.type === "user" ? "justify-end" : "justify-start"}`}
+              className={`flex ${msg.type === "user" ? "justify-end" : "justify-start"}`}
             >
-              <div className={`max-w-[80%] ${message.type === "user" ? "order-2" : "order-1"}`}>
+              <div className="max-w-[80%]">
                 <div
-                  className={`rounded-2xl px-5 py-3.5 text-sm leading-relaxed whitespace-pre-line flex items-start gap-2 ${message.type === "user"
-                    ? "bg-[#3BF7FF] text-black font-medium rounded-br-sm"
-                    : "bg-[#1A1A1E] border border-white/5 text-gray-200 rounded-bl-sm"
-                    }`}
+                  className={`rounded-2xl px-5 py-3.5 text-sm whitespace-pre-line flex items-start gap-2 ${
+                    msg.type === "user"
+                      ? "bg-[#3BF7FF] text-black font-medium rounded-br-sm"
+                      : "bg-[#1A1A1E] border border-white/5 text-gray-200 rounded-bl-sm"
+                  }`}
                 >
-                  {message.isError && <XCircle className="w-4 h-4 text-red-400 flex-shrink-0 mt-0.5" />}
-                  <span>{message.content}</span>
+                  {msg.isError && <XCircle className="w-4 h-4 text-red-400" />}
+                  <span>{msg.content}</span>
                 </div>
+
                 <p
-                  className={`text-[10px] text-gray-600 mt-2 ${message.type === "user" ? "text-right" : "text-left"
-                    }`}
+                  className={`text-[10px] text-gray-600 mt-2 ${
+                    msg.type === "user" ? "text-right" : "text-left"
+                  }`}
                 >
-                  {message.time}
+                  {msg.time}
                 </p>
               </div>
             </motion.div>
           ))}
 
-          {/* Typing Indicator */}
+          {/* TYPING */}
           {loading && (
             <motion.div className="flex gap-1 pl-2">
               <div className="w-2 h-2 bg-white/20 rounded-full animate-bounce" />
@@ -165,7 +148,6 @@ export function ChatPanel() {
               <div className="w-2 h-2 bg-white/20 rounded-full animate-bounce" style={{ animationDelay: ".4s" }} />
             </motion.div>
           )}
-
         </div>
       </div>
 
@@ -173,32 +155,28 @@ export function ChatPanel() {
       <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-[#00010D] pt-10 pb-6 px-4">
         <div className="max-w-3xl mx-auto">
 
-          {/* Suggestions */}
+          {/* SUGGESTIONS */}
           <div className="flex gap-2 mb-4 overflow-x-auto no-scrollbar">
             {[
               "Show investment opportunities",
               "Analyze savings rate",
-              "How much tax will I pay?",
-              "Compare old vs new regime",
-            ].map((action, id) => (
+              "What is my forecast?",
+              "Give me a risk report"
+            ].map((s, i) => (
               <button
-                key={id}
-                className="whitespace-nowrap px-4 py-2 rounded-full bg-[#1A1A1E] border border-white/10 text-xs text-gray-400 hover:text-white"
-                onClick={() => setInput(action)}
+                key={i}
+                className="px-4 py-2 rounded-full bg-[#1A1A1E] border border-white/10 text-xs text-gray-400 hover:text-white"
+                onClick={() => setInput(s)}
               >
-                {action}
+                {s}
               </button>
             ))}
           </div>
 
-          {/* Input */}
-          <form onSubmit={handleSend} className="relative group">
+          {/* INPUT */}
+          <form onSubmit={handleSend}>
             <div className="relative bg-[#0A0A10] border border-white/10 rounded-2xl flex items-center p-2 pl-4">
-
-              {/* <button type="button" className="text-gray-500 hover:text-white mr-3">
-                <Paperclip className="w-5 h-5" />
-              </button> */}
-
+              
               <input
                 type="text"
                 value={input}
@@ -207,44 +185,43 @@ export function ChatPanel() {
                 className="flex-1 bg-transparent outline-none text-sm text-white h-10"
               />
 
-              <div className="flex items-center gap-2 pr-1">
-                {/* <button type="button" className="p-2 text-gray-500 hover:text-white">
-                  <Smile className="w-5 h-5" />
-                </button> */}
-                {/* <button type="button" className="p-2 text-gray-500 hover:text-white">
-                  <Smile className="w-5 h-5" />
-                </button> */}
-                {browserSupportsSpeechRecognition && (
-                  <button
-                    type="button"
-                    className={`p-2 hover:text-white ${listening ? 'text-red-500 animate-pulse' : 'text-gray-500'}`}
-                    onClick={() => {
-                      if (listening) {
-                        SpeechRecognition.stopListening();
-                      } else {
-                        resetTranscript();
-                        SpeechRecognition.startListening({ continuous: true, language: 'en-IN' });
-                      }
-                    }}
-                  >
-                    <Mic className={`w-5 h-5 ${listening ? 'fill-current' : ''}`} />
-                  </button>
-                )}
+              {/* MIC */}
+              {browserSupportsSpeechRecognition && (
                 <button
-                  type="submit"
-                  className="p-2 bg-[#3BF7FF] text-black rounded-xl hover:bg-[#3BF7FF]/90 transition-colors"
+                  type="button"
+                  className={`p-2 ${listening ? "text-red-500 animate-pulse" : "text-gray-500"}`}
+                  onClick={() => {
+                    if (listening) SpeechRecognition.stopListening();
+                    else {
+                      resetTranscript();
+                      SpeechRecognition.startListening({
+                        continuous: true,
+                        language: "en-IN",
+                      });
+                    }
+                  }}
                 >
-                  <Send className="w-4 h-4" />
+                  <Mic className="w-5 h-5" />
                 </button>
-              </div>
+              )}
+
+              {/* SEND */}
+              <button
+                type="submit"
+                className="p-2 bg-[#3BF7FF] text-black rounded-xl hover:bg-[#3BF7FF]/90"
+              >
+                <Send className="w-4 h-4" />
+              </button>
+
             </div>
           </form>
 
           <p className="text-center text-[10px] text-gray-700 mt-3">
-            NeuroFin can make mistakes. Verify important information.
+            NeuroFin can make mistakes. Please verify important information.
           </p>
+
         </div>
       </div>
     </div>
-  )
+  );
 }

@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import { Sparkles, Info } from "lucide-react";
 import { useState, useEffect } from "react";
 
-const API_URL = "http://localhost:4000/api/v1/health-score/111";
+const API_URL = "http://localhost:7001/api/v1/health-score/111";
 
 const FinancialHealthScore = () => {
   const [score, setScore] = useState(0);

@@ -1,102 +1,65 @@
-# replace existing embed_texts with this
 import os
+import json
 import time
 import logging
+import boto3
 
 logger = logging.getLogger("rag")
 
-def embed_texts(texts, model="text-embedding-3-small", batch_size=16, max_retries=4):
-    """
-    Return list-of-embedding vectors for input texts.
-    Supports both the new "OpenAI" client (client.embeddings.create) and legacy
-    openai.Embedding.create(...) APIs. Retries with exponential backoff on failure.
-    """
+AWS_REGION = os.getenv("AWS_REGION", "us-east-1")
+EMBED_MODEL = os.getenv("EMBED_MODEL", "amazon.titan-embed-text-v2:0")
+
+bedrock = boto3.client(
+    "bedrock-runtime",
+    region_name=AWS_REGION
+)
+
+
+def embed_texts(texts, batch_size=8, max_retries=4):
+
     if not texts:
         return []
 
-    # chunking utility
-    def chunks(lst, n):
-        for i in range(0, len(lst), n):
-            yield lst[i : i + n]
+    embeddings = []
 
-    api_key = os.environ.get("OPENAI_API_KEY", "")
-    last_exc = None
-    out_embeddings = []
+    for text in texts:
 
-    for batch in chunks(texts, batch_size):
         backoff = 1.0
-        for attempt in range(1, max_retries + 1):
+
+        for attempt in range(max_retries):
+
             try:
-                # Try new-style client first (if available)
-                try:
-                    # new OpenAI client style: from openai import OpenAI; client = OpenAI()
-                    from openai import OpenAI as _OpenAIClient  # type: ignore
-                    client = _OpenAIClient(api_key=api_key) if api_key else _OpenAIClient()
-                    resp = client.embeddings.create(model=model, input=batch)
-                    # response shape: resp.data -> list of { "embedding": [...] }
-                    out_embeddings.extend([d["embedding"] for d in resp.data])
-                    last_exc = None
-                    break
-                except Exception as e_new:
-                    # fallback to legacy openai module
-                    try:
-                        import openai as _openai_legacy  # type: ignore
-                        if api_key:
-                            # older clients use openai.api_key
-                            try:
-                                _openai_legacy.api_key = api_key
-                            except Exception:
-                                # some versions use _openai_legacy.api_key = ...
-                                pass
-                        # legacy call
-                        resp = _openai_legacy.Embedding.create(input=batch, model=model)
-                        # resp['data'] list of {'embedding': [...]}
-                        out_embeddings.extend([item["embedding"] for item in resp["data"]])
-                        last_exc = None
-                        break
-                    except Exception as e_legacy:
-                        # both attempts failed — record to raise or retry
-                        last_exc = e_legacy
-                        logger.warning("Embedding call failed (attempt %d/%d): %s", attempt, max_retries, repr(e_legacy))
-                        # fall through to retry/backoff
-            except Exception as e_outer:
-                last_exc = e_outer
-                logger.warning("Unexpected embedding error (attempt %d/%d): %s", attempt, max_retries, repr(e_outer))
 
-            # exponential backoff before retrying
-            time.sleep(backoff)
-            backoff *= 2.0
+                body = {
+                    "inputText": text
+                }
 
-        if last_exc is not None:
-            # abort early if we exhausted retries for this batch
-            raise RuntimeError(f"Embedding failed after {max_retries} attempts: {repr(last_exc)}")
+                response = bedrock.invoke_model(
+                    modelId=EMBED_MODEL,
+                    body=json.dumps(body),
+                    contentType="application/json",
+                    accept="application/json"
+                )
 
-    return out_embeddings
-# ------------------------------------------------------------------------
-# COMPATIBILITY SHIM: Make sure `retrieve` exists for langgraph_flow.py
-# ------------------------------------------------------------------------
+                data = json.loads(response["body"].read())
 
-def retrieve(user_id, k=5, embed_model="text-embedding-3-small"):
-    """
-    Temporary fallback RAG retrieval function.
+                embeddings.append(data["embedding"])
 
-    If your real RAG code is not implemented or uses a different function
-    name, this prevents ImportErrors and allows the agent to run properly.
+                break
 
-    Returns a list of dicts like:
-    [
-        {"text": "sample", "meta": {"source": "none"}}
-    ]
-    """
+            except Exception as e:
 
-    # Optionally try calling your actual retrieval function if it exists
-    for alt in ["retrieve_docs", "retrieve_documents", "retrieve_for_user", "rag_retrieve"]:
-        if alt in globals() and callable(globals()[alt]):
-            try:
-                return globals()[alt](user_id, k=k, embed_model=embed_model)
-            except Exception:
-                pass  # fall back if it fails
+                logger.warning(
+                    "Embedding failed attempt %d/%d: %s",
+                    attempt + 1,
+                    max_retries,
+                    str(e)
+                )
 
-    # FINAL fallback: return empty list
-    return []
+                time.sleep(backoff)
+                backoff *= 2
 
+                if attempt == max_retries - 1:
+                    raise RuntimeError(f"Embedding failed: {e}")
+
+    return embeddings
