@@ -7,6 +7,9 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import logo from '../../assets/logo.png';   // ✅ FIXED PATH
 
+import logo from "../../assets/logo.png";
+ // ✅ FIXED
+
 function ChatInterface() {
   const [showMobileSidebar, setShowMobileSidebar] = useState(false);
   const navigate = useNavigate();
@@ -26,6 +29,7 @@ function ChatInterface() {
         className="hidden xl:flex flex-col w-80 border-r border-white/5 bg-[#05050A]"
       >
         <div className="p-6 pb-2 shrink-0">
+          <motion.div
           <motion.div
             className="flex items-center gap-3 cursor-pointer group"
             onClick={() => navigate('/dashboard')}

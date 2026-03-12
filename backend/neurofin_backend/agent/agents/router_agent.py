@@ -55,14 +55,20 @@ SANDBOX = DB["sandboxmonthlytransactions"]
 # INTENT DETECTION
 # ----------------------------------------------------
 def detect_intent(message):
+# ----------------------------------------------------
+# INTENT DETECTION
+# ----------------------------------------------------
+def detect_intent(message):
     q = message.lower()
 
+    if any(w in q for w in ["forecast", "next month", "projection", "future"]):
     if any(w in q for w in ["forecast", "next month", "projection", "future"]):
         return "FORECAST"
 
     if any(w in q for w in ["saving", "savings", "save more", "savings rate"]):
         return "ANALYZE_SAVINGS"
 
+    if any(w in q for w in ["invest", "portfolio", "mutual fund", "stock"]):
     if any(w in q for w in ["invest", "portfolio", "mutual fund", "stock"]):
         return "INVESTMENT_ADVICE"
 
@@ -122,6 +128,8 @@ Here is the forecast data:
     if intent == "ANALYZE_SPENDING":
         data = analyst_agent()
 
+        data = analyst_agent()
+
         prompt = f"""
 Produce a clean text summary.
 
@@ -151,6 +159,8 @@ Data:
     # SAVINGS ANALYSIS
     # ======================================================
     if intent == "ANALYZE_SAVINGS":
+        data = savings_analyzer_agent()
+
         data = savings_analyzer_agent()
 
         prompt = f"""
@@ -188,6 +198,8 @@ Here is the savings data:
     # INVESTMENT ADVICE
     # ======================================================
     if intent == "INVESTMENT_ADVICE":
+        data = investment_agent(SANDBOX)
+
         data = investment_agent(SANDBOX)
 
         prompt = f"""
